@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    
+    <!-- PWA - iOS -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Petio">
+    <link rel="apple-touch-icon" sizes="180x180" href="https://i.ibb.co/zVsc6LDk/62943fce33c7f18d50a127290140782f.jpg">
+    
+    <!-- PWA - Manifest -->
+    <link rel="manifest" href="data:application/manifest+json,{{MANIFEST}}">
+    <link rel="icon" type="image/jpeg" href="https://i.ibb.co/zVsc6LDk/62943fce33c7f18d50a127290140782f.jpg">
+    
+    <title>Petio - Assistant</title>
+    <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+    <style>
+        /* ========== STYLES COMPLETS ET FONCTIONNELS ========== */
+        :root {
+            --bg: #ffffff; --card: #fff; --text: #1c1c1e; --bot: #e9e9eb;
+            --accent: #007aff; --input-bg: #f2f2f7; --border: #e5e5e5;
+            --header-grad: linear-gradient(90deg, #007aff, #00c6ff);
+            --pay-bg: #1c1c1e; --pay-text: #ffffff; --pay-btn: #ff7a01;
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
+            --link-color: #007aff;
+        }
+        .dark-theme {
+            --bg: #000000; --card: #121212; --text: #ffffff; --bot: #2c2c2e;
+            --accent: #0a84ff; --input-bg: #1c1c1e; --border: #2c2c2e;
+            --header-grad: linear-gradient(90deg, #1c1c1e, #3a3a3c);
+            --pay-bg: #000000; --pay-text: #ffffff; --pay-btn: #ff7a01;
+            --link-color: #0a84ff;
+        }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
+        body, html { margin: 0; height: 100%; font-family: -apple-system, sans-serif; background: var(--bg); overflow: hidden; color: var(--text); transition: background 0.3s, color 0.3s; }
+
+        .page { display: none; height: 100%; width: 100%; flex-direction: column; position: absolute; top: 0; left: 0; background: var(--bg); }
+        .page.active { display: flex; }
+
+        .auth-container { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; }
+        .auth-content { width: 100%; max-width: 320px; text-align: center; }
+        .icon-main { font-size: 50px; color: var(--accent); margin-bottom: 10px; }
+        h2 { font-size: 20px; font-weight: 700; margin: 10px 0 5px; }
+        p { font-size: 14px; color: #8e8e93; margin-bottom: 25px; }
+        .input-field { width: 100%; padding: 16px; margin-bottom: 12px; border-radius: 12px; border: none; background: var(--input-bg); font-size: 16px; color: var(--text); }
+        .btn-valid { width: 100%; padding: 16px; background: var(--accent); color: white; border: none; border-radius: 12px; font-weight: 600; font-size: 16px; cursor: pointer; margin-top: 10px; }
+        .btn-valid:active { transform: scale(0.98); opacity: 0.9; }
+        .footer-icons { margin-top: 40px; display: flex; justify-content: center; gap: 20px; color: #d1d1d6; font-size: 24px; }
+
+        .chat-container { width: 100%; max-width: 600px; margin: 0 auto; height: 100vh; background: var(--card); display: flex; flex-direction: column; position: relative; }
+        .header { background: var(--header-grad); padding: 8px 12px; display: flex; align-items: center; justify-content: space-between; color: white; border-bottom-left-radius: 15px; border-bottom-right-radius: 15px; z-index: 20; gap: 8px; }
+        
+        #modeContainer { display: flex; align-items: center; gap: 6px; flex: 1; justify-content: center; }
+        #modeText { font-size: 13px; font-weight: 600; opacity: 0.9; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .btn-reset-mode { background: rgba(255,255,255,0.2); border: none; border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: white; transition: all 0.3s; flex-shrink: 0; }
+        .btn-reset-mode:active { background: rgba(255,255,255,0.4); transform: rotate(-180deg); }
+        
+        .header-btn { font-size: 22px; cursor: pointer; flex-shrink: 0; }
+
+        .chat-content { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        .message { 
+            padding: 12px 16px; 
+            border-radius: 18px; 
+            max-width: 80%; 
+            word-wrap: break-word; 
+            line-height: 1.4; 
+            position: relative; 
+        }
+        .message.bot { background: var(--bot); color: var(--text); align-self: flex-start; padding-right: 50px; }
+        .message.user { background: var(--accent); color: white; align-self: flex-end; }
+
+        .message-text a {
+            color: var(--link-color);
+            text-decoration: underline;
+            word-break: break-all;
+        }
+
+        .btn-copy {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 32px;
+            height: 32px;
+            background: rgba(0,0,0,0.15);
+            border: none;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: all 0.2s ease;
+            color: var(--text);
+            font-size: 16px;
+        }
+        .message.bot:hover .btn-copy,
+        .message.bot:active .btn-copy { opacity: 1; }
+        .btn-copy:active { background: rgba(0,0,0,0.25); transform: scale(0.9); }
+        .btn-copy.copied { background: #34c759; color: white; }
+        @media (max-width: 768px) { .btn-copy { opacity: 1; } }
+
+        .suggestions-container {
+            position: absolute;
+            bottom: 80px;
+            left: 0;
+            right: 0;
+            background: linear-gradient(180deg, transparent, var(--card));
+            padding: 10px 15px 5px;
+            z-index: 5;
+            display: none;
+        }
+        .suggestions-container.show { display: block; animation: slideUp 0.3s ease; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .suggestions-label { font-size: 11px; color: #8e8e93; margin-bottom: 8px; padding-left: 5px; font-weight: 600; }
+        .suggestions-scroll {
+            display: flex; gap: 8px; overflow-x: auto; overflow-y: hidden;
+            scrollbar-width: none; -ms-overflow-style: none;
+            padding: 5px 2px 10px; scroll-behavior: smooth;
+        }
+        .suggestions-scroll::-webkit-scrollbar { display: none; }
+        .suggestion-chip {
+            flex-shrink: 0; padding: 8px 16px; background: var(--accent); color: white;
+            border-radius: 20px; font-size: 13px; cursor: pointer; white-space: nowrap;
+            transition: all 0.2s; border: none; font-weight: 500;
+            animation: chipPop 0.4s ease;
+        }
+        @keyframes chipPop {
+            0% { opacity: 0; transform: scale(0.8) translateY(10px); }
+            60% { transform: scale(1.05); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .suggestion-chip:active { transform: scale(0.95); opacity: 0.8; }
+
+        .settings-page { position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: var(--card); z-index: 30; transition: left 0.4s cubic-bezier(0.77, 0, 0.175, 1); display: flex; flex-direction: column; }
+        .settings-page.open { left: 0; }
+        .settings-header { padding: 15px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border); }
+        .settings-content { padding: 10px; overflow-y: auto; flex: 1; }
+        .setting-item { 
+            display: flex; flex-direction: column; padding: 15px; margin: 10px 20px; background: var(--input-bg); 
+            border-radius: 18px; cursor: pointer; transition: transform 0.1s; 
+        }
+        .setting-item:active { transform: scale(0.98); }
+        .setting-main { display: flex; align-items: center; gap: 15px; }
+        .setting-desc { 
+            max-height: 0; overflow: hidden; opacity: 0; transition: all 0.3s; 
+            padding-left: 39px; font-size: 13px; color: #8e8e93; 
+        }
+        .setting-item.active .setting-desc { max-height: 500px; opacity: 1; margin-top: 8px; }
+        .setting-icon { font-size: 20px; color: var(--accent); }
+
+        .extra-menu { position: absolute; bottom: 85px; left: 15px; display: none; flex-direction: column-reverse; gap: 12px; z-index: 10; }
+        .extra-menu.show { display: flex; animation: bounceIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55); }
+        @keyframes bounceIn {
+            0% { opacity: 0; transform: scale(0.3) translateY(40px); }
+            60% { transform: scale(1.05) translateY(-5px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .menu-row { display: flex; align-items: center; gap: 12px; text-decoration: none; cursor: pointer; }
+        .menu-item { width: 48px; height: 48px; background: var(--accent); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 24px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .menu-item:active { transform: scale(0.85) rotate(5deg); }
+        .menu-label { background: var(--bot); padding: 8px 14px; border-radius: 12px; font-size: 14px; color: var(--text); font-weight: 500; }
+
+        .input-bar { padding: 10px 15px calc(20px + var(--safe-bottom)); display: flex; align-items: flex-end; gap: 10px; border-top: 1px solid var(--border); background: var(--card); }
+        .btn-plus, .btn-send { width: 45px; height: 45px; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: all 0.2s ease; flex-shrink: 0; }
+        .btn-plus:active, .btn-send:active { transform: scale(0.85); }
+        .btn-plus.hidden { width: 0; opacity: 0; transform: scale(0); margin-right: -10px; pointer-events: none; }
+        .btn-plus i, .btn-send i { font-size: 38px; color: var(--accent); }
+        .input-container { flex: 1; background: var(--input-bg); border-radius: 20px; padding: 8px 15px; display: flex; min-width: 0; }
+        textarea { width: 100%; border: none; background: transparent; color: var(--text); font-size: 16px; outline: none; resize: none; max-height: 120px; padding: 5px 0; min-width: 0; }
+        .btn-send { width: 0; opacity: 0; transform: scale(0); pointer-events: none; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .btn-send.show { width: 45px; opacity: 1; transform: scale(1); pointer-events: auto; }
+        .typing { font-style: italic; color: #8e8e93; font-size: 13px; margin-left: 10px; display: none; }
+        .typing.show { display: block; }
+
+        #error-popup { position: fixed; top: -100px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 340px; background: #ff3b30; color: white; padding: 14px; border-radius: 18px; z-index: 3000; transition: top 0.4s; text-align: center; display: flex; align-items: center; gap: 10px; }
+        #error-popup.show { top: 20px; }
+
+        #overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: none; z-index: 1500; backdrop-filter: blur(4px); }
+        #overlay.show { display: block; }
+        #pay-sheet {
+            position: fixed; bottom: -100%; left: 0; width: 100%; background: var(--pay-bg); color: var(--pay-text);
+            padding: 30px 20px 50px 20px; border-top-left-radius: 25px; border-top-right-radius: 25px;
+            transition: bottom 0.5s cubic-bezier(0.32, 1, 0.23, 1); z-index: 2000; text-align: center;
+        }
+        #pay-sheet.show { bottom: 0; }
+        #pay-sheet h2 { margin: 0 0 10px 0; }
+        #pay-sheet p { color: rgba(255,255,255,0.7); margin: 15px 0 25px; }
+        #pay-sheet .btn-pay { display: block; width: 100%; padding: 16px; background: var(--pay-btn); color: white; text-decoration: none; border-radius: 14px; font-weight: 700; font-size: 16px; transition: transform 0.1s; }
+        #pay-sheet .btn-pay:active { transform: scale(0.98); }
+        #pay-sheet .close-link { margin-top: 20px; color: #8e8e93; font-size: 14px; cursor: pointer; }
+
+        #load-status { position: fixed; top: 0; left: 0; right: 0; background: #ffcc00; color: #000; text-align: center; padding: 8px; font-size: 13px; font-weight: 600; z-index: 9999; display: none; }
+        #load-status.error { background: #ff3b30; color: white; }
+        #load-status.success { background: #34c759; color: white; }
+
+        /* Modal renommer */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            z-index: 4000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal-overlay.show { display: flex; }
+        .modal-card {
+            background: var(--card);
+            border-radius: 24px;
+            width: 100%;
+            max-width: 360px;
+            padding: 24px 20px 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            color: var(--text);
+        }
+        .modal-title { font-size: 20px; font-weight: 700; margin-bottom: 8px; text-align: center; }
+        .modal-subtitle { font-size: 14px; color: #8e8e93; margin-bottom: 20px; text-align: center; }
+        .modal-input { width: 100%; padding: 16px; border-radius: 14px; border: none; background: var(--input-bg); font-size: 16px; color: var(--text); margin-bottom: 20px; }
+        .modal-actions { display: flex; gap: 12px; }
+        .modal-btn { flex: 1; padding: 14px; border-radius: 14px; font-weight: 600; font-size: 16px; cursor: pointer; border: none; }
+        .modal-btn.cancel { background: var(--input-bg); color: var(--text); }
+        .modal-btn.confirm { background: var(--accent); color: white; }
+
+        /* Feuille d'installation PWA */
+        #pwa-install-sheet {
+            position: fixed;
+            top: -100%;
+            left: 0;
+            right: 0;
+            background: var(--card);
+            color: var(--text);
+            padding: 20px 20px 30px;
+            border-bottom-left-radius: 25px;
+            border-bottom-right-radius: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            z-index: 2500;
+            transition: top 0.4s;
+        }
+        #pwa-install-sheet.show { top: 0; }
+        .pwa-sheet-header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
+        .pwa-sheet-header i { font-size: 40px; color: var(--accent); }
+        .install-btn-top { 
+            background: var(--accent); color: white; border: none; padding: 12px 20px; 
+            border-radius: 30px; font-weight: 600; font-size: 16px; display: inline-flex; align-items: center; gap: 8px; 
+            cursor: pointer; margin-left: auto; 
+        }
+        .pwa-steps { margin: 20px 0; }
+        .pwa-step { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
+        .pwa-close-btn { background: transparent; border: 1px solid var(--border); color: var(--text); padding: 12px; border-radius: 14px; width: 100%; cursor: pointer; }
+
+        #install-banner { display: none; }
+    </style>
+</head>
+<body>
+
+<div id="load-status">Chargement des connaissances...</div>
+<div id="error-popup"><i class="ph-fill ph-warning-circle"></i><span id="error-msg"></span></div>
+<div id="overlay" onclick="closePay()"></div>
+<div id="pay-sheet">
+    <h2>Accès VIP Requis</h2>
+    <p>Aucun abonnement trouvé pour ces informations.</p>
+    <a href="https://my.moneyfusion.net/69dfaeb42819ad4c3a7fc265" class="btn-pay">Débloquer l'accès (500 XOF)</a>
+    <p class="close-link" onclick="closePay()">Fermer</p>
+</div>
+
+<div id="pwa-install-sheet">
+    <div class="pwa-sheet-header">
+        <i class="ph ph-device-mobile"></i>
+        <h3 style="margin:0;">Installer Petio</h3>
+        <button class="install-btn-top" id="forceInstallBtn"><i class="ph ph-download-simple"></i> Installer</button>
+    </div>
+    <div class="pwa-steps">
+        <div class="pwa-step"><i class="ph ph-android-logo"></i><span><strong>Android</strong> : appuyez sur "Installer" ou menu → "Ajouter à l'écran d'accueil".</span></div>
+        <div class="pwa-step"><i class="ph ph-apple-logo"></i><span><strong>iOS</strong> : appuyez sur "Partager" puis "Sur l'écran d'accueil".</span></div>
+    </div>
+    <button class="pwa-close-btn" onclick="document.getElementById('pwa-install-sheet').classList.remove('show')">Fermer</button>
+</div>
+
+<div class="modal-overlay" id="nameModal">
+    <div class="modal-card">
+        <div class="modal-title">Renommer l'assistant</div>
+        <div class="modal-subtitle">Choisissez un nouveau nom</div>
+        <input type="text" id="newBotNameInput" class="modal-input" placeholder="Ex: Petio, Sophie..." maxlength="20">
+        <div class="modal-actions">
+            <button class="modal-btn cancel" onclick="closeNameModal()">Annuler</button>
+            <button class="modal-btn confirm" onclick="confirmChangeName()">Enregistrer</button>
+        </div>
+    </div>
+</div>
+
+<div id="page-auth" class="page active">
+    <div class="auth-container">
+        <div class="auth-content">
+            <div class="icon-main"><i class="ph-fill ph-shield-check"></i></div>
+            <h2>Vérification</h2>
+            <p>Entrez vos informations de référence.</p>
+            <input type="email" id="userEmail" class="input-field" placeholder="Email d'achat">
+            <input type="text" id="userCode" class="input-field" placeholder="Code de transaction">
+            <button class="btn-valid" id="btnValid" onclick="verifierAcces()">Valider</button>
+            <button class="btn-valid" style="background: var(--pay-btn); margin-top: 12px;" onclick="openPay()">🔑 Avoir mes accès</button>
+            <div class="footer-icons">
+                <i class="ph ph-fingerprint"></i><i class="ph ph-key"></i><i class="ph ph-cpu"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="page-robot" class="page">
+    <div class="chat-container">
+        <div class="header">
+            <div class="header-btn" onclick="openSettings()"><i class="ph ph-gear"></i></div>
+            <div id="modeContainer">
+                <span id="modeText">🤖 Mode: Cerveau</span>
+                <button class="btn-reset-mode" onclick="resetMode()"><i class="ph ph-arrow-counter-clockwise"></i></button>
+            </div>
+            <div class="header-btn" onclick="toggleTheme()"><i id="themeIcon" class="ph ph-moon"></i></div>
+        </div>
+
+        <div class="chat-content" id="chatArea" onclick="closeMenu()"></div>
+        <div class="typing" id="typing"><span id="typingName">Petio</span> écrit...</div>
+
+        <div class="suggestions-container" id="suggestionsContainer">
+            <div class="suggestions-label">💡 Suggestions :</div>
+            <div class="suggestions-scroll" id="suggestionsScroll"></div>
+        </div>
+
+        <div class="settings-page" id="settingsPage">
+            <div class="settings-header">
+                <div class="header-btn" style="color:var(--text)" onclick="closeSettings()"><i class="ph ph-caret-left"></i></div>
+                <span style="font-weight:600; color:var(--text)">Paramètres</span>
+            </div>
+            <div class="settings-content">
+                <div class="setting-item" onclick="openNameModal()">
+                    <div class="setting-main"><i class="setting-icon ph ph-user-circle"></i><span>Nom de l'assistant</span></div>
+                    <div class="setting-desc">Actuellement : <span id="currentBotName">Petio</span></div>
+                </div>
+                <div class="setting-item" onclick="afficherBanniereInstallation()">
+                    <div class="setting-main"><i class="setting-icon ph ph-device-mobile"></i><span>Installer l'application</span></div>
+                    <div class="setting-desc">Ajouter Petio à l'écran d'accueil.</div>
+                </div>
+                <div class="setting-item" onclick="window.open('https://wa.me/qr/UWYBOFF7GXRSB1', '_blank')">
+                    <div class="setting-main"><i class="setting-icon ph ph-whatsapp-logo"></i><span>Contact</span></div>
+                    <div class="setting-desc">Besoin d'aide ? Écrivez-nous sur WhatsApp.</div>
+                </div>
+                <div class="setting-item" onclick="this.classList.toggle('active')">
+                    <div class="setting-main"><i class="setting-icon ph ph-question"></i><span>FAQ</span></div>
+                    <div class="setting-desc"><p><strong>Comment utiliser Petio ?</strong><br>Tapez votre question.</p><p><strong>Fiabilité ?</strong><br>Sources vérifiées.</p></div>
+                </div>
+                <div class="setting-item" onclick="this.classList.toggle('active')">
+                    <div class="setting-main"><i class="setting-icon ph ph-scales"></i><span>CGU</span></div>
+                    <div class="setting-desc"><p>En utilisant Petio, vous acceptez les présentes CGU. Service informatif uniquement.</p></div>
+                </div>
+                <div class="setting-item" onclick="this.classList.toggle('active')">
+                    <div class="setting-main"><i class="setting-icon ph ph-lock"></i><span>Confidentialité</span></div>
+                    <div class="setting-desc"><p>Petio ne partage aucune information. Historique local.</p></div>
+                </div>
+                <div class="setting-item" onclick="this.classList.toggle('active')">
+                    <div class="setting-main"><i class="setting-icon ph ph-info"></i><span>À propos</span></div>
+                    <div class="setting-desc"><p><strong>Petio</strong> - Assistant version 1.0</p></div>
+                </div>
+                <div class="setting-item" onclick="toggleTheme()">
+                    <div class="setting-main"><i class="setting-icon ph ph-paint-bucket"></i><span>Thème</span></div>
+                    <div class="setting-desc">Alterner clair/sombre.</div>
+                </div>
+                <div class="setting-item" onclick="localStorage.removeItem('pierre_bot_access'); localStorage.removeItem('chatHistory'); window.location.reload();">
+                    <div class="setting-main"><i class="setting-icon ph ph-sign-out" style="color:#ff3b30"></i><span style="color:#ff3b30">Déconnexion</span></div>
+                    <div class="setting-desc">Se déconnecter.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="extra-menu" id="plusMenu">
+            <div class="menu-row" onclick="changerMode('Application')"><div class="menu-item"><i class="ph-fill ph-folder-open"></i></div><span class="menu-label">4 Application</span></div>
+            <div class="menu-row" onclick="changerMode('Formate')"><div class="menu-item"><i class="ph-fill ph-folder-open"></i></div><span class="menu-label">3 Formate</span></div>
+            <div class="menu-row" onclick="changerMode('Procedure')"><div class="menu-item"><i class="ph-fill ph-folder-open"></i></div><span class="menu-label">2 Procédure</span></div>
+            <div class="menu-row" onclick="changerMode('Novice')"><div class="menu-item"><i class="ph-fill ph-folder-open"></i></div><span class="menu-label">1 Novice</span></div>
+        </div>
+        <div class="input-bar">
+            <div class="btn-plus" id="btnPlus" onclick="toggleMenu(event)"><i class="ph ph-plus-circle"></i></div>
+            <div class="input-container"><textarea id="userInput" placeholder="Message..." rows="1" oninput="handleInput(this)"></textarea></div>
+            <div class="btn-send" id="btnSend" onclick="envoyerMessage()"><i class="ph-fill ph-paper-plane-right"></i></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function(){
+        // ==================== PWA ====================
+        const MANIFEST_DATA = {
+            name: "Petio Assistant", short_name: "Petio", description: "Assistant intelligent",
+            start_url: ".", display: "standalone", background_color: "#ffffff", theme_color: "#007aff",
+            icons: [{ src: "https://i.ibb.co/zVsc6LDk/62943fce33c7f18d50a127290140782f.jpg", sizes: "512x512", type: "image/jpeg" }]
+        };
+        const manifestBlob = new Blob([JSON.stringify(MANIFEST_DATA)], {type: 'application/manifest+json'});
+        document.querySelector('link[rel="manifest"]').href = URL.createObjectURL(manifestBlob);
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register(URL.createObjectURL(new Blob([`
+                    const CACHE_NAME = 'petio-final';
+                    self.addEventListener('install', e => e.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(['.', 'https://unpkg.com/@phosphor-icons/web@2.1.1', 'https://i.ibb.co/zVsc6LDk/62943fce33c7f18d50a127290140782f.jpg']))));
+                    self.addEventListener('fetch', e => e.respondWith(caches.match(e.request).then(r => r || fetch(e.request))));
+                `], {type: 'application/javascript'})));
+            });
+        }
+
+        let deferredPrompt;
+        const installSheet = document.getElementById('pwa-install-sheet');
+        const forceInstallBtn = document.getElementById('forceInstallBtn');
+        window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; });
+        forceInstallBtn.addEventListener('click', async () => {
+            if (deferredPrompt) { deferredPrompt.prompt(); await deferredPrompt.userChoice; deferredPrompt = null; }
+            else alert('Installation non disponible. Suivez les instructions iOS.');
+            installSheet.classList.remove('show');
+        });
+        window.afficherBanniereInstallation = function() { closeSettings(); installSheet.classList.add('show'); };
+
+        // ==================== MODAL NOM ====================
+        window.openNameModal = function() { closeSettings(); document.getElementById('newBotNameInput').value = nomBot; document.getElementById('nameModal').classList.add('show'); };
+        window.closeNameModal = function() { document.getElementById('nameModal').classList.remove('show'); };
+        window.confirmChangeName = function() {
+            const n = document.getElementById('newBotNameInput').value.trim();
+            if (n) { nomBot = n; localStorage.setItem('botName', nomBot); mettreAJourNomBot(); afficherMessage(`✨ Assistant renommé en "${nomBot}".`, 'bot'); }
+            closeNameModal();
+        };
+
+        // ==================== LOGIQUE PRINCIPALE ====================
+        const URL_GAS = "https://script.google.com/macros/s/AKfycbw1m5PAvSiPUyrMjrzHFOABcTpDqasdNSG6hn6gDSvfJpfRcUNbt9w_X4XjPl_ZXsFM/exec";
+        let modeActuel = 'Cerveau';
+        const textarea = document.getElementById('userInput');
+        const btnPlus = document.getElementById('btnPlus');
+        const btnSend = document.getElementById('btnSend');
+        const menu = document.getElementById('plusMenu');
+        const loadStatus = document.getElementById('load-status');
+        const suggestionsContainer = document.getElementById('suggestionsContainer');
+        const suggestionsScroll = document.getElementById('suggestionsScroll');
+        let nomBot = localStorage.getItem('botName') || 'Petio';
+        let isLoadingHistory = false;
+        const cacheFichiers = {};
+
+        // Traduction Google
+        async function traduireGoogle(texte, source, cible) {
+            if (!texte) return '';
+            const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${source}&tl=${cible}&dt=t&q=${encodeURIComponent(texte)}`;
+            try { const r = await fetch(url); const d = await r.json(); return d[0].map(p => p[0]).join(''); } catch (e) { return texte; }
+        }
+        async function traduireENversFR(t) { return traduireGoogle(t, 'en', 'fr'); }
+        async function traduireFRversEN(t) { return traduireGoogle(t, 'fr', 'en'); }
+
+        // Chargement fichiers
+        async function chargerFichiersMode(mode) {
+            if (cacheFichiers[mode]) return cacheFichiers[mode];
+            let contenu = '';
+            const base = mode.toLowerCase();
+            try { const r = await fetch(`${base}.txt`); if (r.ok) contenu += await r.text() + '\n'; } catch(e) {}
+            for (let i=1; i<=20; i++) {
+                try { const r = await fetch(`${base}_${i}.txt`); if (r.ok) contenu += await r.text() + '\n'; else break; } catch(e) { break; }
+            }
+            if (!contenu.trim()) return null;
+            cacheFichiers[mode] = contenu;
+            return contenu;
+        }
+
+        // Détection ultra-robuste des titres
+        function estTitre(ligne) {
+            let l = ligne.trim();
+            if (l === '') return false;
+            // Séparateurs ignorés
+            if (/^[=_\-]{3,}$/.test(l)) return false;
+            // Titre en MAJUSCULES
+            if (l === l.toUpperCase() && l.length > 2) return true;
+            // Titre numéroté : 1. Titre, 2) Titre, 1_Titre, 2- Titre, etc.
+            if (/^\d+[\.\)_\-]\s*.+/.test(l)) return true;
+            // Titre qui est suivi d'une ligne de séparation (détecté lors de l'extraction)
+            // On peut aussi considérer une ligne qui n'est pas trop longue et qui n'est pas une phrase standard
+            return false;
+        }
+
+        function extraireSection(contenu, mot) {
+            const lignes = contenu.split('\n');
+            const motLower = mot.toLowerCase();
+            for (let i=0; i<lignes.length; i++) {
+                const ligne = lignes[i].trim();
+                if (!estTitre(ligne)) continue;
+                if (ligne.toLowerCase().includes(motLower)) {
+                    let para = '';
+                    for (let j=i+1; j<lignes.length; j++) {
+                        const suiv = lignes[j].trim();
+                        if (estTitre(suiv) || /^[=_\-]{3,}$/.test(suiv)) break;
+                        para += lignes[j] + '\n';
+                    }
+                    return para.trim();
+                }
+            }
+            return null;
+        }
+
+        function collecterTitres(contenu) {
+            const titres = new Set();
+            for (let ligne of contenu.split('\n')) if (estTitre(ligne)) titres.add(ligne.trim());
+            return Array.from(titres);
+        }
+
+        function afficherSuggestionsTitres(titres) {
+            if (!titres.length) { suggestionsContainer.classList.remove('show'); return; }
+            suggestionsScroll.innerHTML = '';
+            titres.sort(()=>Math.random()-0.5).slice(0,8).forEach((t, i) => {
+                const chip = document.createElement('button');
+                chip.className = 'suggestion-chip';
+                chip.textContent = t;
+                chip.style.animationDelay = `${i*0.05}s`;
+                chip.onclick = () => { textarea.value = t; envoyerMessage(); };
+                suggestionsScroll.appendChild(chip);
+            });
+            suggestionsContainer.classList.add('show');
+        }
+
+        function lierUrls(texte) {
+            return texte.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" rel="noopener">$1</a>');
+        }
+
+        function afficherMessageBot(texte, skipSave = false) {
+            const c = document.getElementById('chatArea');
+            const b = document.createElement('div'); b.className = 'message bot';
+            const span = document.createElement('span'); span.className = 'message-text';
+            span.setAttribute('data-full-text', texte);
+            const copyBtn = document.createElement('button'); copyBtn.className = 'btn-copy';
+            copyBtn.innerHTML = '<i class="ph ph-copy"></i>'; copyBtn.onclick = () => copierMessage(copyBtn);
+            b.appendChild(span); b.appendChild(copyBtn);
+            c.appendChild(b);
+            let i = 0; const speed = 30;
+            const texteAvecLiens = lierUrls(texte);
+            function type() {
+                if (i < texte.length) {
+                    span.textContent += texte.charAt(i);
+                    i++;
+                    c.scrollTop = c.scrollHeight;
+                    setTimeout(type, speed);
+                } else {
+                    span.innerHTML = texteAvecLiens;
+                    if (!isLoadingHistory && !skipSave) sauvegarderHistorique();
+                }
+            }
+            type();
+            return new Promise(r => setTimeout(r, texte.length * 30 + 50));
+        }
+
+        function afficherMessageUser(texte, skipSave = false) {
+            const c = document.getElementById('chatArea');
+            const b = document.createElement('div'); b.className = 'message user'; b.textContent = texte;
+            c.appendChild(b);
+            if (!isLoadingHistory && !skipSave) sauvegarderHistorique();
+            c.scrollTop = c.scrollHeight;
+            return Promise.resolve();
+        }
+
+        async function afficherMessage(texte, type, skipSave = false) {
+            return type === 'bot' ? afficherMessageBot(texte, skipSave) : afficherMessageUser(texte, skipSave);
+        }
+
+        async function rechercherDansFichiers(mode, msg) {
+            const contenu = await chargerFichiersMode(mode);
+            if (!contenu) return `Désolé, la base du mode ${mode} est vide.`;
+            const mots = msg.toLowerCase().split(/[^a-zà-ÿ0-9]/i).filter(m => m.length >= 3);
+            for (let m of mots) { let p = extraireSection(contenu, m); if (p) return await traduireENversFR(p); }
+            for (let m of mots) {
+                try { const en = await traduireFRversEN(m); if (en !== m) { let p = extraireSection(contenu, en); if (p) return await traduireENversFR(p); } } catch(e) {}
+            }
+            const titres = collecterTitres(contenu);
+            if (titres.length) { afficherSuggestionsTitres(titres); return `Je n'ai pas trouvé de réponse pour "${msg}". Voici quelques sujets que je connais :`; }
+            return `Je n'ai pas trouvé d'information pour "${msg}".`;
+        }
+
+        function sauvegarderHistorique() {
+            if (isLoadingHistory) return;
+            const msgs = [];
+            document.querySelectorAll('#chatArea .message').forEach(m => {
+                const type = m.classList.contains('user') ? 'user' : 'bot';
+                let texte = type === 'bot' ? (m.querySelector('.message-text')?.getAttribute('data-full-text') || m.textContent) : m.textContent;
+                msgs.push({type, texte});
+            });
+            localStorage.setItem('chatHistory', JSON.stringify(msgs));
+        }
+
+        function chargerHistorique() {
+            isLoadingHistory = true;
+            document.getElementById('chatArea').innerHTML = '';
+            const saved = localStorage.getItem('chatHistory');
+            if (!saved) { afficherMessage('Accès confirmé. Bonjour, comment puis-je vous aider ?', 'bot').then(() => isLoadingHistory = false); return; }
+            try {
+                const msgs = JSON.parse(saved);
+                Promise.all(msgs.map(m => afficherMessage(m.texte, m.type, true))).then(() => { isLoadingHistory = false; sauvegarderHistorique(); });
+            } catch(e) { afficherMessage('Accès confirmé. Bonjour, comment puis-je vous aider ?', 'bot').then(() => isLoadingHistory = false); }
+        }
+
+        function mettreAJourNomBot() {
+            document.getElementById('typingName').textContent = nomBot;
+            document.getElementById('currentBotName').textContent = nomBot;
+            document.title = `Petio - ${nomBot}`;
+        }
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            loadStatus.style.display = 'block';
+            const contenu = await chargerFichiersMode('Cerveau');
+            loadStatus.className = contenu ? 'success' : 'error';
+            loadStatus.textContent = contenu ? '✅ Prêt.' : '⚠️ Fichier cerveau.txt manquant';
+            setTimeout(() => loadStatus.style.display = 'none', 2000);
+            initApp();
+        });
+
+        function initApp() {
+            mettreAJourNomBot();
+            if (localStorage.getItem('pierre_bot_access') === 'true') { showPage('robot'); chargerHistorique(); }
+            if (localStorage.getItem('theme') === 'dark') { document.body.classList.add('dark-theme'); document.getElementById('themeIcon').className = 'ph ph-sun'; }
+        }
+
+        function showPage(n) { document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); document.getElementById(`page-${n}`).classList.add('active'); if (n==='robot') setTimeout(() => textarea.focus(), 100); }
+        function handleInput(el) { el.style.height = 'auto'; el.style.height = (el.scrollHeight > 40 ? el.scrollHeight : 'auto') + 'px'; const v = !!el.value.trim(); btnSend.classList.toggle('show', v); btnPlus.classList.toggle('hidden', v); }
+        function resetInputBar() { textarea.value = ''; handleInput(textarea); textarea.focus(); }
+        function toggleMenu(e) { e.stopPropagation(); menu.classList.toggle('show'); }
+        function closeMenu() { menu.classList.remove('show'); suggestionsContainer.classList.remove('show'); }
+        function openSettings() { document.getElementById('settingsPage').classList.add('open'); }
+        function closeSettings() { document.getElementById('settingsPage').classList.remove('open'); }
+        async function changerMode(n) { if (!await chargerFichiersMode(n)) { afficherErreur(`Mode ${n} sans fichier`); return; } modeActuel = n; document.getElementById('modeText').textContent = `🤖 Mode: ${n}`; closeMenu(); afficherMessage(`✅ Mode changé : ${n}`, 'bot'); }
+        async function resetMode() { await changerMode('Cerveau'); }
+        async function verifierAcces() {
+            const email = document.getElementById('userEmail').value.trim(), code = document.getElementById('userCode').value.trim(), btn = document.getElementById('btnValid');
+            if (!email || !code) { afficherErreur("Champs obligatoires."); return; }
+            btn.disabled = true; btn.innerText = "Vérification...";
+            try {
+                const r = await fetch(`${URL_GAS}?action=verif&email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}`);
+                if (!r.ok) throw new Error(`Erreur ${r.status}`);
+                if ((await r.text()).trim() === "VALIDE") { localStorage.setItem('pierre_bot_access', 'true'); showPage('robot'); chargerHistorique(); }
+                else { openPay(); }
+            } catch(e) { afficherErreur("Erreur réseau."); }
+            finally { btn.disabled = false; btn.innerText = "Valider"; }
+        }
+        function openPay() { document.getElementById('pay-sheet').classList.add('show'); document.getElementById('overlay').classList.add('show'); }
+        function closePay() { document.getElementById('pay-sheet').classList.remove('show'); document.getElementById('overlay').classList.remove('show'); }
+        function afficherErreur(msg) { const p = document.getElementById('error-popup'); document.getElementById('error-msg').innerText = msg; p.classList.add('show'); setTimeout(() => p.classList.remove('show'), 4000); }
+        function toggleTheme() { document.body.classList.toggle('dark-theme'); const i = document.getElementById('themeIcon'); i.className = document.body.classList.contains('dark-theme') ? 'ph ph-sun' : 'ph ph-moon'; localStorage.setItem('theme', document.body.classList.contains('dark-theme') ? 'dark' : 'light'); }
+        function copierMessage(btn) {
+            const txt = btn.closest('.message').querySelector('.message-text').textContent.trim();
+            navigator.clipboard.writeText(txt).then(() => {
+                btn.innerHTML = '<i class="ph-fill ph-check"></i>'; btn.classList.add('copied');
+                setTimeout(() => { btn.innerHTML = '<i class="ph ph-copy"></i>'; btn.classList.remove('copied'); }, 2000);
+            }).catch(() => {});
+        }
+
+        async function envoyerMessage() {
+            const msg = textarea.value.trim(); if (!msg) return;
+            suggestionsContainer.classList.remove('show');
+            afficherMessage(msg, 'user'); resetInputBar();
+            document.getElementById('typing').classList.add('show');
+            try {
+                const rep = await rechercherDansFichiers(modeActuel, msg);
+                document.getElementById('typing').classList.remove('show');
+                afficherMessage(rep, 'bot');
+            } catch(e) {
+                document.getElementById('typing').classList.remove('show');
+                afficherMessage("Erreur lors de la recherche.", 'bot');
+            }
+        }
+        textarea.addEventListener('keypress', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); envoyerMessage(); } });
+
+        // Exposition globale des fonctions nécessaires
+        window.verifierAcces = verifierAcces;
+        window.openPay = openPay;
+        window.closePay = closePay;
+        window.toggleTheme = toggleTheme;
+        window.handleInput = handleInput;
+        window.toggleMenu = toggleMenu;
+        window.closeMenu = closeMenu;
+        window.openSettings = openSettings;
+        window.closeSettings = closeSettings;
+        window.changerMode = changerMode;
+        window.resetMode = resetMode;
+        window.envoyerMessage = envoyerMessage;
+        window.copierMessage = copierMessage;
+    })();
+</script>
+</body>
+</html>
