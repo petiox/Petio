@@ -1,0 +1,98 @@
+Page 1
+
+Rapport Final de Viabilité : WELLERBAPP 
+(Modèle Identiﬁants Internes)
+1. Analyse du Modèle Économique Révisé
+La précision selon laquelle les Weller IDs sont des identiﬁants internes (non loués auprès 
+d'opérateurs télécoms) change radicalement la structure de coûts et la viabilité à long 
+terme de votre projet.
+1.1. Structure de Coûts (Modèle Identiﬁants Internes)
+Poste de dépense Ancien Modèle (Numéros Nouveau Modèle (Identiﬁants 
+Réels) Internes)
+Coût d'acquisition ID ~1$ à 2$ / mois / numéro 0 $ (Génération logicielle)
+Coût de maintenance ID Récurrent (Mensuel) 0 $ (Stockage DB négligeable)
+~97% (Moins frais 
+Marge sur vente (3000 XOF) Négative après quelques mois
+MoneyFusion)
+Dans ce nouveau modèle, chaque vente d'ID (3 000 XOF ou 6 500 XOF) est presque 
+entièrement du bénéﬁce net. Vous n'avez plus de "coût de revient" télécom, ce qui rend le 
+modèle de paiement unique à vie (Lifetime Deal) extrêmement robuste.
+2. Estimation de la Durée de Vie du Système
+Avec des coûts récurrents quasi nuls, la durée de vie de votre système n'est plus limitée par 
+vos ﬁnances, mais par les limites techniques de vos outils gratuits.
+2.1. Phase 1 : Lancement (0 - 50 000 Utilisateurs)
+• Coût : 0 $ / mois (Plan gratuit Supabase).
+• Revenus : 100% des ventes d'IDs (moins ~3% de frais MoneyFusion).
+• Durée de vie : Illimitée tant que vous restez sous les 50 000 utilisateurs actifs mensuels 
+(MAU) et 500 Mo de base de données 1 .
+2.2. Phase 2 : Croissance (50 000 - 500 000 Utilisateurs)
+Coût : 25 $ / mois (Plan Pro Supabase).
+•
+
+Page 2
+
+Revenus : Très élevés. Avec seulement 1% de conversion (500 acheteurs à 3 000 XOF), 
+•
+vous générez environ 2 250 $ de CA, ce qui couvre largement les 25 $ de frais mensuels.
+Durée de vie : Plusieurs années. Le système s'auto-ﬁnance largement.
+•
+2.3. Phase 3 : Échelle (Plus de 1 Million d'Utilisateurs)
+Coût : Variable (Plan Pro + suppléments d'usage).
+•
+Risque : Le seul risque ﬁnancier réel est le coût des Edge Functions si elles sont 
+•
+utilisées massivement pour le proxy WebRTC (2 $ par million d'invocations 
+supplémentaires) 2 .
+Durée de vie : Indéﬁnie, à condition de maintenir un ﬂux constant de nouveaux 
+•
+utilisateurs payants ou de monétiser le répertoire d'entreprises (Directory).
+3. Budget de Démarrage pour un Étudiant (Révisé)
+Vous pouvez littéralement commencer avec 0 XOF si vous utilisez un sous-domaine gratuit, 
+ou environ 10 000 XOF pour un nom de domaine professionnel (.com ou .app).
+Étape Budget Requis Action
+Utilisation de VS Code, 
+Développement 0 XOF Supabase Free Tier, Vercel 
+Free Tier.
+Achat d'un nom de domaine 
+Lancement ~10 000 XOF
+pour 1 an.
+Réseaux sociaux, bouche-à-
+Marketing 0 XOF oreille, groupes 
+WhatsApp/Telegram.
+Total pour démarrer ~10 000 XOF C'est tout ce qu'il vous faut.
+4. Réponse à vos questions spéciﬁques
+Combien de temps je tiendrai ?
+•
+Avec ce système d'identiﬁants internes et le stockage local des médias, vous pouvez 
+tenir indéﬁniment. Votre seule limite sera le jour où les coûts de serveurs (Supabase) 
+dépasseront vos revenus de vente d'IDs. Mais avec une marge de ~97% par vente, ce 
+jour est très lointain.
+
+Page 3
+
+Sur combien de périodes ?
+•
+On peut diviser cela en 3 périodes :
+1. Période Gratuite (0-50k users) : Risque zéro.
+2. Période d'Auto-ﬁnancement (50k-500k users) : Très rentable.
+3. Période de Maturité (1M+ users) : Nécessitera une gestion ﬁne des coûts Edge 
+Functions.
+Avec combien un simple étudiant peut commencer ?
+•
+Vous pouvez commencer avec 10 000 XOF (pour le nom de domaine). Tout le reste 
+(hébergement, base de données, outils de dev) est gratuit pour démarrer.
+5. Recommandations Stratégiques Finales
+1. Marketing de la "Vie Privée" : Puisque les médias sont stockés localement et que les 
+IDs sont internes, communiquez massivement sur la conﬁdentialité totale. C'est un 
+argument de vente majeur par rapport à WhatsApp.
+2. Gestion du Cache WebRTC : Pour éviter de payer trop cher en Edge Functions plus tard, 
+assurez-vous que votre logique de signaling est optimisée pour minimiser le nombre 
+d'appels au serveur.
+3. Répertoire Business : Ne tardez pas à lancer le répertoire. C'est ce qui donnera de la 
+valeur réelle aux IDs achetés. Si un utilisateur achète un ID français, c'est pour être 
+trouvé par des clients potentiels dans le répertoire.
+Votre projet est extrêmement viable et parfaitement adapté à un proﬁl étudiant. La 
+structure de coûts est optimisée au maximum.
+Références
+[1] Supabase Pricing 2026: Plans, Free Tier Limits & Full Breakdown. UI Bakery.
+[2] Pricing | Supabase Docs. Supabase.
