@@ -11,7 +11,7 @@
     <link rel="apple-touch-icon" sizes="180x180" href="https://i.ibb.co/zVsc6LDk/62943fce33c7f18d50a127290140782f.jpg">
     
     <!-- PWA - Manifest -->
-    <link rel="manifest" href="data:application/manifest+json,{{MANIFEST}}">
+    <link rel="manifest" href="application/manifest+json,{{MANIFEST}}">
     <link rel="icon" type="image/jpeg" href="https://i.ibb.co/zVsc6LDk/62943fce33c7f18d50a127290140782f.jpg">
     
     <title>Petio - Assistant</title>
@@ -100,6 +100,28 @@
         .btn-copy.copied { background: #34c759; color: white; }
         @media (max-width: 768px) { .btn-copy { opacity: 1; } }
 
+        /* SUGGESTIONS IN-CHAT */
+        .suggestion-btn {
+            display: block;
+            width: 100%;
+            text-align: left;
+            padding: 12px 16px;
+            margin: 6px 0;
+            background: var(--card);
+            border: 2px solid var(--accent);
+            border-left: 5px solid var(--accent);
+            border-radius: 12px;
+            color: var(--text);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            animation: slideUp 0.3s ease;
+        }
+        .suggestion-btn:hover { background: var(--input-bg); transform: translateX(3px); }
+        .suggestion-btn:active { transform: scale(0.98); }
+
         .suggestions-container {
             position: absolute;
             bottom: 80px;
@@ -123,8 +145,7 @@
             flex-shrink: 0; padding: 8px 16px; background: var(--accent); color: white;
             border-radius: 20px; font-size: 13px; cursor: pointer; white-space: nowrap;
             transition: all 0.2s; border: none; font-weight: 700;
-            animation: chipPop 0.4s ease;
-        }
+            animation: chipPop 0.4s ease;        }
         @keyframes chipPop {
             0% { opacity: 0; transform: scale(0.8) translateY(10px); }
             60% { transform: scale(1.05); }
@@ -145,7 +166,8 @@
         .setting-desc { 
             max-height: 0; overflow: hidden; opacity: 0; transition: all 0.3s; 
             padding-left: 39px; font-size: 13px; color: #8e8e93; font-weight: 700;
-        }        .setting-item.active .setting-desc { max-height: 500px; opacity: 1; margin-top: 8px; }
+        }
+        .setting-item.active .setting-desc { max-height: 500px; opacity: 1; margin-top: 8px; }
         .setting-icon { font-size: 20px; color: var(--accent); }
 
         .extra-menu { position: absolute; bottom: 85px; left: 15px; display: none; flex-direction: column-reverse; gap: 12px; z-index: 10; }
@@ -172,8 +194,7 @@
         .typing { font-style: italic; color: #8e8e93; font-size: 13px; margin-left: 10px; display: none; font-weight: 700; }
         .typing.show { display: block; }
 
-        #error-popup { position: fixed; top: -100px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 340px; background: #ff3b30; color: white; padding: 14px; border-radius: 18px; z-index: 3000; transition: top 0.4s; text-align: center; display: flex; align-items: center; gap: 10px; font-weight: 700; }
-        #error-popup.show { top: 20px; }
+        #error-popup { position: fixed; top: -100px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 340px; background: #ff3b30; color: white; padding: 14px; border-radius: 18px; z-index: 3000; transition: top 0.4s; text-align: center; display: flex; align-items: center; gap: 10px; font-weight: 700; }        #error-popup.show { top: 20px; }
 
         #overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: none !important; z-index: 1500; backdrop-filter: blur(4px); }
         #overlay.show { display: block !important; }
@@ -194,7 +215,8 @@
             display: block; width: 100%; padding: 16px; margin-top: 12px; background: transparent;
             border: 2px solid #ff7a01; border-radius: 14px; font-weight: 700; font-size: 16px;
             cursor: pointer; color: #ff7a01; transition: background 0.1s;
-        }        #pay-sheet .contact-admin-btn:active { background: rgba(255,122,1,0.1); }
+        }
+        #pay-sheet .contact-admin-btn:active { background: rgba(255,122,1,0.1); }
 
         #load-status { position: fixed; top: 0; left: 0; right: 0; background: #ffcc00; color: #000; text-align: center; padding: 8px; font-size: 13px; font-weight: 700; z-index: 9999; display: none; }
         #load-status.error { background: #ff3b30; color: white; }
@@ -215,15 +237,13 @@
         #pwa-install-sheet.show { top: 0; }
         .pwa-sheet-header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
         .pwa-sheet-header i { font-size: 40px; color: var(--accent); }
-        /* Bouton Installer ajusté - bleu juste autour du texte */
         .install-btn-top { 
             background: var(--accent); color: white; border: none; 
-            padding: 6px 14px; /* Réduit pour ajuster au texte */
+            padding: 6px 14px;
             border-radius: 20px; 
             font-weight: 700; font-size: 13px;
             display: inline-flex; align-items: center; gap: 4px; 
-            cursor: pointer; margin-left: auto; 
-            box-shadow: none; /* Enlève l'ombre/contour bleu excessif */
+            cursor: pointer; margin-left: auto;             box-shadow: none;
         }
         .install-btn-top:active { transform: scale(0.95); opacity: 0.9; }
         .pwa-steps { margin: 20px 0; }
@@ -243,7 +263,8 @@
         .unlock-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         .unlock-secondary { background: transparent; border: 1px solid var(--border); color: var(--text); }
         .error-message { color: #ff3b30; background: rgba(255,59,48,0.1); padding: 15px; border-radius: 14px; margin-bottom: 20px; text-align: center; font-weight: 700; }
-    </style></head>
+    </style>
+</head>
 <body>
 
 <div id="load-status">Chargement des connaissances...</div>
@@ -253,7 +274,7 @@
 <div id="pay-sheet">
     <h2>Accès VIP Requis</h2>
     <p>Aucun abonnement trouvé pour ces informations.</p>
-    <a href="https://my.moneyfusion.net/69dfaeb42819ad4c3a7fc265" class="btn-pay">Débloquer l'accès (500 XOF)</a>
+    <a href="https://my.moneyfusion.net/69dfaeb42819ad4c3a7fc265" class="btn-pay"> Clic ici pour débloquer tes accès à (500 XOF)</a>
     <button class="contact-admin-btn" onclick="contacterAdmin('vip')">Contacter l'admin</button>
     <p class="close-link" onclick="closePay()">Fermer</p>
 </div>
@@ -272,7 +293,6 @@
     </div>
     <button class="pwa-close-btn" onclick="document.getElementById('pwa-install-sheet').classList.remove('show')">Fermer</button>
 </div>
-
 <div class="modal-overlay" id="nameModal">
     <div class="modal-card">
         <div class="modal-title">Renommer l'assistant</div>
@@ -292,7 +312,8 @@
     </div>
     <div id="unlock-step-code" class="unlock-step active">
         <p style="margin-bottom: 15px;">Entrez le code reçu après paiement :</p>
-        <input type="text" id="unlock-code-input" class="unlock-input" placeholder="Code d'accès">        <button class="unlock-btn" onclick="verifierCodeAcces()">Valider</button>
+        <input type="text" id="unlock-code-input" class="unlock-input" placeholder="Code d'accès">
+        <button class="unlock-btn" onclick="verifierCodeAcces()">Valider</button>
         <button class="unlock-btn unlock-secondary" onclick="contacterAdmin('code')">Contacter l'admin</button>
     </div>
     <div id="unlock-step-payment" class="unlock-step">
@@ -320,7 +341,6 @@
         </div>
     </div>
 </div>
-
 <div id="page-robot" class="page">
     <div class="chat-container">
         <div class="header">
@@ -329,7 +349,10 @@
                 <span id="modeText">🤖 MODE: CERVEAU</span>
                 <button class="btn-reset-mode" onclick="resetMode()"><i class="ph ph-arrow-counter-clockwise"></i></button>
             </div>
-            <div class="header-btn" onclick="toggleTheme()"><i id="themeIcon" class="ph ph-moon"></i></div>
+            <div class="header-actions" style="display:flex;gap:8px;">
+                <!-- BOUTON TRADUCTION RETIRÉ DE L'EN-TÊTE -->
+                <div class="header-btn" onclick="toggleTheme()"><i id="themeIcon" class="ph ph-moon"></i></div>
+            </div>
         </div>
 
         <div class="chat-content" id="chatArea" onclick="closeMenu()"></div>
@@ -341,7 +364,8 @@
         </div>
 
         <div class="settings-page" id="settingsPage">
-            <div class="settings-header">                <div class="header-btn" style="color:var(--text)" onclick="closeSettings()"><i class="ph ph-caret-left"></i></div>
+            <div class="settings-header">
+                <div class="header-btn" style="color:var(--text)" onclick="closeSettings()"><i class="ph ph-caret-left"></i></div>
                 <span style="font-weight:700; color:var(--text)">Paramètres</span>
             </div>
             <div class="settings-content">
@@ -363,8 +387,7 @@
                 </div>
                 <div class="setting-item" onclick="toggleSettingDesc('cgu')">
                     <div class="setting-main"><i class="setting-icon ph ph-scales"></i><span>CGU</span></div>
-                    <div class="setting-desc" id="cgu-desc"><p><strong>1. Objet</strong><br>Les présentes Conditions Générales d'Utilisation (CGU) régissent l'accès et l'utilisation de l'application Petio.</p><p><strong>2. Nature du service</strong><br>Petio est un assistant numérique fonctionnant entièrement en local sur votre appareil. Il fournit des informations à partir de bases de connaissances textuelles chargées localement.</p><p><strong>3. 🛡️ CLAUSE DE NON-RESPONSABILITÉ</strong><br><strong>L'Administrateur et le créateur de Petio déclinent toute responsabilité, en aucun cas, concernant les décisions prises, les actions entreprises ou les conséquences subies par l'Utilisateur suite à l'utilisation de Petio.</strong> L'Utilisateur utilise l'application sous sa seule responsabilité.</p><p><strong>4. Accès et Modes</strong><br>Petio propose plusieurs modes de fonctionnement. Certains contenus peuvent être réservés aux utilisateurs disposant d'un accès VIP vérifié.</p><p><strong>5. Propriété intellectuelle</strong><br>L'interface, le code source et la structure de Petio sont la propriété exclusive de son créateur.</p></div>
-                </div>
+                    <div class="setting-desc" id="cgu-desc"><p><strong>1. Objet</strong><br>Les présentes Conditions Générales d'Utilisation (CGU) régissent l'accès et l'utilisation de l'application Petio.</p><p><strong>2. Nature du service</strong><br>Petio est un assistant numérique fonctionnant entièrement en local sur votre appareil. Il fournit des informations à partir de bases de connaissances textuelles chargées localement.</p><p><strong>3. 🛡️ CLAUSE DE NON-RESPONSABILITÉ</strong><br><strong>L'Administrateur et le créateur de Petio déclinent toute responsabilité, en aucun cas, concernant les décisions prises, les actions entreprises ou les conséquences subies par l'Utilisateur suite à l'utilisation de Petio.</strong> L'Utilisateur utilise l'application sous sa seule responsabilité.</p><p><strong>4. Accès et Modes</strong><br>Petio propose plusieurs modes de fonctionnement. Certains contenus peuvent être réservés aux utilisateurs disposant d'un accès VIP vérifié.</p><p><strong>5. Propriété intellectuelle</strong><br>L'interface, le code source et la structure de Petio sont la propriété exclusive de son créateur.</p></div>                </div>
                 <div class="setting-item" onclick="toggleSettingDesc('confidentialite')">
                     <div class="setting-main"><i class="setting-icon ph ph-lock"></i><span>Confidentialité</span></div>
                     <div class="setting-desc" id="confidentialite-desc"><p><strong>1. Collecte des données</strong><br>Petio <strong>ne collecte aucune donnée personnelle</strong> sur des serveurs externes. Votre adresse email et votre code de transaction sont uniquement utilisés localement pour vérifier votre statut d'accès.</p><p><strong>2. Stockage local</strong><br>- L'historique de vos conversations est sauvegardé exclusivement dans le <code>localStorage</code> de votre appareil.<br>- Les fichiers de connaissances sont mis en cache localement pour un fonctionnement hors ligne.<br>- Vous pouvez effacer toutes vos données via le bouton "Déconnexion".</p><p><strong>3. Sécurité</strong><br>- Petio fonctionne en environnement sandbox (navigateur).<br>- Les liens externes s'ouvrent dans un nouvel onglet sécurisé.<br>- Aucune publicité, tracker ou script d'analyse n'est intégré.</p><p><strong>4. Responsabilité</strong><br>Comme indiqué dans les CGU, <strong>l'Administrateur n'est responsable en aucun cas</strong> de l'usage que vous faites des informations fournies.</p></div>
@@ -372,6 +395,14 @@
                 <div class="setting-item" onclick="toggleSettingDesc('apropos')">
                     <div class="setting-main"><i class="setting-icon ph ph-info"></i><span>À propos</span></div>
                     <div class="setting-desc" id="apropos-desc"><p><strong>Petio – Assistant Intelligent Local</strong><br>Version 1.0 | Développé par Le Balzac</p><p>Petio est une application progressive (PWA) conçue pour offrir des réponses rapides, précises et privées. Contrairement aux assistants cloud, Petio ne dépend d'aucun serveur distant pour ses connaissances.</p><p><strong>🔹 Points forts :</strong><br>✅ <strong>100% Local</strong> : Vos données et l'historique restent sur votre appareil.<br>🚀 <strong>Ultra-rapide</strong> : Recherche optimisée dans plus de 1000 fichiers texte.<br>🔒 <strong>Cloisonné</strong> : Chaque mode est isolé pour éviter les mélanges d'informations.<br>📱 <strong>PWA</strong> : Installable sur écran d'accueil, fonctionne hors ligne.<br>🎨 <strong>Personnalisable</strong> : Thème sombre/clair, nom de l'assistant modifiable.</p><p>Petio a été créé pour simplifier l'accès à l'information technique et pratique, en gardant un contrôle total sur la confidentialité et la performance. Merci de votre confiance.</p></div>
+                </div>
+                <!-- NOUVEL ITEM TRADUCTION DANS LES PARAMÈTRES -->
+                <div class="setting-item" onclick="toggleTranslation()">
+                    <div class="setting-main">
+                        <i id="translationSettingIcon" class="setting-icon ph ph-translate"></i>
+                        <span>Traduction</span>
+                    </div>
+                    <div class="setting-desc">Activer/désactiver la traduction automatique (anglais ↔ français).</div>
                 </div>
                 <div class="setting-item" onclick="toggleTheme()">
                     <div class="setting-main"><i class="setting-icon ph ph-paint-bucket"></i><span>Thème</span></div>
@@ -390,7 +421,8 @@
             <div class="menu-row" onclick="changerMode('Procedure')"><div class="menu-item"><i class="ph-fill ph-folder-open"></i></div><span class="menu-label">2 Procédure</span></div>
             <div class="menu-row" onclick="changerMode('Novice')"><div class="menu-item"><i class="ph-fill ph-folder-open"></i></div><span class="menu-label">1 Novice</span></div>
         </div>
-        <div class="input-bar">            <div class="btn-plus" id="btnPlus" onclick="toggleMenu(event)"><i class="ph ph-plus-circle"></i></div>
+        <div class="input-bar">
+            <div class="btn-plus" id="btnPlus" onclick="toggleMenu(event)"><i class="ph ph-plus-circle"></i></div>
             <div class="input-container"><textarea id="userInput" placeholder="Message..." rows="1" oninput="handleInput(this)"></textarea></div>
             <div class="btn-send" id="btnSend" onclick="envoyerMessage()"><i class="ph-fill ph-paper-plane-right"></i></div>
         </div>
@@ -412,8 +444,7 @@
                 { src: "https://i.ibb.co/zVsc6LDk/62943fce33c7f18d50a127290140782f.jpg", sizes: "512x512", type: "image/jpeg", purpose: "any maskable" }
             ]
         };
-        const manifestBlob = new Blob([JSON.stringify(MANIFEST_DATA)], {type: 'application/manifest+json'});
-        const manifestURL = URL.createObjectURL(manifestBlob);
+        const manifestBlob = new Blob([JSON.stringify(MANIFEST_DATA)], {type: 'application/manifest+json'});        const manifestURL = URL.createObjectURL(manifestBlob);
         document.querySelector('link[rel="manifest"]').href = manifestURL;
 
         // ==================== SERVICE WORKER ====================
@@ -439,7 +470,8 @@
                     });
                 `;
                 const swBlob = new Blob([swCode], {type: 'application/javascript'});
-                const swURL = URL.createObjectURL(swBlob);                navigator.serviceWorker.register(swURL).catch(err => console.log('SW registration failed:', err));
+                const swURL = URL.createObjectURL(swBlob);
+                navigator.serviceWorker.register(swURL).catch(err => console.log('SW registration failed:', err));
             });
         }
 
@@ -460,10 +492,8 @@
                 console.log('Installation outcome:', outcome);
                 deferredPrompt = null;
             } else {
-                // Fallback pour iOS
                 alert('Pour installer Petio sur iOS : Appuyez sur Partager → "Sur l\'écran d\'accueil"');
-            }
-            installSheet.classList.remove('show');
+            }            installSheet.classList.remove('show');
         });
         
         window.afficherBanniereInstallation = function() { 
@@ -488,7 +518,8 @@
                 mettreAJourNomBot(); 
                 afficherMessage(`✨ Assistant renommé en "${nomBot}".`, 'bot'); 
             }
-            closeNameModal();        };
+            closeNameModal();
+        };
 
         // ==================== GESTION DES DESCRIPTIONS PARAMÈTRES ====================
         function toggleSettingDesc(id) {
@@ -511,8 +542,7 @@
         let modeActuel = 'Cerveau';
         const textarea = document.getElementById('userInput');
         const btnPlus = document.getElementById('btnPlus');
-        const btnSend = document.getElementById('btnSend');
-        const menu = document.getElementById('plusMenu');
+        const btnSend = document.getElementById('btnSend');        const menu = document.getElementById('plusMenu');
         const loadStatus = document.getElementById('load-status');
         const suggestionsContainer = document.getElementById('suggestionsContainer');
         const suggestionsScroll = document.getElementById('suggestionsScroll');
@@ -520,6 +550,31 @@
         let isLoadingHistory = false;
         const cacheFichiers = {};
         const SUGGESTION_PARAGRAPHS = new Map();
+        
+        // ==================== GESTION TRADUCTION (adaptée pour l'icône dans les paramètres) ====================
+        let traductionActive = localStorage.getItem('petio_traduction') !== 'false';
+        
+        function toggleTranslation() {
+            traductionActive = !traductionActive;
+            localStorage.setItem('petio_traduction', traductionActive);
+            
+            const icon = document.getElementById('translationSettingIcon');
+            if (traductionActive) {
+                icon.className = 'setting-icon ph ph-translate';
+                icon.style.opacity = '1';
+            } else {
+                icon.className = 'setting-icon ph ph-translate-slash';
+                icon.style.opacity = '0.5';
+            }
+        }
+        
+        function initTranslationButton() {
+            const icon = document.getElementById('translationSettingIcon');
+            if (!traductionActive) {
+                icon.className = 'setting-icon ph ph-translate-slash';
+                icon.style.opacity = '0.5';
+            }
+        }
 
         // Traduction Google
         async function traduireGoogle(texte, source, cible) {
@@ -533,11 +588,17 @@
                 return texte; 
             }
         }
-        async function traduireENversFR(t) { return traduireGoogle(t, 'en', 'fr'); }
-        async function traduireFRversEN(t) { return traduireGoogle(t, 'fr', 'en'); }
+        async function traduireENversFR(t) { 
+            if (!traductionActive) return t;
+            return traduireGoogle(t, 'en', 'fr'); 
+        }        async function traduireFRversEN(t) { 
+            if (!traductionActive) return t;
+            return traduireGoogle(t, 'fr', 'en'); 
+        }
 
         // Chargement des fichiers d'un mode
-        async function chargerFichiersMode(mode) {            if (cacheFichiers[mode]) return cacheFichiers[mode];
+        async function chargerFichiersMode(mode) {
+            if (cacheFichiers[mode]) return cacheFichiers[mode];
             let contenu = '';
             const base = mode.toLowerCase();
             
@@ -578,67 +639,77 @@
             return contenu;
         }
 
-        function estTitre(ligne, estApresSeparateur = false) {
-            let l = ligne.trim();
-            if (l === '') return false;
-            if (/^[=_\-]{3,}$/.test(l)) return false;
-            if (estApresSeparateur) return true;
-            if (l === l.toUpperCase() && l.length > 2) return true;
-            if (/^\d+[\.\)_\-]\s*.+/.test(l)) return true;
-            if (/^page(s)?\s*\d+/i.test(l)) return true;
-            return false;        }
+        function normalize(str) {
+            return str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");        }
 
-        function extraireSection(contenu, mot) {
-            const lignes = contenu.split('\n');
-            const motLower = mot.toLowerCase();
-            for (let i=0; i<lignes.length; i++) {
-                const ligne = lignes[i].trim();
-                if (!estTitre(ligne, false)) continue;
-                if (ligne.toLowerCase().includes(motLower)) {
-                    let para = '';
-                    for (let j=i+1; j<lignes.length; j++) {
-                        const suiv = lignes[j].trim();
-                        if (estTitre(suiv, false) || /^[=_\-]{3,}$/.test(suiv)) break;
-                        para += lignes[j] + '\n';
-                    }
-                    return para.trim();
+        // === MOTEUR DE RECHERCHE FULL-TEXT ===
+        async function rechercherDansFichiers(mode, msg) {
+            const contenu = await chargerFichiersMode(mode);
+            if (!contenu) return `Désolé, la base du mode ${mode} est vide.`;
+            
+            const paragraphs = contenu.split(/\n\s*\n/).filter(p => p.trim().length > 20);
+            const normalizedQuery = normalize(msg);
+            const queryWords = normalizedQuery.split(/[^a-z0-9]/i).filter(w => w.length >= 2);
+            
+            if (queryWords.length === 0) return `Je n'ai pas compris "${msg}".`;
+
+            const matches = [];
+            for (const para of paragraphs) {
+                const normalizedPara = normalize(para);
+                const hasAllWords = queryWords.every(word => normalizedPara.includes(word));
+                
+                if (hasAllWords) {
+                    const words = para.trim().split(/\s+/);
+                    const preview = words.slice(0, 15).join(' ') + (words.length > 15 ? '...' : '');
+                    matches.push({ full: para.trim(), preview: preview });
                 }
             }
-            return null;
-        }
-
-        // Suggestions aléatoires avec traduction FR
-        function afficherSuggestionsAleatoires(contenu) {
-            const paragraphs = contenu.split(/\n\s*\n/).filter(p => p.trim().length > 50);
-            SUGGESTION_PARAGRAPHS.clear();
             
-            const shuffled = paragraphs.sort(() => Math.random() - 0.5).slice(0, 8);
+            if (matches.length > 0) {
+                if (matches.length === 1) {
+                    return await traduireENversFR(matches[0].full);
+                }
+                // Retourner l'objet avec message et matches pour gérer l'ordre
+                return {
+                    message: `J'ai trouvé ${matches.length} résultats pour "${msg}". Choisissez une option ci-dessous :`,
+                    matches: matches
+                };
+            }
             
-            suggestionsScroll.innerHTML = '';
-            shuffled.forEach(async (para, i) => {
+            // Fallback aléatoire
+            const randomParagraphs = paragraphs.sort(() => Math.random() - 0.5).slice(0, 3);
+            const randomMatches = randomParagraphs.map(para => {
                 const words = para.trim().split(/\s+/);
-                const preview = words.slice(0, 4).join(' ') + '...';
-                
-                const previewFR = await traduireENversFR(preview);
-                const fullTextFR = await traduireENversFR(para.trim());
-                
-                SUGGESTION_PARAGRAPHS.set(previewFR, fullTextFR);
-                
-                const chip = document.createElement('button');
-                chip.className = 'suggestion-chip';
-                chip.textContent = previewFR;
-                chip.style.animationDelay = `${i*0.05}s`;
-                
-                chip.onclick = () => {
-                    const fullText = SUGGESTION_PARAGRAPHS.get(previewFR);
-                    if (fullText) {
-                        afficherMessage(fullText, 'bot');
-                        suggestionsContainer.classList.remove('show');
-                    }
-                };                
-                suggestionsScroll.appendChild(chip);
+                const preview = words.slice(0, 15).join(' ') + (words.length > 15 ? '...' : '');
+                return { full: para.trim(), preview: preview };
             });
-            suggestionsContainer.classList.add('show');
+            
+            return {
+                message: `Je n'ai pas trouvé d'information pour "${msg}" dans le mode ${mode}. Voici quelques suggestions aléatoires :`,
+                matches: randomMatches
+            };
+        }
+        // === AFFICHAGE DES SUGGESTIONS DANS LE CHAT ===
+        function afficherSuggestionsInChat(matches) {
+            const chatArea = document.getElementById('chatArea');
+            
+            matches.forEach((match, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'suggestion-btn';
+                traduireENversFR(match.preview).then(frPreview => {
+                    btn.textContent = frPreview;
+                });
+                
+                btn.onclick = async function() {
+                    document.querySelectorAll('.suggestion-btn').forEach(b => b.remove());
+                    const fullText = await traduireENversFR(match.full);
+                    afficherMessage(fullText, 'bot');
+                };
+                
+                chatArea.appendChild(btn);
+            });
+            
+            chatArea.scrollTop = chatArea.scrollHeight;
         }
 
         function lierUrls(texte) {
@@ -667,8 +738,7 @@
                     if (!isLoadingHistory && !skipSave) sauvegarderHistorique();
                 }
             }
-            type();
-            return new Promise(r => setTimeout(r, texte.length * 30 + 50));
+            type();            return new Promise(r => setTimeout(r, texte.length * 30 + 50));
         }
 
         function afficherMessageUser(texte, skipSave = false) {
@@ -683,30 +753,6 @@
         async function afficherMessage(texte, type, skipSave = false) {
             const texteFR = await traduireENversFR(texte);
             return type === 'bot' ? afficherMessageBot(texteFR, skipSave) : afficherMessageUser(texteFR, skipSave);
-        }
-        async function rechercherDansFichiers(mode, msg) {
-            const contenu = await chargerFichiersMode(mode);
-            if (!contenu) return `Désolé, la base du mode ${mode} est vide.`;
-            
-            const mots = msg.toLowerCase().split(/[^a-zà-ÿ0-9]/i).filter(m => m.length >= 3);
-            
-            for (let m of mots) { 
-                let p = extraireSection(contenu, m); 
-                if (p) return await traduireENversFR(p); 
-            }
-            
-            for (let m of mots) {
-                try { 
-                    const en = await traduireFRversEN(m); 
-                    if (en !== m) { 
-                        let p = extraireSection(contenu, en); 
-                        if (p) return await traduireENversFR(p); 
-                    } 
-                } catch(e) {}
-            }
-            
-            await afficherSuggestionsAleatoires(contenu);
-            return `Je n'ai pas trouvé de réponse exacte pour "${msg}". Voici quelques sujets disponibles dans ce mode :`;
         }
 
         function sauvegarderHistorique() {
@@ -733,15 +779,15 @@
 
         function mettreAJourNomBot() {
             document.getElementById('typingName').textContent = nomBot;
-            document.getElementById('currentBotName').textContent = nomBot;            document.title = `Petio - ${nomBot}`;
+            document.getElementById('currentBotName').textContent = nomBot;
+            document.title = `Petio - ${nomBot}`;
         }
 
         function deconnexionComplete() {
             localStorage.removeItem('pierre_bot_access');
             localStorage.removeItem('chatHistory');
             localStorage.removeItem('petio_procedure_unlocked');
-            window.location.reload();
-        }
+            window.location.reload();        }
 
         const UNLOCK_STORAGE_KEY = 'petio_procedure_unlocked';
         let unlockModal = document.getElementById('unlock-modal');
@@ -757,21 +803,14 @@
         }
         window.closeUnlockModal = function() { unlockModal.classList.remove('show'); };
 
-        // ==================== WHATSAPP LINK - CORRIGÉ ====================
         window.contacterAdmin = function(context) {
             const phoneNumber = "12496806826";
             let message = "Bonjour, je contacte l'administrateur de Petio.";
             
             switch(context) {
-                case 'vip':
-                    message = "Bonjour, je souhaite obtenir un accès VIP pour Petio.";
-                    break;
-                case 'payment':
-                    message = "Bonjour, le code saisi est invalide. Je souhaite obtenir un accès au mode Procédure.";
-                    break;
-                case 'code':
-                    message = "Bonjour, j'ai un problème avec le code d'accès Procédure.";
-                    break;
+                case 'vip': message = "Bonjour, je souhaite obtenir un accès VIP pour Petio."; break;
+                case 'payment': message = "Bonjour, le code saisi est invalide. Je souhaite obtenir un accès au mode Procédure."; break;
+                case 'code': message = "Bonjour, j'ai un problème avec le code d'accès Procédure."; break;
             }
             
             const encodedMessage = encodeURIComponent(message);
@@ -782,7 +821,8 @@
         async function verifierCodeAcces() {
             const code = document.getElementById('unlock-code-input').value.trim();
             const email = localStorage.getItem('userEmail') || '';
-            if (!code) { afficherErreur("Veuillez saisir un code."); return; }            if (!email) { afficherErreur("Email utilisateur introuvable. Reconnectez-vous."); return; }
+            if (!code) { afficherErreur("Veuillez saisir un code."); return; }
+            if (!email) { afficherErreur("Email utilisateur introuvable. Reconnectez-vous."); return; }
             try {
                 const res = await fetch(`${URL_GAS}?action=checkProcedureCode&email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}`);
                 const result = await res.text();
@@ -796,14 +836,14 @@
 
         async function activerModeProcedure() {
             modeActuel = 'Procedure';
-            document.getElementById('modeText').textContent = `🤖 MODE: PROCEDURE`;
-            closeMenu(); afficherMessage(`✅ Mode changé : Procedure`, 'bot');
+            document.getElementById('modeText').textContent = `🤖 MODE: PROCEDURE`;            closeMenu(); afficherMessage(`✅ Mode changé : Procedure`, 'bot');
         }
 
         const changerModeOriginal = async function(n) {
             if (!await chargerFichiersMode(n)) { afficherErreur(`Mode ${n} sans fichier`); return; }
             modeActuel = n;
-            document.getElementById('modeText').textContent = `🤖 MODE: ${n.toUpperCase()}`;localStorage.setItem('petio_current_mode', n);
+            document.getElementById('modeText').textContent = `🤖 MODE: ${n.toUpperCase()}`;
+            localStorage.setItem('petio_current_mode', n);
             closeMenu(); afficherMessage(`✅ Mode changé : ${n}`, 'bot');
         };
 
@@ -817,13 +857,13 @@
         };
         window.verifierCodeAcces = verifierCodeAcces;
 
-        // Initialisation
         window.addEventListener('DOMContentLoaded', async () => {
             loadStatus.style.display = 'block';
             const contenu = await chargerFichiersMode('Cerveau');
             loadStatus.className = contenu ? 'success' : 'error';
             loadStatus.textContent = contenu ? '✅ Prêt.' : '⚠️ Fichier cerveau.txt manquant';
             setTimeout(() => loadStatus.style.display = 'none', 2000);
+            initTranslationButton();
             initApp();
         });
 
@@ -832,6 +872,7 @@
             if (localStorage.getItem('pierre_bot_access') === 'true') { showPage('robot'); chargerHistorique(); }
             if (localStorage.getItem('theme') === 'dark') { document.body.classList.add('dark-theme'); document.getElementById('themeIcon').className = 'ph ph-sun'; }
         }
+
         function showPage(n) { 
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); 
             document.getElementById(`page-${n}`).classList.add('active'); 
@@ -844,32 +885,17 @@
             const v = !!el.value.trim(); 
             btnSend.classList.toggle('show', v); 
             btnPlus.classList.toggle('hidden', v); 
-        }
-        
+        }        
         function resetInputBar() { 
             textarea.value = ''; 
             handleInput(textarea); 
             textarea.focus(); 
         }
         
-        function toggleMenu(e) { 
-            e.stopPropagation(); 
-            menu.classList.toggle('show'); 
-        }
-        
-        function closeMenu() { 
-            menu.classList.remove('show'); 
-            suggestionsContainer.classList.remove('show'); 
-        }
-        
-        function openSettings() { 
-            document.getElementById('settingsPage').classList.add('open'); 
-        }
-        
-        function closeSettings() { 
-            document.getElementById('settingsPage').classList.remove('open'); 
-        }
-        
+        function toggleMenu(e) { e.stopPropagation(); menu.classList.toggle('show'); }
+        function closeMenu() { menu.classList.remove('show'); suggestionsContainer.classList.remove('show'); }
+        function openSettings() { document.getElementById('settingsPage').classList.add('open'); }
+        function closeSettings() { document.getElementById('settingsPage').classList.remove('open'); }
         async function resetMode() { await changerMode('Cerveau'); }
         
         async function verifierAcces() {
@@ -880,21 +906,19 @@
             btn.disabled = true; btn.innerText = "Vérification...";
             try {
                 const r = await fetch(`${URL_GAS}?action=verif&email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}`);
-                if (!r.ok) throw new Error(`Erreur ${r.status}`);                const result = await r.text();
+                if (!r.ok) throw new Error(`Erreur ${r.status}`);
+                const result = await r.text();
                 if (result.trim() === "VALIDE") { 
-                    localStorage.setItem('pierre_bot_access', 'true');// 1. Sauvegarde pour l'application Petio (Déjà là)
-localStorage.setItem('pierre_bot_access', 'true');
-localStorage.setItem('userEmail', email);
-
-// 2. Synchronisation pour le Panneau Admin (AJOUTE ÇA)
-var adminUsers = JSON.parse(localStorage.getItem('petio_admin_users') || '[]');
-var existeDeja = adminUsers.some(function(u) { return u.email === email; });
-
-if (!existeDeja) {
-    adminUsers.push({ email: email, date: new Date().toISOString() });
-    localStorage.setItem('petio_admin_users', JSON.stringify(adminUsers));
-} 
+                    localStorage.setItem('pierre_bot_access', 'true');
                     localStorage.setItem('userEmail', email);
+                    
+                    var adminUsers = JSON.parse(localStorage.getItem('petio_admin_users') || '[]');
+                    var existeDeja = adminUsers.some(function(u) { return u.email === email; });
+                    if (!existeDeja) {
+                        adminUsers.push({ email: email, date: new Date().toISOString() });
+                        localStorage.setItem('petio_admin_users', JSON.stringify(adminUsers));
+                    }
+                    
                     showPage('robot'); 
                     chargerHistorique();
                 } else { 
@@ -910,8 +934,7 @@ if (!existeDeja) {
         }
         function closePay() { 
             document.getElementById('pay-sheet').classList.remove('show'); 
-            document.getElementById('overlay').classList.remove('show'); 
-        }
+            document.getElementById('overlay').classList.remove('show');         }
         function afficherErreur(msg) { 
             const p = document.getElementById('error-popup'); 
             document.getElementById('error-msg').innerText = msg; 
@@ -938,20 +961,29 @@ if (!existeDeja) {
 
         async function envoyerMessage() {
             const msg = textarea.value.trim(); if (!msg) return;
-            suggestionsContainer.classList.remove('show');
+            document.querySelectorAll('.suggestion-btn').forEach(b => b.remove());
+            
             afficherMessage(msg, 'user'); resetInputBar();
-            document.getElementById('typing').classList.add('show');            try {
+            document.getElementById('typing').classList.add('show');
+            try {
                 const rep = await rechercherDansFichiers(modeActuel, msg);
                 document.getElementById('typing').classList.remove('show');
-                afficherMessage(rep, 'bot');
+                
+                // GESTION DE L'ORDRE D'AFFICHAGE
+                if (rep.matches) {
+                    // D'abord le message "J'ai trouvé X résultats..."
+                    await afficherMessage(rep.message, 'bot');
+                    // Puis les suggestions EN DESSOUS
+                    afficherSuggestionsInChat(rep.matches);
+                } else {
+                    afficherMessage(rep, 'bot');
+                }
             } catch(e) {
                 document.getElementById('typing').classList.remove('show');
                 afficherMessage("Erreur lors de la recherche.", 'bot');
             }
         }
         textarea.addEventListener('keypress', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); envoyerMessage(); } });
-
-        // Expositions globales
         window.verifierAcces = verifierAcces; 
         window.openPay = openPay; 
         window.closePay = closePay;
@@ -968,6 +1000,7 @@ if (!existeDeja) {
         window.verifierCodeAcces = verifierCodeAcces;
         window.deconnexionComplete = deconnexionComplete;
         window.toggleSettingDesc = toggleSettingDesc;
+        window.toggleTranslation = toggleTranslation;
     })();
 </script>
 </body>
