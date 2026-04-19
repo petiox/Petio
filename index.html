@@ -62,7 +62,8 @@
         .message { 
             padding: 12px 16px; 
             border-radius: 18px; 
-            max-width: 80%; 
+            max-width: 100%;
+            width: fit-content;
             word-wrap: break-word; 
             line-height: 1.4; 
             position: relative; 
@@ -96,7 +97,8 @@
             font-size: 16px;
         }
         .message.bot:hover .btn-copy,
-        .message.bot:active .btn-copy { opacity: 1; }        .btn-copy:active { background: rgba(0,0,0,0.25); transform: scale(0.9); }
+        .message.bot:active .btn-copy { opacity: 1; }
+        .btn-copy:active { background: rgba(0,0,0,0.25); transform: scale(0.9); }
         .btn-copy.copied { background: #34c759; color: white; }
         @media (max-width: 768px) { .btn-copy { opacity: 1; } }
 
@@ -274,7 +276,7 @@
 <div id="pay-sheet">
     <h2>Accès VIP Requis</h2>
     <p>Aucun abonnement trouvé pour ces informations.</p>
-    <a href="https://my.moneyfusion.net/69dfaeb42819ad4c3a7fc265" class="btn-pay"> Clic ici pour débloquer tes accès à (500 XOF)</a>
+    <a href="https://my.moneyfusion.net/69dfaeb42819ad4c3a7fc265" class="btn-pay">Débloquer l'accès (500 XOF)</a>
     <button class="contact-admin-btn" onclick="contacterAdmin('vip')">Contacter l'admin</button>
     <p class="close-link" onclick="closePay()">Fermer</p>
 </div>
@@ -350,7 +352,6 @@
                 <button class="btn-reset-mode" onclick="resetMode()"><i class="ph ph-arrow-counter-clockwise"></i></button>
             </div>
             <div class="header-actions" style="display:flex;gap:8px;">
-                <!-- BOUTON TRADUCTION RETIRÉ DE L'EN-TÊTE -->
                 <div class="header-btn" onclick="toggleTheme()"><i id="themeIcon" class="ph ph-moon"></i></div>
             </div>
         </div>
@@ -396,7 +397,6 @@
                     <div class="setting-main"><i class="setting-icon ph ph-info"></i><span>À propos</span></div>
                     <div class="setting-desc" id="apropos-desc"><p><strong>Petio – Assistant Intelligent Local</strong><br>Version 1.0 | Développé par Le Balzac</p><p>Petio est une application progressive (PWA) conçue pour offrir des réponses rapides, précises et privées. Contrairement aux assistants cloud, Petio ne dépend d'aucun serveur distant pour ses connaissances.</p><p><strong>🔹 Points forts :</strong><br>✅ <strong>100% Local</strong> : Vos données et l'historique restent sur votre appareil.<br>🚀 <strong>Ultra-rapide</strong> : Recherche optimisée dans plus de 1000 fichiers texte.<br>🔒 <strong>Cloisonné</strong> : Chaque mode est isolé pour éviter les mélanges d'informations.<br>📱 <strong>PWA</strong> : Installable sur écran d'accueil, fonctionne hors ligne.<br>🎨 <strong>Personnalisable</strong> : Thème sombre/clair, nom de l'assistant modifiable.</p><p>Petio a été créé pour simplifier l'accès à l'information technique et pratique, en gardant un contrôle total sur la confidentialité et la performance. Merci de votre confiance.</p></div>
                 </div>
-                <!-- NOUVEL ITEM TRADUCTION DANS LES PARAMÈTRES -->
                 <div class="setting-item" onclick="toggleTranslation()">
                     <div class="setting-main">
                         <i id="translationSettingIcon" class="setting-icon ph ph-translate"></i>
@@ -416,6 +416,10 @@
         </div>
 
         <div class="extra-menu" id="plusMenu">
+            <div class="menu-row" onclick="changerMode('Global')">
+                <div class="menu-item"><i class="ph-fill ph-globe"></i></div>
+                <span class="menu-label">🌐 Global</span>
+            </div>
             <div class="menu-row" onclick="changerMode('Application')"><div class="menu-item"><i class="ph-fill ph-folder-open"></i></div><span class="menu-label">4 Application</span></div>
             <div class="menu-row" onclick="changerMode('Formate')"><div class="menu-item"><i class="ph-fill ph-folder-open"></i></div><span class="menu-label">3 Formate</span></div>
             <div class="menu-row" onclick="changerMode('Procedure')"><div class="menu-item"><i class="ph-fill ph-folder-open"></i></div><span class="menu-label">2 Procédure</span></div>
@@ -551,7 +555,7 @@
         const cacheFichiers = {};
         const SUGGESTION_PARAGRAPHS = new Map();
         
-        // ==================== GESTION TRADUCTION (adaptée pour l'icône dans les paramètres) ====================
+        // ==================== GESTION TRADUCTION ====================
         let traductionActive = localStorage.getItem('petio_traduction') !== 'false';
         
         function toggleTranslation() {
@@ -642,8 +646,56 @@
         function normalize(str) {
             return str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");        }
 
+        // === RECHERCHE MODE GLOBAL (version améliorée) ===
+        async function rechercherModeGlobal(query) {
+            const API_URL = 'https://script.google.com/macros/s/AKfycbxCmsUiDwNhlqAa_qoIYx2Vtr3_2V4x63rjqqn7aU69787Ba9xymzpLLxmG9wF6HKVN/exec';
+            
+            try {
+                const url = `${API_URL}?action=search&q=${encodeURIComponent(query)}`;
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (data.success && data.results.length > 0) {
+                    // Si un seul résultat, on l'affiche directement (texte complet)
+                    if (data.results.length === 1 && !data.fallback) {
+                        return await traduireENversFR(data.results[0].fullText);
+                    }
+                    
+                    // Préparer les suggestions (matches) pour le chat
+                    const matches = data.results.map(r => ({
+                        full: r.fullText,
+                        preview: r.excerpt.replace(/<[^>]*>/g, '')  // Nettoie les balises HTML
+                    }));
+                    
+                    // Message contextuel selon fallback ou non
+                    const message = data.fallback 
+                        ? (data.message || `ℹ️ Aucun résultat exact. Suggestions aléatoires :`)
+                        : `✅ Trouvé ${data.count} résultat(s) dans Petio_global. Choisissez une option ci-dessous :`;
+                        
+                    return {
+                        message: message,
+                        matches: matches
+                    };
+                }
+                else if (data.success) {
+                    return `ℹ️ Aucun résultat pour "${query}" dans Petio_global.`;
+                }
+                else {
+                    return `⚠️ Erreur de connexion au mode Global.`;
+                }
+            } catch (e) {
+                console.error('Global error:', e);
+                return `⚠️ Impossible de contacter le mode Global.`;
+            }
+        }
+
         // === MOTEUR DE RECHERCHE FULL-TEXT ===
         async function rechercherDansFichiers(mode, msg) {
+            // === MODE GLOBAL : appel API Drive ===
+            if (mode === 'Global') {
+                return await rechercherModeGlobal(msg);
+            }
+            
             const contenu = await chargerFichiersMode(mode);
             if (!contenu) return `Désolé, la base du mode ${mode} est vide.`;
             
@@ -689,6 +741,7 @@
                 matches: randomMatches
             };
         }
+
         // === AFFICHAGE DES SUGGESTIONS DANS LE CHAT ===
         function afficherSuggestionsInChat(matches) {
             const chatArea = document.getElementById('chatArea');
@@ -840,11 +893,17 @@
         }
 
         const changerModeOriginal = async function(n) {
-            if (!await chargerFichiersMode(n)) { afficherErreur(`Mode ${n} sans fichier`); return; }
+            if (n !== 'Global') {
+                if (!await chargerFichiersMode(n)) { 
+                    afficherErreur(`Mode ${n} sans fichier`); 
+                    return; 
+                }
+            }
             modeActuel = n;
             document.getElementById('modeText').textContent = `🤖 MODE: ${n.toUpperCase()}`;
             localStorage.setItem('petio_current_mode', n);
-            closeMenu(); afficherMessage(`✅ Mode changé : ${n}`, 'bot');
+            closeMenu(); 
+            afficherMessage(`✅ Mode changé : ${n}`, 'bot');
         };
 
         window.changerMode = async function(n) {
