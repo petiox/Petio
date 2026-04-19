@@ -47,7 +47,8 @@
             width: 100%; padding: 14px 44px 14px 14px; border: 2px solid var(--border);
             border-radius: 14px; background: var(--bg); color: var(--text); font-size: 16px; outline: none;
         }
-        .input-wrap input:focus { border-color: var(--accent); }        .toggle-pass {
+        .input-wrap input:focus { border-color: var(--accent); }
+        .toggle-pass {
             position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
             background: none; border: none; cursor: pointer; font-size: 22px; color: var(--accent); padding: 4px;
         }
@@ -96,7 +97,7 @@
         }
         .stat-val { font-size: 26px; font-weight: 800; color: var(--accent); margin: 6px 0; }
         .stat-lbl { font-size: 13px; color: #8e8e93; font-weight: 600; }
-                .card {
+        .card {
             background: var(--card); padding: 20px; border-radius: var(--radius); border: 1px solid var(--border);
             box-shadow: var(--shadow); margin-bottom: 16px; overflow: hidden;
         }
@@ -145,7 +146,8 @@
         /* TOAST */
         #toast {
             position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px);
-            background: var(--card); color: var(--text); padding: 12px 20px; border-radius: 30px;            box-shadow: var(--shadow); border: 1px solid var(--border); font-weight: 600; font-size: 14px;
+            background: var(--card); color: var(--text); padding: 12px 20px; border-radius: 30px;
+            box-shadow: var(--shadow); border: 1px solid var(--border); font-weight: 600; font-size: 14px;
             display: flex; align-items: center; gap: 8px; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             z-index: 9999;
         }
@@ -194,7 +196,8 @@
         <div class="header-actions">
             <button class="icon-btn" onclick="toggleTheme()"><i id="theme-icon" class="ph ph-moon"></i></button>
             <button class="icon-btn" onclick="logout()"><i class="ph ph-sign-out"></i></button>
-        </div>    </header>
+        </div>
+    </header>
 
     <main>
         <div class="tabs">
@@ -222,6 +225,16 @@
                 <div class="stat-card">
                     <div class="stat-lbl">Dernière activité</div>
                     <div class="stat-val" id="d-last" style="font-size:16px;">--:--</div>
+                </div>
+            </div>
+            <div class="grid">
+                <div class="stat-card">
+                    <div class="stat-lbl">Fichiers locaux</div>
+                    <div class="stat-val" id="d-total-files">--</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-lbl">État Global</div>
+                    <div class="stat-val" id="d-global-status" style="font-size:15px;">⏳</div>
                 </div>
             </div>
             <div class="card">
@@ -292,6 +305,7 @@
         </div>
     </main>
 </div>
+
 <!-- TOAST -->
 <div id="toast"><i class="ph-fill ph-check-circle" style="color:var(--success)"></i> <span id="toast-msg">Copié !</span></div>
 
@@ -341,7 +355,8 @@
             navigator.serviceWorker.register(swURL).catch(err => console.log('SW registration failed:', err));
         });
     }
-        // Install Prompt
+    
+    // Install Prompt
     let deferredPrompt = null;
     window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
@@ -390,7 +405,8 @@
         enterAdmin();
     }
     
-    function logout() {        localStorage.removeItem(PREFIX + 'auth');
+    function logout() {
+        localStorage.removeItem(PREFIX + 'auth');
         location.reload();
     }
     
@@ -439,18 +455,132 @@
         const recentEl = document.getElementById('recent-list');
         recentEl.innerHTML = logs.slice(-6).reverse().map(l => `
             <div class="log-item">
-                <div><strong>${l.email}</strong><br><small style="color:#8e8e93">${l.date}</small></div>                <span class="badge ${l.status==='VALIDE'?'badge-ok':'badge-off'}">${l.status}</span>
+                <div><strong>${l.email}</strong><br><small style="color:#8e8e93">${l.date}</small></div>
+                <span class="badge ${l.status==='VALIDE'?'badge-ok':'badge-off'}">${l.status}</span>
             </div>
         `).join('') || '<p style="padding:10px;color:#8e8e93;text-align:center">Aucune activité.</p>';
         
         renderVIPTable();
         renderLogs();
+        updateDashboardFileStats(); // Mise à jour des stats de fichiers
     }
     
     window.addEventListener('storage', (e) => {
         if (e.key && e.key.startsWith('petio_')) refreshAll();
     });
     setInterval(refreshAll, 3000);
+
+    // ==================== FILE STATS ====================
+    async function updateDashboardFileStats() {
+        const modes = [
+            { base: 'cerveau' }, { base: 'novice' }, { base: 'procedure' },
+            { base: 'formate' }, { base: 'application' }
+        ];
+        let totalFiles = 0;
+        
+        for (const mode of modes) {
+            const base = mode.base;
+            try { if ((await fetch(`${base}.txt`)).ok) totalFiles++; } catch(e) {}
+            
+            const patterns = [
+                (i) => `${base}${i}.txt`,
+                (i) => `${base}_${i}.txt`,
+                (i) => `${base}-${i}.txt`
+            ];
+            for (const pattern of patterns) {
+                let i = 1, fails = 0;
+                while (i <= 500) {
+                    try {
+                        const r = await fetch(pattern(i));
+                        if (r.ok) { totalFiles++; fails = 0; }
+                        else fails++;
+                    } catch(e) { fails++; }
+                    if (fails >= 3) break;
+                    i++;
+                }
+            }
+        }
+        document.getElementById('d-total-files').textContent = totalFiles;
+        
+        // Global status
+        try {
+            const API_URL = 'https://script.google.com/macros/s/AKfycbxCmsUiDwNhlqAa_qoIYx2Vtr3_2V4x63rjqqn7aU69787Ba9xymzpLLxmG9wF6HKVN/exec';
+            const res = await fetch(`${API_URL}?action=health`);
+            const data = await res.json();
+            document.getElementById('d-global-status').innerHTML = data.status === 'ok' ? '✅ En ligne' : '⚠️ Erreur';
+        } catch(e) {
+            document.getElementById('d-global-status').innerHTML = '❌ Hors ligne';
+        }
+    }
+
+    async function checkFiles() {
+        const el = document.getElementById('sys-check');
+        el.innerHTML = '<p>⏳ Analyse des fichiers en cours...</p>';
+        
+        const modes = [
+            { name: 'Cerveau', base: 'cerveau' },
+            { name: 'Novice', base: 'novice' },
+            { name: 'Procédure', base: 'procedure' },
+            { name: 'Formate', base: 'formate' },
+            { name: 'Application', base: 'application' }
+        ];
+        
+        let html = '<div style="margin-bottom: 16px;"><strong>📁 Fichiers locaux</strong></div>';
+        
+        for (const mode of modes) {
+            let count = 0;
+            const base = mode.base;
+            
+            try { if ((await fetch(`${base}.txt`)).ok) count++; } catch(e) {}
+            
+            const patterns = [
+                (i) => `${base}${i}.txt`,
+                (i) => `${base}_${i}.txt`,
+                (i) => `${base}-${i}.txt`
+            ];
+            for (const pattern of patterns) {
+                let i = 1, fails = 0;
+                while (i <= 500) {
+                    try {
+                        const r = await fetch(pattern(i));
+                        if (r.ok) { count++; fails = 0; }
+                        else fails++;
+                    } catch(e) { fails++; }
+                    if (fails >= 3) break;
+                    i++;
+                }
+            }
+            
+            const status = count > 0 ? '✅' : '❌';
+            const color = count > 0 ? 'var(--success)' : 'var(--danger)';
+            html += `<div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid var(--border);">
+                <span><strong>${mode.name}</strong></span>
+                <span style="color:${color};">${status} ${count} fichier(s)</span>
+            </div>`;
+        }
+        
+        // Mode Global
+        html += '<div style="margin: 20px 0 16px;"><strong>🌐 Mode Global</strong></div>';
+        try {
+            const API_URL = 'https://script.google.com/macros/s/AKfycbxCmsUiDwNhlqAa_qoIYx2Vtr3_2V4x63rjqqn7aU69787Ba9xymzpLLxmG9wF6HKVN/exec';
+            const res = await fetch(`${API_URL}?action=health`);
+            const data = await res.json();
+            const status = data.status === 'ok' ? '✅ Connecté' : '⚠️ Actif mais erreur';
+            html += `<div style="display:flex; justify-content:space-between; padding:10px 0;">
+                <span><strong>API Global</strong></span>
+                <span style="color:var(--success);">${status}</span>
+            </div>`;
+            html += `<div style="font-size:13px; color:#8e8e93; margin-top:8px;">Dossier : ${data.folder || 'N/A'}</div>`;
+        } catch(e) {
+            html += `<div style="display:flex; justify-content:space-between; padding:10px 0;">
+                <span><strong>API Global</strong></span>
+                <span style="color:var(--danger);">❌ Injoignable</span>
+            </div>`;
+        }
+        
+        el.innerHTML = html;
+        updateDashboardFileStats(); // Synchroniser les stats dashboard
+    }
 
     // ==================== VIP SYSTEM ====================
     function createVIP() {
@@ -488,7 +618,8 @@
         if(!confirm('Supprimer ce code ?')) return;
         const vips = JSON.parse(localStorage.getItem(PREFIX + 'vips') || '[]');
         vips.splice(idx, 1);
-        localStorage.setItem(PREFIX + 'vips', JSON.stringify(vips));        refreshAll();
+        localStorage.setItem(PREFIX + 'vips', JSON.stringify(vips));
+        refreshAll();
     }
 
     // ==================== LOGS & UTILS ====================
@@ -516,28 +647,9 @@
         navigator.clipboard.writeText(txt).then(() => showToast('Code copié !', 'ph-copy'));
     }
     
-    async function checkFiles() {
-        const el = document.getElementById('sys-check');
-        el.innerHTML = '<p>⏳ Analyse...</p>';
-        const modes = ['cerveau', 'formate', 'procedure', 'novice', 'application'];
-        let html = '';
-        for(const m of modes) {
-            try {
-                const r = await fetch(`${m}.txt`);
-                html += `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);">
-                    <span><strong>${m.toUpperCase()}</strong></span>
-                    <span style="color:${r.ok?'var(--success)':'var(--danger)'}">${r.ok ? '✅ OK' : '❌ Manquant'}</span>
-                </div>`;
-            } catch(e) {
-                html += `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);">
-                    <span><strong>${m.toUpperCase()}</strong></span><span style="color:var(--danger)">❌ Réseau</span></div>`;
-            }
-        }
-        el.innerHTML = html;
-    }
-    
     function showToast(msg, icon='ph-check-circle') {
-        const t = document.getElementById('toast');        t.innerHTML = `<i class="ph-fill ${icon}"></i> <span>${msg}</span>`;
+        const t = document.getElementById('toast');
+        t.innerHTML = `<i class="ph-fill ${icon}"></i> <span>${msg}</span>`;
         t.classList.add('show');
         setTimeout(() => t.classList.remove('show'), 2500);
     }
