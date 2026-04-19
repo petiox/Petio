@@ -17,6 +17,10 @@
     <title>Petio - Assistant</title>
     <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
     
+    <!-- Bibliothèques pour PDF et DOCX -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js"></script>
+    
     <style>
         :root {
             --bg: #ffffff; --card: #fff; --text: #1c1c1e; --bot: #e9e9eb;
@@ -265,6 +269,23 @@
         .unlock-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         .unlock-secondary { background: transparent; border: 1px solid var(--border); color: var(--text); }
         .error-message { color: #ff3b30; background: rgba(255,59,48,0.1); padding: 15px; border-radius: 14px; margin-bottom: 20px; text-align: center; font-weight: 700; }
+
+        /* Bouton Lire la suite */
+        .suite-btn {
+            display: block;
+            margin-top: 12px;
+            padding: 8px 16px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: fit-content;
+        }
+        .suite-btn:active { transform: scale(0.96); opacity: 0.9; }
     </style>
 </head>
 <body>
@@ -553,7 +574,7 @@
         let nomBot = localStorage.getItem('botName') || 'Petio';
         let isLoadingHistory = false;
         const cacheFichiers = {};
-        const SUGGESTION_PARAGRAPHS = new Map();
+        const fullTextCache = new Map(); // Pour stocker le texte complet des documents
         
         // ==================== GESTION TRADUCTION ====================
         let traductionActive = localStorage.getItem('petio_traduction') !== 'false';
@@ -595,17 +616,51 @@
         async function traduireENversFR(t) { 
             if (!traductionActive) return t;
             return traduireGoogle(t, 'en', 'fr'); 
-        }        async function traduireFRversEN(t) { 
+        }
+        async function traduireFRversEN(t) { 
             if (!traductionActive) return t;
             return traduireGoogle(t, 'fr', 'en'); 
         }
 
-        // Chargement des fichiers d'un mode
+        // === EXTRACTION TEXTE FICHIER LOCAL (PDF, DOCX, TXT) ===
+        async function extraireTexteFichierLocal(fileName) {
+            const lower = fileName.toLowerCase();
+            try {
+                const response = await fetch(fileName);
+                if (!response.ok) return null;
+                
+                if (lower.endsWith('.txt')) {
+                    return await response.text();
+                } else if (lower.endsWith('.pdf')) {
+                    const arrayBuffer = await response.arrayBuffer();
+                    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+                    let fullText = '';
+                    for (let i = 1; i <= pdf.numPages; i++) {
+                        const page = await pdf.getPage(i);
+                        const content = await page.getTextContent();
+                        const strings = content.items.map(item => item.str);
+                        fullText += strings.join(' ') + '\n';
+                    }
+                    return fullText;
+                } else if (lower.endsWith('.docx')) {
+                    const arrayBuffer = await response.arrayBuffer();
+                    const result = await mammoth.extractRawText({ arrayBuffer });
+                    return result.value;
+                }
+                return null;
+            } catch (e) {
+                console.warn(`Erreur lecture ${fileName}:`, e);
+                return null;
+            }
+        }
+
+        // === CHARGEMENT DES FICHIERS (MODIFIÉ POUR PROCEDURE) ===
         async function chargerFichiersMode(mode) {
             if (cacheFichiers[mode]) return cacheFichiers[mode];
             let contenu = '';
             const base = mode.toLowerCase();
             
+            // TXT existants
             try { 
                 const r = await fetch(`${base}.txt`); 
                 if (r.ok) contenu += await r.text() + '\n'; 
@@ -637,6 +692,35 @@
                     i++;
                 }
             }
+
+            // === UNIQUEMENT POUR LE MODE PROCEDURE : PDF/DOCX ===
+            if (mode === 'Procedure') {
+                const prefixes = ['procedure', 'proc', 'doc'];
+                const extensions = ['.pdf', '.docx'];
+                for (const prefix of prefixes) {
+                    for (const ext of extensions) {
+                        let i = 1;
+                        let consecutiveFails = 0;
+                        while (i <= 500) {
+                            const fileName = `${prefix}${i}${ext}`;
+                            try {
+                                const texte = await extraireTexteFichierLocal(fileName);
+                                if (texte) {
+                                    contenu += `[Fichier: ${fileName}]\n${texte}\n\n`;
+                                    fullTextCache.set(fileName, texte);
+                                    consecutiveFails = 0;
+                                } else {
+                                    consecutiveFails++;
+                                }
+                            } catch(e) {
+                                consecutiveFails++;
+                            }
+                            if (consecutiveFails >= 3) break;
+                            i++;
+                        }
+                    }
+                }
+            }
             
             if (!contenu.trim()) return null;
             cacheFichiers[mode] = contenu;
@@ -644,9 +728,10 @@
         }
 
         function normalize(str) {
-            return str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");        }
+            return str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        }
 
-        // === RECHERCHE MODE GLOBAL (version améliorée) ===
+        // === RECHERCHE MODE GLOBAL ===
         async function rechercherModeGlobal(query) {
             const API_URL = 'https://script.google.com/macros/s/AKfycbxCmsUiDwNhlqAa_qoIYx2Vtr3_2V4x63rjqqn7aU69787Ba9xymzpLLxmG9wF6HKVN/exec';
             
@@ -656,26 +741,20 @@
                 const data = await response.json();
                 
                 if (data.success && data.results.length > 0) {
-                    // Si un seul résultat, on l'affiche directement (texte complet)
                     if (data.results.length === 1 && !data.fallback) {
                         return await traduireENversFR(data.results[0].fullText);
                     }
                     
-                    // Préparer les suggestions (matches) pour le chat
                     const matches = data.results.map(r => ({
                         full: r.fullText,
-                        preview: r.excerpt.replace(/<[^>]*>/g, '')  // Nettoie les balises HTML
+                        preview: r.excerpt.replace(/<[^>]*>/g, '')
                     }));
                     
-                    // Message contextuel selon fallback ou non
                     const message = data.fallback 
                         ? (data.message || `ℹ️ Aucun résultat exact. Suggestions aléatoires :`)
                         : `✅ Trouvé ${data.count} résultat(s) dans Petio_global. Choisissez une option ci-dessous :`;
                         
-                    return {
-                        message: message,
-                        matches: matches
-                    };
+                    return { message, matches };
                 }
                 else if (data.success) {
                     return `ℹ️ Aucun résultat pour "${query}" dans Petio_global.`;
@@ -689,9 +768,8 @@
             }
         }
 
-        // === MOTEUR DE RECHERCHE FULL-TEXT ===
+        // === MOTEUR DE RECHERCHE ===
         async function rechercherDansFichiers(mode, msg) {
-            // === MODE GLOBAL : appel API Drive ===
             if (mode === 'Global') {
                 return await rechercherModeGlobal(msg);
             }
@@ -713,15 +791,22 @@
                 if (hasAllWords) {
                     const words = para.trim().split(/\s+/);
                     const preview = words.slice(0, 15).join(' ') + (words.length > 15 ? '...' : '');
-                    matches.push({ full: para.trim(), preview: preview });
+                    let sourceFile = null;
+                    const fileMatch = para.match(/^\[Fichier: (.*?)\]/);
+                    if (fileMatch) sourceFile = fileMatch[1];
+                    matches.push({ full: para.trim(), preview, sourceFile });
                 }
             }
             
             if (matches.length > 0) {
                 if (matches.length === 1) {
-                    return await traduireENversFR(matches[0].full);
+                    const single = matches[0];
+                    const texte = await traduireENversFR(single.full);
+                    if (single.sourceFile && (single.sourceFile.endsWith('.pdf') || single.sourceFile.endsWith('.docx'))) {
+                        return { __isDocumentMessage: true, text: texte, sourceFile: single.sourceFile };
+                    }
+                    return texte;
                 }
-                // Retourner l'objet avec message et matches pour gérer l'ordre
                 return {
                     message: `J'ai trouvé ${matches.length} résultats pour "${msg}". Choisissez une option ci-dessous :`,
                     matches: matches
@@ -733,7 +818,10 @@
             const randomMatches = randomParagraphs.map(para => {
                 const words = para.trim().split(/\s+/);
                 const preview = words.slice(0, 15).join(' ') + (words.length > 15 ? '...' : '');
-                return { full: para.trim(), preview: preview };
+                let sourceFile = null;
+                const fileMatch = para.match(/^\[Fichier: (.*?)\]/);
+                if (fileMatch) sourceFile = fileMatch[1];
+                return { full: para.trim(), preview, sourceFile };
             });
             
             return {
@@ -742,11 +830,11 @@
             };
         }
 
-        // === AFFICHAGE DES SUGGESTIONS DANS LE CHAT ===
+        // === AFFICHAGE DES SUGGESTIONS ===
         function afficherSuggestionsInChat(matches) {
             const chatArea = document.getElementById('chatArea');
             
-            matches.forEach((match, index) => {
+            matches.forEach((match) => {
                 const btn = document.createElement('button');
                 btn.className = 'suggestion-btn';
                 traduireENversFR(match.preview).then(frPreview => {
@@ -756,13 +844,67 @@
                 btn.onclick = async function() {
                     document.querySelectorAll('.suggestion-btn').forEach(b => b.remove());
                     const fullText = await traduireENversFR(match.full);
-                    afficherMessage(fullText, 'bot');
+                    
+                    if (match.sourceFile && (match.sourceFile.endsWith('.pdf') || match.sourceFile.endsWith('.docx'))) {
+                        await afficherMessageAvecBoutonDocument(fullText, match.sourceFile);
+                    } else {
+                        await afficherMessage(fullText, 'bot');
+                    }
                 };
                 
                 chatArea.appendChild(btn);
             });
             
             chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        async function afficherMessageAvecBoutonDocument(textePartiel, sourceFile) {
+            const c = document.getElementById('chatArea');
+            const b = document.createElement('div');
+            b.className = 'message bot';
+            
+            const span = document.createElement('span');
+            span.className = 'message-text';
+            span.setAttribute('data-full-text', textePartiel);
+            span.innerHTML = lierUrls(textePartiel);
+            
+            const copyBtn = document.createElement('button');
+            copyBtn.className = 'btn-copy';
+            copyBtn.innerHTML = '<i class="ph ph-copy"></i>';
+            copyBtn.onclick = () => copierMessage(copyBtn);
+            
+            b.appendChild(span);
+            b.appendChild(copyBtn);
+            
+            const suiteBtn = document.createElement('button');
+            suiteBtn.className = 'suite-btn';
+            suiteBtn.innerHTML = '<i class="ph ph-book-open"></i> Lire la suite du document';
+            suiteBtn.onclick = async () => {
+                suiteBtn.disabled = true;
+                suiteBtn.innerHTML = '<i class="ph ph-spinner"></i> Chargement...';
+                try {
+                    let fullDocument = fullTextCache.get(sourceFile);
+                    if (!fullDocument) {
+                        fullDocument = await extraireTexteFichierLocal(sourceFile);
+                        if (fullDocument) fullTextCache.set(sourceFile, fullDocument);
+                    }
+                    if (fullDocument) {
+                        const texteComplet = await traduireENversFR(fullDocument);
+                        await afficherMessage(`📄 **Document complet : ${sourceFile}**\n\n${texteComplet}`, 'bot');
+                    } else {
+                        await afficherMessage(`❌ Impossible de charger le document "${sourceFile}".`, 'bot');
+                    }
+                } catch (e) {
+                    await afficherMessage(`❌ Erreur lors du chargement du document.`, 'bot');
+                }
+                suiteBtn.remove();
+                if (!isLoadingHistory) sauvegarderHistorique();
+            };
+            b.appendChild(suiteBtn);
+            
+            c.appendChild(b);
+            if (!isLoadingHistory) sauvegarderHistorique();
+            c.scrollTop = c.scrollHeight;
         }
 
         function lierUrls(texte) {
@@ -1028,11 +1170,10 @@
                 const rep = await rechercherDansFichiers(modeActuel, msg);
                 document.getElementById('typing').classList.remove('show');
                 
-                // GESTION DE L'ORDRE D'AFFICHAGE
-                if (rep.matches) {
-                    // D'abord le message "J'ai trouvé X résultats..."
+                if (rep && rep.__isDocumentMessage) {
+                    await afficherMessageAvecBoutonDocument(rep.text, rep.sourceFile);
+                } else if (rep && rep.matches) {
                     await afficherMessage(rep.message, 'bot');
-                    // Puis les suggestions EN DESSOUS
                     afficherSuggestionsInChat(rep.matches);
                 } else {
                     afficherMessage(rep, 'bot');
