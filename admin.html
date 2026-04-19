@@ -3,6 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    
+    <!-- PWA - iOS -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Petio Admin">
+    <link rel="apple-touch-icon" sizes="180x180" href="https://i.ibb.co/zVsc6LDk/62943fce33c7f18d50a127290140782f.jpg">
+    
+    <!-- PWA - Manifest -->
+    <link rel="manifest" href="data:application/manifest+json,{{ADMIN_MANIFEST}}">
+    <link rel="icon" type="image/jpeg" href="https://i.ibb.co/zVsc6LDk/62943fce33c7f18d50a127290140782f.jpg">
+    
     <meta name="theme-color" content="#007aff">
     <title>Petio Admin - Panneau de Contrôle</title>
     <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
@@ -36,8 +47,7 @@
             width: 100%; padding: 14px 44px 14px 14px; border: 2px solid var(--border);
             border-radius: 14px; background: var(--bg); color: var(--text); font-size: 16px; outline: none;
         }
-        .input-wrap input:focus { border-color: var(--accent); }
-        .toggle-pass {
+        .input-wrap input:focus { border-color: var(--accent); }        .toggle-pass {
             position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
             background: none; border: none; cursor: pointer; font-size: 22px; color: var(--accent); padding: 4px;
         }
@@ -47,7 +57,9 @@
         }
         .btn:active { transform: scale(0.97); opacity: 0.9; }
         .btn-primary { background: var(--accent); color: white; }
-        .btn-danger { background: var(--danger); color: white; margin-top: 12px; }        
+        .btn-danger { background: var(--danger); color: white; margin-top: 12px; }
+        .btn-install { background: var(--success); color: white; margin-top: 10px; }
+        
         /* ADMIN LAYOUT */
         #admin-panel { display: none; height: 100vh; flex-direction: column; }
         header {
@@ -84,8 +96,7 @@
         }
         .stat-val { font-size: 26px; font-weight: 800; color: var(--accent); margin: 6px 0; }
         .stat-lbl { font-size: 13px; color: #8e8e93; font-weight: 600; }
-        
-        .card {
+                .card {
             background: var(--card); padding: 20px; border-radius: var(--radius); border: 1px solid var(--border);
             box-shadow: var(--shadow); margin-bottom: 16px; overflow: hidden;
         }
@@ -96,7 +107,8 @@
         .form-group label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 14px; color: var(--text); }
         .form-control {
             width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 12px;
-            background: var(--bg); color: var(--text); font-size: 15px; outline: none;        }
+            background: var(--bg); color: var(--text); font-size: 15px; outline: none;
+        }
         table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 14px; }
         th, td { padding: 12px 8px; text-align: left; border-bottom: 1px solid var(--border); word-break: break-word; }
         th { font-weight: 700; color: #8e8e93; font-size: 13px; }
@@ -114,11 +126,26 @@
         .log-item { padding: 12px 0; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; font-size: 14px; }
         .log-item:last-child { border-bottom: none; }
         
+        /* INSTALL BANNER */
+        #install-banner {
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(100px);
+            background: var(--card); padding: 16px 20px; border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15); border: 1px solid var(--border);
+            display: none; align-items: center; gap: 12px; z-index: 9998;
+            animation: slideUp 0.3s ease;
+        }
+        #install-banner.show { display: flex; }
+        @keyframes slideUp { from { opacity: 0; transform: translateX(-50%) translateY(100px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+        #install-banner i { font-size: 28px; color: var(--success); }
+        #install-banner button {
+            background: var(--success); color: white; border: none; padding: 8px 16px;
+            border-radius: 10px; font-weight: 700; cursor: pointer;
+        }
+        
         /* TOAST */
         #toast {
             position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px);
-            background: var(--card); color: var(--text); padding: 12px 20px; border-radius: 30px;
-            box-shadow: var(--shadow); border: 1px solid var(--border); font-weight: 600; font-size: 14px;
+            background: var(--card); color: var(--text); padding: 12px 20px; border-radius: 30px;            box-shadow: var(--shadow); border: 1px solid var(--border); font-weight: 600; font-size: 14px;
             display: flex; align-items: center; gap: 8px; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             z-index: 9999;
         }
@@ -145,7 +172,19 @@
             </button>
         </div>
         <button class="btn btn-primary" onclick="attemptLogin()">Se connecter</button>
-        <p style="margin-top: 16px; font-size: 12px; color: #8e8e93;">Mot de passe : <code>L*********6</code></p>    </div>
+        <p style="margin-top: 16px; font-size: 12px; color: #8e8e93;">Mot de passe : <code>L*********6</code></p>
+    </div>
+</div>
+
+<!-- INSTALL BANNER -->
+<div id="install-banner">
+    <i class="ph-fill ph-device-mobile"></i>
+    <div>
+        <strong>Installer Petio Admin</strong><br>
+        <small style="color:#8e8e93">Accès rapide depuis l'écran d'accueil</small>
+    </div>
+    <button onclick="installPWA()">Installer</button>
+    <button onclick="dismissInstall()" style="background:var(--bg);color:var(--text);margin-left:8px;"><i class="ph ph-x"></i></button>
 </div>
 
 <!-- ADMIN PANEL -->
@@ -155,8 +194,7 @@
         <div class="header-actions">
             <button class="icon-btn" onclick="toggleTheme()"><i id="theme-icon" class="ph ph-moon"></i></button>
             <button class="icon-btn" onclick="logout()"><i class="ph ph-sign-out"></i></button>
-        </div>
-    </header>
+        </div>    </header>
 
     <main>
         <div class="tabs">
@@ -194,7 +232,8 @@
 
         <!-- VIP -->
         <div id="vip" class="section">
-            <div class="card">                <h3><i class="ph ph-plus-circle"></i> Générer un code VIP</h3>
+            <div class="card">
+                <h3><i class="ph ph-plus-circle"></i> Générer un code VIP</h3>
                 <div class="form-group">
                     <label>Email du destinataire</label>
                     <input type="email" id="vip-email" class="form-control" placeholder="user@email.com">
@@ -204,8 +243,7 @@
                     <input type="number" id="vip-days" class="form-control" value="30" min="1">
                 </div>
                 <button class="btn btn-primary" onclick="createVIP()"><i class="ph ph-sparkle"></i> Générer</button>
-            </div>
-            
+            </div>            
             <div id="vip-output" class="card" style="display:none; border: 2px solid var(--accent);">
                 <h3><i class="ph ph-check-circle"></i> Code généré avec succès</h3>
                 <div class="copy-row">
@@ -243,7 +281,8 @@
                 <button class="btn btn-primary" style="margin-top:12px;" onclick="checkFiles()"><i class="ph ph-arrows-clockwise"></i> Tester</button>
             </div>
             <div class="card">
-                <h3><i class="ph ph-link-simple"></i> Accès rapide</h3>                <a href="index.html" style="display:flex; align-items:center; gap:10px; padding:12px; background:var(--bg); border-radius:12px; text-decoration:none; color:var(--text); margin-bottom:10px; font-weight:600;">
+                <h3><i class="ph ph-link-simple"></i> Accès rapide</h3>
+                <a href="index.html" style="display:flex; align-items:center; gap:10px; padding:12px; background:var(--bg); border-radius:12px; text-decoration:none; color:var(--text); margin-bottom:10px; font-weight:600;">
                     <i class="ph ph-globe"></i> Ouvrir Petio (Utilisateur)
                 </a>
                 <a href="https://wa.me/12496806826" target="_blank" style="display:flex; align-items:center; gap:10px; padding:12px; background:var(--bg); border-radius:12px; text-decoration:none; color:var(--text); font-weight:600;">
@@ -253,11 +292,79 @@
         </div>
     </main>
 </div>
-
 <!-- TOAST -->
 <div id="toast"><i class="ph-fill ph-check-circle" style="color:var(--success)"></i> <span id="toast-msg">Copié !</span></div>
 
 <script>
+    // ==================== PWA SETUP ====================
+    const ADMIN_MANIFEST = {
+        name: "Petio Admin",
+        short_name: "Petio Admin",
+        description: "Panneau d'administration Petio",
+        start_url: "admin.html",
+        display: "standalone",
+        background_color: "#f2f2f7",
+        theme_color: "#007aff",
+        icons: [
+            { src: "https://i.ibb.co/zVsc6LDk/62943fce33c7f18d50a127290140782f.jpg", sizes: "512x512", type: "image/jpeg", purpose: "any maskable" }
+        ]
+    };
+    
+    const manifestBlob = new Blob([JSON.stringify(ADMIN_MANIFEST)], {type: 'application/manifest+json'});
+    const manifestURL = URL.createObjectURL(manifestBlob);
+    document.querySelector('link[rel="manifest"]').href = manifestURL;
+    
+    // Service Worker
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            const swCode = `
+                const CACHE_NAME = 'petio-admin-v1';
+                const ASSETS = ['.', 'admin.html', 'https://unpkg.com/@phosphor-icons/web@2.1.1', 'https://i.ibb.co/zVsc6LDk/62943fce33c7f18d50a127290140782f.jpg'];
+                
+                self.addEventListener('install', e => {
+                    e.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS)));
+                    self.skipWaiting();
+                });
+                
+                self.addEventListener('activate', e => {
+                    e.waitUntil(clients.claim());
+                });
+                
+                self.addEventListener('fetch', e => {
+                    e.respondWith(
+                        caches.match(e.request).then(res => res || fetch(e.request).catch(() => caches.match('.')))
+                    );
+                });
+            `;
+            const swBlob = new Blob([swCode], {type: 'application/javascript'});
+            const swURL = URL.createObjectURL(swBlob);
+            navigator.serviceWorker.register(swURL).catch(err => console.log('SW registration failed:', err));
+        });
+    }
+        // Install Prompt
+    let deferredPrompt = null;
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        setTimeout(() => {
+            document.getElementById('install-banner').classList.add('show');
+        }, 2000);
+    });
+    
+    function installPWA() {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then(() => {
+                deferredPrompt = null;
+                dismissInstall();
+            });
+        }
+    }
+    
+    function dismissInstall() {
+        document.getElementById('install-banner').classList.remove('show');
+    }
+    
     // ==================== CONFIG ====================
     const ADMIN_PASS = "Le BalzaC.5426";
     const PREFIX = "petio_admin_";
@@ -283,8 +390,7 @@
         enterAdmin();
     }
     
-    function logout() {
-        localStorage.removeItem(PREFIX + 'auth');
+    function logout() {        localStorage.removeItem(PREFIX + 'auth');
         location.reload();
     }
     
@@ -292,7 +398,8 @@
         const inp = document.getElementById('admin-pass');
         const icon = document.getElementById('eye-icon');
         if (inp.type === 'password') { inp.type = 'text'; icon.className = 'ph ph-eye-slash'; }
-        else { inp.type = 'password'; icon.className = 'ph ph-eye'; }    }
+        else { inp.type = 'password'; icon.className = 'ph ph-eye'; }
+    }
 
     // ==================== NAVIGATION & THEME ====================
     document.querySelectorAll('.tab').forEach(tab => {
@@ -324,7 +431,6 @@
         const logs = JSON.parse(localStorage.getItem(PREFIX + 'access_logs') || '[]');
         const currentMode = localStorage.getItem('petio_current_mode') || 'Cerveau';
         
-        // Dashboard
         document.getElementById('d-users').textContent = users.length;
         document.getElementById('d-vip').textContent = vips.filter(v => new Date(v.expiry) > new Date()).length;
         document.getElementById('d-mode').textContent = currentMode;
@@ -333,19 +439,17 @@
         const recentEl = document.getElementById('recent-list');
         recentEl.innerHTML = logs.slice(-6).reverse().map(l => `
             <div class="log-item">
-                <div><strong>${l.email}</strong><br><small style="color:#8e8e93">${l.date}</small></div>
-                <span class="badge ${l.status==='VALIDE'?'badge-ok':'badge-off'}">${l.status}</span>
+                <div><strong>${l.email}</strong><br><small style="color:#8e8e93">${l.date}</small></div>                <span class="badge ${l.status==='VALIDE'?'badge-ok':'badge-off'}">${l.status}</span>
             </div>
         `).join('') || '<p style="padding:10px;color:#8e8e93;text-align:center">Aucune activité.</p>';
         
         renderVIPTable();
         renderLogs();
     }
-        // Écoute les changements en temps réel depuis d'autres onglets (Petio)
+    
     window.addEventListener('storage', (e) => {
         if (e.key && e.key.startsWith('petio_')) refreshAll();
     });
-    // Rafraîchissement périodique de secours
     setInterval(refreshAll, 3000);
 
     // ==================== VIP SYSTEM ====================
@@ -384,13 +488,13 @@
         if(!confirm('Supprimer ce code ?')) return;
         const vips = JSON.parse(localStorage.getItem(PREFIX + 'vips') || '[]');
         vips.splice(idx, 1);
-        localStorage.setItem(PREFIX + 'vips', JSON.stringify(vips));
-        refreshAll();
+        localStorage.setItem(PREFIX + 'vips', JSON.stringify(vips));        refreshAll();
     }
 
     // ==================== LOGS & UTILS ====================
     function renderLogs() {
-        const logs = JSON.parse(localStorage.getItem(PREFIX + 'access_logs') || '[]');        document.getElementById('logs-list').innerHTML = logs.reverse().map(l => `
+        const logs = JSON.parse(localStorage.getItem(PREFIX + 'access_logs') || '[]');
+        document.getElementById('logs-list').innerHTML = logs.reverse().map(l => `
             <div class="log-item">
                 <div><strong>${l.email}</strong><br><small style="color:#8e8e93">${l.ip || 'App'} • ${l.date}</small></div>
                 <span class="badge ${l.status==='VALIDE'?'badge-ok':'badge-off'}">${l.status}</span>
@@ -433,10 +537,10 @@
     }
     
     function showToast(msg, icon='ph-check-circle') {
-        const t = document.getElementById('toast');
-        t.innerHTML = `<i class="ph-fill ${icon}"></i> <span>${msg}</span>`;
+        const t = document.getElementById('toast');        t.innerHTML = `<i class="ph-fill ${icon}"></i> <span>${msg}</span>`;
         t.classList.add('show');
         setTimeout(() => t.classList.remove('show'), 2500);
     }
 </script>
-</body></html>
+</body>
+</html>
