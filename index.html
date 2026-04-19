@@ -803,7 +803,7 @@
         const changerModeOriginal = async function(n) {
             if (!await chargerFichiersMode(n)) { afficherErreur(`Mode ${n} sans fichier`); return; }
             modeActuel = n;
-            document.getElementById('modeText').textContent = `🤖 MODE: ${n.toUpperCase()}`;
+            document.getElementById('modeText').textContent = `🤖 MODE: ${n.toUpperCase()}`;localStorage.setItem('petio_current_mode', n);
             closeMenu(); afficherMessage(`✅ Mode changé : ${n}`, 'bot');
         };
 
@@ -882,7 +882,18 @@
                 const r = await fetch(`${URL_GAS}?action=verif&email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}`);
                 if (!r.ok) throw new Error(`Erreur ${r.status}`);                const result = await r.text();
                 if (result.trim() === "VALIDE") { 
-                    localStorage.setItem('pierre_bot_access', 'true'); 
+                    localStorage.setItem('pierre_bot_access', 'true');// 1. Sauvegarde pour l'application Petio (Déjà là)
+localStorage.setItem('pierre_bot_access', 'true');
+localStorage.setItem('userEmail', email);
+
+// 2. Synchronisation pour le Panneau Admin (AJOUTE ÇA)
+var adminUsers = JSON.parse(localStorage.getItem('petio_admin_users') || '[]');
+var existeDeja = adminUsers.some(function(u) { return u.email === email; });
+
+if (!existeDeja) {
+    adminUsers.push({ email: email, date: new Date().toISOString() });
+    localStorage.setItem('petio_admin_users', JSON.stringify(adminUsers));
+} 
                     localStorage.setItem('userEmail', email);
                     showPage('robot'); 
                     chargerHistorique();
