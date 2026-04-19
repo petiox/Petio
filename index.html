@@ -176,17 +176,171 @@
         .setting-item.active .setting-desc { max-height: 500px; opacity: 1; margin-top: 8px; }
         .setting-icon { font-size: 20px; color: var(--accent); }
 
-        .extra-menu { position: absolute; bottom: 85px; left: 15px; display: none; flex-direction: column-reverse; gap: 12px; z-index: 10; }
-        .extra-menu.show { display: flex; animation: bounceIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55); }
+        /* Menu "+" amélioré avec flou */
+        .extra-menu {
+            position: absolute;
+            bottom: 85px;
+            left: 15px;
+            display: none;
+            flex-direction: column;
+            gap: 16px;
+            z-index: 10;
+            background: rgba(120, 120, 120, 0.2);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 18px 16px;
+            border-radius: 28px;
+            border: 1px solid rgba(255,255,255,0.15);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            max-width: 320px;
+        }
+        .extra-menu.show {
+            display: flex;
+            animation: bounceIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
         @keyframes bounceIn {
             0% { opacity: 0; transform: scale(0.3) translateY(40px); }
             60% { transform: scale(1.05) translateY(-5px); }
             100% { opacity: 1; transform: scale(1) translateY(0); }
         }
-        .menu-row { display: flex; align-items: center; gap: 12px; text-decoration: none; cursor: pointer; }
-        .menu-item { width: 48px; height: 48px; background: var(--accent); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 24px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1); }
-        .menu-item:active { transform: scale(0.85) rotate(5deg); }
-        .menu-label { background: var(--bot); padding: 8px 14px; border-radius: 12px; font-size: 14px; color: var(--text); font-weight: 700; }
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        .menu-row {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            cursor: pointer;
+            background: rgba(255,255,255,0.1);
+            padding: 12px 8px;
+            border-radius: 16px;
+            transition: transform 0.15s, background 0.2s;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .menu-row:active {
+            transform: scale(0.95);
+            background: rgba(255,255,255,0.2);
+        }
+        .menu-item {
+            width: 48px;
+            height: 48px;
+            background: var(--accent);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            margin-bottom: 6px;
+        }
+        .menu-label {
+            background: transparent;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 13px;
+            color: white;
+            font-weight: 700;
+            text-align: center;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+        .menu-separator {
+            grid-column: span 2;
+            text-align: center;
+            color: rgba(255,255,255,0.7);
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            margin: 4px 0 2px;
+            text-transform: uppercase;
+        }
+
+        /* Galerie styles */
+        .gallery-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            padding: 12px;
+            overflow-y: auto;
+            max-height: calc(100vh - 150px);
+        }
+        .gallery-item {
+            aspect-ratio: 1;
+            background: var(--input-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            border: 2px solid var(--border);
+            transition: transform 0.2s;
+            position: relative;
+        }
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .gallery-item:active { transform: scale(0.95); }
+        .downloaded-badge {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: var(--success);
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+        .gallery-lightbox {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.9);
+            z-index: 5000;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .gallery-lightbox.show { display: flex; }
+        .lightbox-img {
+            max-width: 95%;
+            max-height: 80vh;
+            border-radius: 16px;
+        }
+        .lightbox-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            font-size: 32px;
+            cursor: pointer;
+        }
+        .lightbox-download {
+            margin-top: 20px;
+            padding: 12px 24px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .gallery-loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--text);
+        }
 
         .input-bar { padding: 10px 15px calc(20px + var(--safe-bottom)); display: flex; align-items: flex-end; gap: 10px; border-top: 1px solid var(--border); background: var(--card); }
         .btn-plus, .btn-send { width: 45px; height: 45px; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: all 0.2s ease; flex-shrink: 0; }
@@ -212,7 +366,7 @@
             box-shadow: 0 -10px 30px rgba(0,0,0,0.3); display: none !important;
         }
         #pay-sheet.show { bottom: 0 !important; display: block !important; }
-        #pay-sheet h2 { margin: 0 0 10px 0; color: #ffffff; font-weight: 700; }
+        #pay-sheet h2 { margin: 0 0 10px 0; color: #ffffff; font-weight:700; }
         #pay-sheet p { color: #a1a1a6; margin: 15px 0 25px; font-size: 15px; font-weight: 700; }
         #pay-sheet .btn-pay { display: block; width: 100%; padding: 16px; background: var(--pay-btn); color: white; text-decoration: none; border-radius: 14px; font-weight: 700; font-size: 16px; transition: transform 0.1s; }
         #pay-sheet .btn-pay:active { transform: scale(0.98); }
@@ -297,7 +451,7 @@
 <div id="pay-sheet">
     <h2>Accès VIP Requis</h2>
     <p>Aucun abonnement trouvé pour ces informations.</p>
-    <a href="https://my.moneyfusion.net/69dfaeb42819ad4c3a7fc265" class="btn-pay">Débloquer l'accès (500 XOF)</a>
+    <a href="https://my.moneyfusion.net/69dfaeb42819ad4c3a7fc265" class="btn-pay">clic ici pour Débloquer tes accès à (500 XOF)</a>
     <button class="contact-admin-btn" onclick="contacterAdmin('vip')">Contacter l'admin</button>
     <p class="close-link" onclick="closePay()">Fermer</p>
 </div>
@@ -385,6 +539,15 @@
             <div class="suggestions-scroll" id="suggestionsScroll"></div>
         </div>
 
+        <!-- Galerie Lightbox -->
+        <div class="gallery-lightbox" id="galleryLightbox" onclick="closeLightbox()">
+            <span class="lightbox-close" onclick="closeLightbox()">&times;</span>
+            <img class="lightbox-img" id="lightboxImg" src="" alt="">
+            <button class="lightbox-download" id="lightboxDownloadBtn" onclick="downloadCurrentImage(event)">
+                <i class="ph ph-download-simple"></i> Télécharger
+            </button>
+        </div>
+
         <div class="settings-page" id="settingsPage">
             <div class="settings-header">
                 <div class="header-btn" style="color:var(--text)" onclick="closeSettings()"><i class="ph ph-caret-left"></i></div>
@@ -436,16 +599,40 @@
             </div>
         </div>
 
+        <!-- Menu "+" réorganisé -->
         <div class="extra-menu" id="plusMenu">
-            <div class="menu-row" onclick="changerMode('Global')">
-                <div class="menu-item"><i class="ph-fill ph-globe"></i></div>
-                <span class="menu-label">🌐 Global</span>
+            <div class="menu-grid">
+                <div class="menu-row" onclick="changerMode('Global')">
+                    <div class="menu-item"><i class="ph-fill ph-globe"></i></div>
+                    <span class="menu-label">🌐 Global</span>
+                </div>
+                <div class="menu-row" onclick="changerMode('Novice')">
+                    <div class="menu-item"><i class="ph-fill ph-folder-open"></i></div>
+                    <span class="menu-label">1 Novice</span>
+                </div>
+                <div class="menu-row" onclick="changerMode('Procedure')">
+                    <div class="menu-item"><i class="ph-fill ph-folder-open"></i></div>
+                    <span class="menu-label">2 Procédure</span>
+                </div>
+                <div class="menu-row" onclick="changerMode('Formate')">
+                    <div class="menu-item"><i class="ph-fill ph-folder-open"></i></div>
+                    <span class="menu-label">3 Formate</span>
+                </div>
+                <div class="menu-row" onclick="changerMode('Application')">
+                    <div class="menu-item"><i class="ph-fill ph-folder-open"></i></div>
+                    <span class="menu-label">4 Application</span>
+                </div>
+                <div class="menu-row" onclick="changerMode('Divers')">
+                    <div class="menu-item"><i class="ph-fill ph-folder-open"></i></div>
+                    <span class="menu-label">Divers</span>
+                </div>
+                <div class="menu-row" onclick="changerMode('Gallery')">
+                    <div class="menu-item"><i class="ph-fill ph-image"></i></div>
+                    <span class="menu-label">Gallery</span>
+                </div>
             </div>
-            <div class="menu-row" onclick="changerMode('Application')"><div class="menu-item"><i class="ph-fill ph-folder-open"></i></div><span class="menu-label">4 Application</span></div>
-            <div class="menu-row" onclick="changerMode('Formate')"><div class="menu-item"><i class="ph-fill ph-folder-open"></i></div><span class="menu-label">3 Formate</span></div>
-            <div class="menu-row" onclick="changerMode('Procedure')"><div class="menu-item"><i class="ph-fill ph-folder-open"></i></div><span class="menu-label">2 Procédure</span></div>
-            <div class="menu-row" onclick="changerMode('Novice')"><div class="menu-item"><i class="ph-fill ph-folder-open"></i></div><span class="menu-label">1 Novice</span></div>
         </div>
+
         <div class="input-bar">
             <div class="btn-plus" id="btnPlus" onclick="toggleMenu(event)"><i class="ph ph-plus-circle"></i></div>
             <div class="input-container"><textarea id="userInput" placeholder="Message..." rows="1" oninput="handleInput(this)"></textarea></div>
@@ -456,6 +643,12 @@
 
 <script>
     (function(){
+        // ==================== CONFIG GALLERY ====================
+        const DRIVE_API_KEY = 'AIzaSyDiZNla26G3wblOh9ZFLs2vvPFDI1ZTDJo';
+        const DRIVE_FOLDER_ID = '1iqlRjauMrSsazy--eA3AVzr7t33La_3x';
+        let currentLightboxImageUrl = '';
+        let currentLightboxImageId = '';
+
         // ==================== PWA MANIFEST ====================
         const MANIFEST_DATA = {
             name: "Petio Assistant",
@@ -574,7 +767,7 @@
         let nomBot = localStorage.getItem('botName') || 'Petio';
         let isLoadingHistory = false;
         const cacheFichiers = {};
-        const fullTextCache = new Map(); // Pour stocker le texte complet des documents
+        const fullTextCache = new Map();
         
         // ==================== GESTION TRADUCTION ====================
         let traductionActive = localStorage.getItem('petio_traduction') !== 'false';
@@ -622,7 +815,7 @@
             return traduireGoogle(t, 'fr', 'en'); 
         }
 
-        // === EXTRACTION TEXTE FICHIER LOCAL (PDF, DOCX, TXT) ===
+        // === EXTRACTION TEXTE FICHIER LOCAL ===
         async function extraireTexteFichierLocal(fileName) {
             const lower = fileName.toLowerCase();
             try {
@@ -654,13 +847,12 @@
             }
         }
 
-        // === CHARGEMENT DES FICHIERS (MODIFIÉ POUR PROCEDURE) ===
+        // === CHARGEMENT DES FICHIERS ===
         async function chargerFichiersMode(mode) {
             if (cacheFichiers[mode]) return cacheFichiers[mode];
             let contenu = '';
             const base = mode.toLowerCase();
             
-            // TXT existants
             try { 
                 const r = await fetch(`${base}.txt`); 
                 if (r.ok) contenu += await r.text() + '\n'; 
@@ -693,7 +885,6 @@
                 }
             }
 
-            // === UNIQUEMENT POUR LE MODE PROCEDURE : PDF/DOCX ===
             if (mode === 'Procedure') {
                 const prefixes = ['procedure', 'proc', 'doc'];
                 const extensions = ['.pdf', '.docx'];
@@ -720,6 +911,28 @@
                         }
                     }
                 }
+            }
+
+            if (mode === 'Divers') {
+                const separators = ['', '_', '-', '.'];
+                for (let num = 1; num <= 9; num++) {
+                    for (const sep of separators) {
+                        const fileName = `divers${sep}${num}.txt`;
+                        try {
+                            const r = await fetch(fileName);
+                            if (r.ok) contenu += `[Fichier: ${fileName}]\n${await r.text()}\n\n`;
+                        } catch(e) {}
+                        const fileName2 = `divers${num}${sep}.txt`;
+                        try {
+                            const r = await fetch(fileName2);
+                            if (r.ok) contenu += `[Fichier: ${fileName2}]\n${await r.text()}\n\n`;
+                        } catch(e) {}
+                    }
+                }
+                try {
+                    const r = await fetch('divers.txt');
+                    if (r.ok) contenu += await r.text() + '\n';
+                } catch(e) {}
             }
             
             if (!contenu.trim()) return null;
@@ -768,10 +981,92 @@
             }
         }
 
+        // === MODE GALLERY ===
+        async function loadGallery() {
+            const chatArea = document.getElementById('chatArea');
+            chatArea.innerHTML = '<div class="gallery-loading"><i class="ph ph-spinner"></i> Chargement de la galerie...</div>';
+            
+            try {
+                const url = `https://www.googleapis.com/drive/v3/files?q='${DRIVE_FOLDER_ID}'+in+parents+and+mimeType+contains+'image/'&key=${DRIVE_API_KEY}&fields=files(id,name,mimeType,thumbnailLink,webContentLink,size)`;
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (!data.files || data.files.length === 0) {
+                    chatArea.innerHTML = '<div class="gallery-loading">Aucune image trouvée dans le dossier.</div>';
+                    return;
+                }
+                
+                const downloadedKey = 'petio_gallery_downloaded';
+                const downloaded = JSON.parse(localStorage.getItem(downloadedKey) || '{}');
+                
+                let html = '<div class="gallery-container">';
+                for (const file of data.files) {
+                    const imageUrl = `https://drive.google.com/uc?export=view&id=${file.id}`;
+                    const downloadUrl = `https://drive.google.com/uc?export=download&id=${file.id}`;
+                    const isDownloaded = downloaded[file.id] || false;
+                    
+                    html += `
+                        <div class="gallery-item" data-id="${file.id}" data-url="${imageUrl}" data-download="${downloadUrl}" onclick="openLightbox(this)">
+                            <img src="${imageUrl}" loading="lazy" alt="${file.name}">
+                            ${isDownloaded ? '<span class="downloaded-badge"><i class="ph ph-check"></i></span>' : ''}
+                        </div>
+                    `;
+                }
+                html += '</div>';
+                chatArea.innerHTML = html;
+            } catch (e) {
+                chatArea.innerHTML = '<div class="gallery-loading">Erreur de chargement de la galerie.</div>';
+                console.error('Gallery error:', e);
+            }
+        }
+
+        window.openLightbox = function(el) {
+            const url = el.dataset.url;
+            const downloadUrl = el.dataset.download;
+            const id = el.dataset.id;
+            currentLightboxImageUrl = downloadUrl;
+            currentLightboxImageId = id;
+            document.getElementById('lightboxImg').src = url;
+            document.getElementById('galleryLightbox').classList.add('show');
+        };
+
+        window.closeLightbox = function() {
+            document.getElementById('galleryLightbox').classList.remove('show');
+        };
+
+        window.downloadCurrentImage = function(event) {
+            event.stopPropagation();
+            if (currentLightboxImageUrl) {
+                const link = document.createElement('a');
+                link.href = currentLightboxImageUrl;
+                link.download = '';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                const downloadedKey = 'petio_gallery_downloaded';
+                const downloaded = JSON.parse(localStorage.getItem(downloadedKey) || '{}');
+                downloaded[currentLightboxImageId] = true;
+                localStorage.setItem(downloadedKey, JSON.stringify(downloaded));
+                
+                const item = document.querySelector(`.gallery-item[data-id="${currentLightboxImageId}"]`);
+                if (item && !item.querySelector('.downloaded-badge')) {
+                    const badge = document.createElement('span');
+                    badge.className = 'downloaded-badge';
+                    badge.innerHTML = '<i class="ph ph-check"></i>';
+                    item.appendChild(badge);
+                }
+            }
+        };
+
         // === MOTEUR DE RECHERCHE ===
         async function rechercherDansFichiers(mode, msg) {
             if (mode === 'Global') {
                 return await rechercherModeGlobal(msg);
+            }
+            if (mode === 'Gallery') {
+                await loadGallery();
+                return null;
             }
             
             const contenu = await chargerFichiersMode(mode);
@@ -813,7 +1108,6 @@
                 };
             }
             
-            // Fallback aléatoire
             const randomParagraphs = paragraphs.sort(() => Math.random() - 0.5).slice(0, 3);
             const randomMatches = randomParagraphs.map(para => {
                 const words = para.trim().split(/\s+/);
@@ -1035,17 +1329,22 @@
         }
 
         const changerModeOriginal = async function(n) {
-            if (n !== 'Global') {
+            if (n !== 'Global' && n !== 'Gallery') {
                 if (!await chargerFichiersMode(n)) { 
                     afficherErreur(`Mode ${n} sans fichier`); 
                     return; 
                 }
             }
             modeActuel = n;
-            document.getElementById('modeText').textContent = `🤖 MODE: ${n.toUpperCase()}`;
+            document.getElementById('modeText').textContent = n === 'Gallery' ? `🖼️ MODE: GALLERY` : `🤖 MODE: ${n.toUpperCase()}`;
             localStorage.setItem('petio_current_mode', n);
-            closeMenu(); 
-            afficherMessage(`✅ Mode changé : ${n}`, 'bot');
+            closeMenu();
+            if (n === 'Gallery') {
+                document.getElementById('chatArea').innerHTML = '';
+                await loadGallery();
+            } else {
+                afficherMessage(`✅ Mode changé : ${n}`, 'bot');
+            }
         };
 
         window.changerMode = async function(n) {
@@ -1162,6 +1461,7 @@
 
         async function envoyerMessage() {
             const msg = textarea.value.trim(); if (!msg) return;
+            if (modeActuel === 'Gallery') { afficherErreur('Ce mode affiche une galerie, pas de chat.'); return; }
             document.querySelectorAll('.suggestion-btn').forEach(b => b.remove());
             
             afficherMessage(msg, 'user'); resetInputBar();
@@ -1175,7 +1475,7 @@
                 } else if (rep && rep.matches) {
                     await afficherMessage(rep.message, 'bot');
                     afficherSuggestionsInChat(rep.matches);
-                } else {
+                } else if (rep) {
                     afficherMessage(rep, 'bot');
                 }
             } catch(e) {
