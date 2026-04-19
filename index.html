@@ -16,8 +16,8 @@
     
     <title>Petio - Assistant</title>
     <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+    
     <style>
-        /* ========== STYLES COMPLETS (modifications ciblées uniquement) ========== */
         :root {
             --bg: #ffffff; --card: #fff; --text: #1c1c1e; --bot: #e9e9eb;
             --accent: #007aff; --input-bg: #f2f2f7; --border: #e5e5e5;
@@ -52,7 +52,7 @@
         .header { background: var(--header-grad); padding: 8px 12px; display: flex; align-items: center; justify-content: space-between; color: white; border-bottom-left-radius: 15px; border-bottom-right-radius: 15px; z-index: 20; gap: 8px; }
         
         #modeContainer { display: flex; align-items: center; gap: 6px; flex: 1; justify-content: center; }
-        #modeText { font-size: 13px; font-weight: 800; opacity: 0.9; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-transform: uppercase; }
+        #modeText { font-size: 15px; font-weight: 900; opacity: 0.95; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-transform: uppercase; letter-spacing: 0.5px; }
         .btn-reset-mode { background: rgba(255,255,255,0.2); border: none; border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: white; transition: all 0.3s; flex-shrink: 0; }
         .btn-reset-mode:active { background: rgba(255,255,255,0.4); transform: rotate(-180deg); }
         
@@ -178,7 +178,6 @@
         #overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: none !important; z-index: 1500; backdrop-filter: blur(4px); }
         #overlay.show { display: block !important; }
         
-        /* ---------- FEUILLE DE PAIEMENT VIP (BLOQUÉE PAR DÉFAUT) ---------- */
         #pay-sheet {
             position: fixed; bottom: -100% !important; left: 0; width: 100%; background: var(--pay-bg); color: var(--pay-text);
             padding: 30px 20px 50px 20px; border-top-left-radius: 25px; border-top-right-radius: 25px;
@@ -191,50 +190,19 @@
         #pay-sheet .btn-pay { display: block; width: 100%; padding: 16px; background: var(--pay-btn); color: white; text-decoration: none; border-radius: 14px; font-weight: 700; font-size: 16px; transition: transform 0.1s; }
         #pay-sheet .btn-pay:active { transform: scale(0.98); }
         #pay-sheet .close-link { margin-top: 20px; color: #8e8e93; font-size: 14px; cursor: pointer; font-weight: 700; }
-        /* Bouton Contacter l'admin avec texte orange visible dans les deux thèmes */
         #pay-sheet .contact-admin-btn {
-            display: block;
-            width: 100%;            padding: 16px;
-            margin-top: 12px;
-            background: transparent;
-            border: 2px solid #ff7a01;
-            border-radius: 14px;
-            font-weight: 700;
-            font-size: 16px;
-            cursor: pointer;
-            color: #ff7a01;
-            transition: background 0.1s;
-        }
-        #pay-sheet .contact-admin-btn:active {
-            background: rgba(255,122,1,0.1);
-        }
+            display: block; width: 100%; padding: 16px; margin-top: 12px; background: transparent;
+            border: 2px solid #ff7a01; border-radius: 14px; font-weight: 700; font-size: 16px;
+            cursor: pointer; color: #ff7a01; transition: background 0.1s;
+        }        #pay-sheet .contact-admin-btn:active { background: rgba(255,122,1,0.1); }
 
         #load-status { position: fixed; top: 0; left: 0; right: 0; background: #ffcc00; color: #000; text-align: center; padding: 8px; font-size: 13px; font-weight: 700; z-index: 9999; display: none; }
         #load-status.error { background: #ff3b30; color: white; }
         #load-status.success { background: #34c759; color: white; }
 
-        /* Modal renommer */
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.5);
-            backdrop-filter: blur(4px);
-            z-index: 4000;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 4000; display: none; align-items: center; justify-content: center; padding: 20px; }
         .modal-overlay.show { display: flex; }
-        .modal-card {
-            background: var(--card);
-            border-radius: 24px;
-            width: 100%;
-            max-width: 360px;
-            padding: 24px 20px 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-            color: var(--text);
-        }
+        .modal-card { background: var(--card); border-radius: 24px; width: 100%; max-width: 360px; padding: 24px 20px 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); color: var(--text); }
         .modal-title { font-size: 20px; font-weight: 700; margin-bottom: 8px; text-align: center; }
         .modal-subtitle { font-size: 14px; color: #8e8e93; margin-bottom: 20px; text-align: center; font-weight: 700; }
         .modal-input { width: 100%; padding: 16px; border-radius: 14px; border: none; background: var(--input-bg); font-size: 16px; color: var(--text); margin-bottom: 20px; font-weight: 700; }
@@ -243,114 +211,28 @@
         .modal-btn.cancel { background: var(--input-bg); color: var(--text); }
         .modal-btn.confirm { background: var(--accent); color: white; }
 
-        /* Feuille d'installation PWA */        #pwa-install-sheet {
-            position: fixed;
-            top: -100%;
-            left: 0;
-            right: 0;
-            background: var(--card);
-            color: var(--text);
-            padding: 20px 20px 30px;
-            border-bottom-left-radius: 25px;
-            border-bottom-right-radius: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            z-index: 2500;
-            transition: top 0.4s;
-        }
+        #pwa-install-sheet { position: fixed; top: -100%; left: 0; right: 0; background: var(--card); color: var(--text); padding: 20px 20px 30px; border-bottom-left-radius: 25px; border-bottom-right-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 2500; transition: top 0.4s; }
         #pwa-install-sheet.show { top: 0; }
         .pwa-sheet-header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
         .pwa-sheet-header i { font-size: 40px; color: var(--accent); }
-        .install-btn-top { 
-            background: var(--accent); color: white; border: none; 
-            padding: 8px 16px;
-            border-radius: 30px; 
-            font-weight: 700; font-size: 14px;
-            display: inline-flex; align-items: center; gap: 6px; 
-            cursor: pointer; margin-left: auto; 
-        }
+        .install-btn-top { background: var(--accent); color: white; border: none; padding: 8px 16px; border-radius: 30px; font-weight: 700; font-size: 14px; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; margin-left: auto; }
         .pwa-steps { margin: 20px 0; }
         .pwa-step { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; font-weight: 700; }
         .pwa-close-btn { background: transparent; border: 1px solid var(--border); color: var(--text); padding: 12px; border-radius: 14px; width: 100%; cursor: pointer; font-weight: 700; }
-
         #install-banner { display: none; }
 
-        /* Modal de déblocage Procédure */
-        #unlock-modal {
-            position: fixed;
-            bottom: -100%;
-            left: 0;
-            right: 0;
-            background: var(--card);
-            color: var(--text);
-            padding: 20px 20px 30px;
-            border-top-left-radius: 25px;
-            border-top-right-radius: 25px;
-            box-shadow: 0 -10px 30px rgba(0,0,0,0.2);
-            z-index: 3000;
-            transition: bottom 0.4s cubic-bezier(0.32, 1, 0.23, 1);
-            max-height: 90vh;
-            overflow-y: auto;
-        }
+        #unlock-modal { position: fixed; bottom: -100%; left: 0; right: 0; background: var(--card); color: var(--text); padding: 20px 20px 30px; border-top-left-radius: 25px; border-top-right-radius: 25px; box-shadow: 0 -10px 30px rgba(0,0,0,0.2); z-index: 3000; transition: bottom 0.4s cubic-bezier(0.32, 1, 0.23, 1); max-height: 90vh; overflow-y: auto; }
         #unlock-modal.show { bottom: 0; }
-        .unlock-header {            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 20px;
-        }
-        .unlock-title {
-            font-size: 20px;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .unlock-close {
-            font-size: 24px;
-            cursor: pointer;
-            padding: 5px;
-        }
+        .unlock-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+        .unlock-title { font-size: 20px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+        .unlock-close { font-size: 24px; cursor: pointer; padding: 5px; }
         .unlock-step { display: none; }
         .unlock-step.active { display: block; }
-        .unlock-input {
-            width: 100%;
-            padding: 16px;
-            border-radius: 14px;
-            border: none;
-            background: var(--input-bg);
-            color: var(--text);
-            font-size: 16px;
-            margin-bottom: 15px;
-            font-weight: 700;
-        }
-        .unlock-btn {
-            width: 100%;
-            padding: 16px;
-            border-radius: 14px;
-            font-weight: 700;
-            font-size: 16px;
-            cursor: pointer;
-            border: none;
-            margin-bottom: 10px;
-            background: var(--accent);
-            color: white;
-        }
-        .unlock-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-        .unlock-secondary {
-            background: transparent;
-            border: 1px solid var(--border);
-            color: var(--text);        }
-        .error-message {
-            color: #ff3b30;
-            background: rgba(255,59,48,0.1);
-            padding: 15px;
-            border-radius: 14px;
-            margin-bottom: 20px;
-            text-align: center;
-            font-weight: 700;
-        }
+        .unlock-input { width: 100%; padding: 16px; border-radius: 14px; border: none; background: var(--input-bg); color: var(--text); font-size: 16px; margin-bottom: 15px; font-weight: 700; }
+        .unlock-btn { width: 100%; padding: 16px; border-radius: 14px; font-weight: 700; font-size: 16px; cursor: pointer; border: none; margin-bottom: 10px; background: var(--accent); color: white; }
+        .unlock-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .unlock-secondary { background: transparent; border: 1px solid var(--border); color: var(--text); }
+        .error-message { color: #ff3b30; background: rgba(255,59,48,0.1); padding: 15px; border-radius: 14px; margin-bottom: 20px; text-align: center; font-weight: 700; }
     </style>
 </head>
 <body>
@@ -359,11 +241,9 @@
 <div id="error-popup"><i class="ph-fill ph-warning-circle"></i><span id="error-msg"></span></div>
 <div id="overlay" onclick="closePay()"></div>
 
-<!-- FEUILLE DE PAIEMENT VIP (BLOQUÉE - S'AFFICHE UNIQUEMENT SUR BOUTON OU ÉCHEC VÉRIFICATION) -->
 <div id="pay-sheet">
     <h2>Accès VIP Requis</h2>
-    <p>Aucun abonnement trouvé pour ces informations.</p>
-    <a href="https://my.moneyfusion.net/69dfaeb42819ad4c3a7fc265" class="btn-pay">Débloquer l'accès (500 XOF)</a>
+    <p>Aucun abonnement trouvé pour ces informations.</p>    <a href="https://my.moneyfusion.net/69dfaeb42819ad4c3a7fc265" class="btn-pay">Débloquer l'accès (500 XOF)</a>
     <button class="contact-admin-btn" onclick="contacterAdmin('vip')">Contacter l'admin</button>
     <p class="close-link" onclick="closePay()">Fermer</p>
 </div>
@@ -390,22 +270,20 @@
             <button class="modal-btn cancel" onclick="closeNameModal()">Annuler</button>
             <button class="modal-btn confirm" onclick="confirmChangeName()">Enregistrer</button>
         </div>
-    </div></div>
+    </div>
+</div>
 
-<!-- MODAL DE DÉBLOCAGE PROCÉDURE -->
 <div id="unlock-modal">
     <div class="unlock-header">
         <div class="unlock-title"><i class="ph ph-lock"></i> Accès Procédure</div>
         <div class="unlock-close" onclick="closeUnlockModal()"><i class="ph ph-x"></i></div>
     </div>
-    
     <div id="unlock-step-code" class="unlock-step active">
         <p style="margin-bottom: 15px;">Entrez le code reçu après paiement :</p>
         <input type="text" id="unlock-code-input" class="unlock-input" placeholder="Code d'accès">
         <button class="unlock-btn" onclick="verifierCodeAcces()">Valider</button>
         <button class="unlock-btn unlock-secondary" onclick="contacterAdmin('code')">Contacter l'admin</button>
     </div>
-    
     <div id="unlock-step-payment" class="unlock-step">
         <div class="error-message">
             <i class="ph ph-warning-circle" style="font-size: 24px; margin-bottom: 8px; display: block;"></i>
@@ -414,7 +292,6 @@
         <button class="unlock-btn unlock-secondary" onclick="contacterAdmin('payment')">Contacter l'admin</button>
     </div>
 </div>
-
 <div id="page-auth" class="page active">
     <div class="auth-container">
         <div class="auth-content">
@@ -439,7 +316,8 @@
             <div id="modeContainer">
                 <span id="modeText">🤖 MODE: CERVEAU</span>
                 <button class="btn-reset-mode" onclick="resetMode()"><i class="ph ph-arrow-counter-clockwise"></i></button>
-            </div>            <div class="header-btn" onclick="toggleTheme()"><i id="themeIcon" class="ph ph-moon"></i></div>
+            </div>
+            <div class="header-btn" onclick="toggleTheme()"><i id="themeIcon" class="ph ph-moon"></i></div>
         </div>
 
         <div class="chat-content" id="chatArea" onclick="closeMenu()"></div>
@@ -463,32 +341,32 @@
                 <div class="setting-item" onclick="afficherBanniereInstallation()">
                     <div class="setting-main"><i class="setting-icon ph ph-device-mobile"></i><span>Installer l'application</span></div>
                     <div class="setting-desc">Ajouter Petio à l'écran d'accueil.</div>
-                </div>
-                <div class="setting-item" onclick="window.open('https://wa.me/qr/UWYBOFF7GXRSB1', '_blank')">
+                </div>                <div class="setting-item" onclick="window.open('https://wa.me/qr/UWYBOFF7GXRSB1', '_blank')">
                     <div class="setting-main"><i class="setting-icon ph ph-whatsapp-logo"></i><span>Contact</span></div>
                     <div class="setting-desc">Besoin d'aide ? Écrivez-nous sur WhatsApp.</div>
                 </div>
-                <div class="setting-item" onclick="this.classList.toggle('active')">
+                <div class="setting-item" onclick="toggleSettingDesc('faq')">
                     <div class="setting-main"><i class="setting-icon ph ph-question"></i><span>FAQ</span></div>
-                    <div class="setting-desc"><p><strong>Comment utiliser Petio ?</strong><br>Tapez votre question.</p><p><strong>Fiabilité ?</strong><br>Sources vérifiées.</p></div>
+                    <div class="setting-desc" id="faq-desc"><p><strong>Comment utiliser Petio ?</strong><br>Tapez votre question dans la zone de saisie. Petio analysera les fichiers du mode actif et vous répondra instantanément. Utilisez le menu <code>+</code> pour changer de mode.</p><p><strong>Que sont les "Modes" ?</strong><br>Chaque mode charge une base de connaissances différente. Par exemple, le mode <em>Novice</em> propose des explications simples, tandis que le mode <em>Formate</em> contient des procédures techniques avancées. Les réponses sont strictement limitées au mode sélectionné.</p><p><strong>Petio fonctionne-t-il hors ligne ?</strong><br>Oui. Une fois l'application installée en tant que PWA et les fichiers chargés, Petio fonctionne entièrement hors ligne.</p><p><strong>Comment obtenir un accès VIP ?</strong><br>Cliquez sur "Avoir mes accès" sur l'écran de vérification ou contactez l'administrateur via WhatsApp.</p></div>
                 </div>
-                <div class="setting-item" onclick="this.classList.toggle('active')">
+                <div class="setting-item" onclick="toggleSettingDesc('cgu')">
                     <div class="setting-main"><i class="setting-icon ph ph-scales"></i><span>CGU</span></div>
-                    <div class="setting-desc"><p>En utilisant Petio, vous acceptez les présentes CGU. Service informatif uniquement.</p></div>
+                    <div class="setting-desc" id="cgu-desc"><p><strong>1. Objet</strong><br>Les présentes Conditions Générales d'Utilisation (CGU) régissent l'accès et l'utilisation de l'application Petio.</p><p><strong>2. Nature du service</strong><br>Petio est un assistant numérique fonctionnant entièrement en local sur votre appareil. Il fournit des informations à partir de bases de connaissances textuelles chargées localement.</p><p><strong>3. 🛡️ CLAUSE DE NON-RESPONSABILITÉ</strong><br><strong>L'Administrateur et le créateur de Petio déclinent toute responsabilité, en aucun cas, concernant les décisions prises, les actions entreprises ou les conséquences subies par l'Utilisateur suite à l'utilisation de Petio.</strong> L'Utilisateur utilise l'application sous sa seule responsabilité.</p><p><strong>4. Accès et Modes</strong><br>Petio propose plusieurs modes de fonctionnement. Certains contenus peuvent être réservés aux utilisateurs disposant d'un accès VIP vérifié.</p><p><strong>5. Propriété intellectuelle</strong><br>L'interface, le code source et la structure de Petio sont la propriété exclusive de son créateur.</p></div>
                 </div>
-                <div class="setting-item" onclick="this.classList.toggle('active')">
+                <div class="setting-item" onclick="toggleSettingDesc('confidentialite')">
                     <div class="setting-main"><i class="setting-icon ph ph-lock"></i><span>Confidentialité</span></div>
-                    <div class="setting-desc"><p>Petio ne partage aucune information. Historique local.</p></div>
+                    <div class="setting-desc" id="confidentialite-desc"><p><strong>1. Collecte des données</strong><br>Petio <strong>ne collecte aucune donnée personnelle</strong> sur des serveurs externes. Votre adresse email et votre code de transaction sont uniquement utilisés localement pour vérifier votre statut d'accès.</p><p><strong>2. Stockage local</strong><br>- L'historique de vos conversations est sauvegardé exclusivement dans le <code>localStorage</code> de votre appareil.<br>- Les fichiers de connaissances sont mis en cache localement pour un fonctionnement hors ligne.<br>- Vous pouvez effacer toutes vos données via le bouton "Déconnexion".</p><p><strong>3. Sécurité</strong><br>- Petio fonctionne en environnement sandbox (navigateur).<br>- Les liens externes s'ouvrent dans un nouvel onglet sécurisé.<br>- Aucune publicité, tracker ou script d'analyse n'est intégré.</p><p><strong>4. Responsabilité</strong><br>Comme indiqué dans les CGU, <strong>l'Administrateur n'est responsable en aucun cas</strong> de l'usage que vous faites des informations fournies.</p></div>
                 </div>
-                <div class="setting-item" onclick="this.classList.toggle('active')">
+                <div class="setting-item" onclick="toggleSettingDesc('apropos')">
                     <div class="setting-main"><i class="setting-icon ph ph-info"></i><span>À propos</span></div>
-                    <div class="setting-desc"><p><strong>Petio</strong> - Assistant version 1.0</p></div>
+                    <div class="setting-desc" id="apropos-desc"><p><strong>Petio – Assistant Intelligent Local</strong><br>Version 1.0 | Développé par Le Balzac</p><p>Petio est une application progressive (PWA) conçue pour offrir des réponses rapides, précises et privées. Contrairement aux assistants cloud, Petio ne dépend d'aucun serveur distant pour ses connaissances.</p><p><strong>🔹 Points forts :</strong><br>✅ <strong>100% Local</strong> : Vos données et l'historique restent sur votre appareil.<br>🚀 <strong>Ultra-rapide</strong> : Recherche optimisée dans plus de 1000 fichiers texte.<br>🔒 <strong>Cloisonné</strong> : Chaque mode est isolé pour éviter les mélanges d'informations.<br>📱 <strong>PWA</strong> : Installable sur écran d'accueil, fonctionne hors ligne.<br>🎨 <strong>Personnalisable</strong> : Thème sombre/clair, nom de l'assistant modifiable.</p><p>Petio a été créé pour simplifier l'accès à l'information technique et pratique, en gardant un contrôle total sur la confidentialité et la performance. Merci de votre confiance.</p></div>
                 </div>
                 <div class="setting-item" onclick="toggleTheme()">
                     <div class="setting-main"><i class="setting-icon ph ph-paint-bucket"></i><span>Thème</span></div>
                     <div class="setting-desc">Alterner clair/sombre.</div>
                 </div>
-                <div class="setting-item" onclick="deconnexionComplete()">                    <div class="setting-main"><i class="setting-icon ph ph-sign-out" style="color:#ff3b30"></i><span style="color:#ff3b30">Déconnexion</span></div>
+                <div class="setting-item" onclick="deconnexionComplete()">
+                    <div class="setting-main"><i class="setting-icon ph ph-sign-out" style="color:#ff3b30"></i><span style="color:#ff3b30">Déconnexion</span></div>
                     <div class="setting-desc">Se déconnecter.</div>
                 </div>
             </div>
@@ -512,8 +390,7 @@
     (function(){
         // ==================== PWA ====================
         const MANIFEST_DATA = {
-            name: "Petio Assistant", short_name: "Petio", description: "Assistant intelligent",
-            start_url: ".", display: "standalone", background_color: "#ffffff", theme_color: "#007aff",
+            name: "Petio Assistant", short_name: "Petio", description: "Assistant intelligent",            start_url: ".", display: "standalone", background_color: "#ffffff", theme_color: "#007aff",
             icons: [{ src: "https://i.ibb.co/zVsc6LDk/62943fce33c7f18d50a127290140782f.jpg", sizes: "512x512", type: "image/jpeg" }]
         };
         const manifestBlob = new Blob([JSON.stringify(MANIFEST_DATA)], {type: 'application/manifest+json'});
@@ -537,7 +414,8 @@
             if (deferredPrompt) { deferredPrompt.prompt(); await deferredPrompt.userChoice; deferredPrompt = null; }
             else alert('Installation non disponible. Suivez les instructions iOS.');
             installSheet.classList.remove('show');
-        });        window.afficherBanniereInstallation = function() { closeSettings(); installSheet.classList.add('show'); };
+        });
+        window.afficherBanniereInstallation = function() { closeSettings(); installSheet.classList.add('show'); };
 
         // ==================== MODAL NOM ====================
         window.openNameModal = function() { closeSettings(); document.getElementById('newBotNameInput').value = nomBot; document.getElementById('nameModal').classList.add('show'); };
@@ -547,6 +425,23 @@
             if (n) { nomBot = n; localStorage.setItem('botName', nomBot); mettreAJourNomBot(); afficherMessage(`✨ Assistant renommé en "${nomBot}".`, 'bot'); }
             closeNameModal();
         };
+
+        // ==================== GESTION DES DESCRIPTIONS PARAMÈTRES (une seule ouverte à la fois) ====================
+        function toggleSettingDesc(id) {
+            // Fermer toutes les autres descriptions
+            ['faq', 'cgu', 'confidentialite', 'apropos'].forEach(key => {
+                if (key !== id) {
+                    const desc = document.getElementById(key + '-desc');
+                    if (desc && desc.parentElement.classList.contains('active')) {
+                        desc.parentElement.classList.remove('active');
+                    }
+                }
+            });
+            // Toggle la description cliquée
+            const clicked = document.getElementById(id + '-desc');
+            if (clicked) {                clicked.parentElement.classList.toggle('active');
+            }
+        }
 
         // ==================== LOGIQUE PRINCIPALE ====================
         const URL_GAS = "https://script.google.com/macros/s/AKfycbwECfIzsgINAu5IqMDaqcDuYtZAaspR16wvxu-BuLaqTdGJT-6Pec3hJs27lYvxzaIB2Q/exec";
@@ -561,8 +456,9 @@
         let nomBot = localStorage.getItem('botName') || 'Petio';
         let isLoadingHistory = false;
         const cacheFichiers = {};
+        const SUGGESTION_PARAGRAPHS = new Map();
 
-        // Traduction Google
+        // Traduction Google (EN → FR)
         async function traduireGoogle(texte, source, cible) {
             if (!texte) return '';
             const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${source}&tl=${cible}&dt=t&q=${encodeURIComponent(texte)}`;
@@ -571,7 +467,7 @@
         async function traduireENversFR(t) { return traduireGoogle(t, 'en', 'fr'); }
         async function traduireFRversEN(t) { return traduireGoogle(t, 'fr', 'en'); }
 
-        // Chargement de TOUS les fichiers d'un mode (sans limite)
+        // Chargement des fichiers d'un mode
         async function chargerFichiersMode(mode) {
             if (cacheFichiers[mode]) return cacheFichiers[mode];
             let contenu = '';
@@ -586,13 +482,13 @@
                 (i) => `${base}${i}.txt`,
                 (i) => `${base}_${i}.txt`,
                 (i) => `${base}-${i}.txt`
-            ];            
+            ];
+            
             for (let motif of motifs) {
                 let i = 1;
                 let consecutiveFails = 0;
                 while (i <= 500) {
-                    const url = motif(i);
-                    try {
+                    const url = motif(i);                    try {
                         const r = await fetch(url);
                         if (r.ok) {
                             contenu += await r.text() + '\n';
@@ -613,7 +509,6 @@
             return contenu;
         }
 
-        // Détection ultra-robuste des titres
         function estTitre(ligne, estApresSeparateur = false) {
             let l = ligne.trim();
             if (l === '') return false;
@@ -635,62 +530,45 @@
                     let para = '';
                     for (let j=i+1; j<lignes.length; j++) {
                         const suiv = lignes[j].trim();
-                        if (estTitre(suiv, false) || /^[=_\-]{3,}$/.test(suiv)) break;                        para += lignes[j] + '\n';
+                        if (estTitre(suiv, false) || /^[=_\-]{3,}$/.test(suiv)) break;
+                        para += lignes[j] + '\n';
                     }
                     return para.trim();
                 }
             }
             return null;
         }
-
-        function collecterTitres(contenu) {
-            const titres = new Set();
-            const lignes = contenu.split('\n');
-            let apresSeparateur = false;
-            let debutParagraphe = true;
+        // Suggestions aléatoires avec paragraphes complets + traduction FR
+        function afficherSuggestionsAleatoires(contenu) {
+            const paragraphs = contenu.split(/\n\s*\n/).filter(p => p.trim().length > 50);
+            SUGGESTION_PARAGRAPHS.clear();
             
-            for (let i=0; i<lignes.length; i++) {
-                const ligne = lignes[i].trim();
-                
-                if (/^[=_\-]{3,}$/.test(ligne)) {
-                    apresSeparateur = true;
-                    debutParagraphe = true;
-                    continue;
-                }
-                
-                if (apresSeparateur && ligne !== '') {
-                    titres.add(ligne);
-                    apresSeparateur = false;
-                    debutParagraphe = false;
-                    continue;
-                }
-                apresSeparateur = false;
-                
-                if (estTitre(ligne, false)) {
-                    titres.add(ligne);
-                    debutParagraphe = false;
-                } else if (debutParagraphe && ligne !== '') {
-                    const mots = ligne.split(/\s+/).slice(0, 2).join(' ');
-                    if (mots.length > 2) titres.add(mots);
-                    debutParagraphe = false;
-                }
-                
-                if (ligne === '') {
-                    debutParagraphe = true;
-                }
-            }
+            const shuffled = paragraphs.sort(() => Math.random() - 0.5).slice(0, 8);
             
-            return Array.from(titres);
-        }
-
-        function afficherSuggestionsTitres(titres) {
-            if (!titres.length) { suggestionsContainer.classList.remove('show'); return; }            suggestionsScroll.innerHTML = '';
-            titres.sort(()=>Math.random()-0.5).slice(0,8).forEach((t, i) => {
+            suggestionsScroll.innerHTML = '';
+            shuffled.forEach(async (para, i) => {
+                const words = para.trim().split(/\s+/);
+                const preview = words.slice(0, 4).join(' ') + '...';
+                
+                // Traduire l'aperçu en français avant affichage
+                const previewFR = await traduireENversFR(preview);
+                const fullTextFR = await traduireENversFR(para.trim());
+                
+                SUGGESTION_PARAGRAPHS.set(previewFR, fullTextFR);
+                
                 const chip = document.createElement('button');
                 chip.className = 'suggestion-chip';
-                chip.textContent = t;
+                chip.textContent = previewFR;
                 chip.style.animationDelay = `${i*0.05}s`;
-                chip.onclick = () => { textarea.value = t; envoyerMessage(); };
+                
+                chip.onclick = () => {
+                    const fullText = SUGGESTION_PARAGRAPHS.get(previewFR);
+                    if (fullText) {
+                        afficherMessage(fullText, 'bot');
+                        suggestionsContainer.classList.remove('show');
+                    }
+                };
+                
                 suggestionsScroll.appendChild(chip);
             });
             suggestionsContainer.classList.add('show');
@@ -708,8 +586,7 @@
             const copyBtn = document.createElement('button'); copyBtn.className = 'btn-copy';
             copyBtn.innerHTML = '<i class="ph ph-copy"></i>'; copyBtn.onclick = () => copierMessage(copyBtn);
             b.appendChild(span); b.appendChild(copyBtn);
-            c.appendChild(b);
-            let i = 0; const speed = 30;
+            c.appendChild(b);            let i = 0; const speed = 30;
             const texteAvecLiens = lierUrls(texte);
             function type() {
                 if (i < texte.length) {
@@ -734,21 +611,36 @@
             c.scrollTop = c.scrollHeight;
             return Promise.resolve();
         }
+
         async function afficherMessage(texte, type, skipSave = false) {
-            return type === 'bot' ? afficherMessageBot(texte, skipSave) : afficherMessageUser(texte, skipSave);
+            // Traduire en français si nécessaire avant affichage
+            const texteFR = await traduireENversFR(texte);
+            return type === 'bot' ? afficherMessageBot(texteFR, skipSave) : afficherMessageUser(texteFR, skipSave);
         }
 
         async function rechercherDansFichiers(mode, msg) {
             const contenu = await chargerFichiersMode(mode);
             if (!contenu) return `Désolé, la base du mode ${mode} est vide.`;
+            
             const mots = msg.toLowerCase().split(/[^a-zà-ÿ0-9]/i).filter(m => m.length >= 3);
-            for (let m of mots) { let p = extraireSection(contenu, m); if (p) return await traduireENversFR(p); }
-            for (let m of mots) {
-                try { const en = await traduireFRversEN(m); if (en !== m) { let p = extraireSection(contenu, en); if (p) return await traduireENversFR(p); } } catch(e) {}
+            
+            for (let m of mots) { 
+                let p = extraireSection(contenu, m); 
+                if (p) return await traduireENversFR(p); 
             }
-            const titres = collecterTitres(contenu);
-            if (titres.length) { afficherSuggestionsTitres(titres); return `Je n'ai pas trouvé de réponse pour "${msg}". Voici quelques sujets que je connais :`; }
-            return `Je n'ai pas trouvé d'information pour "${msg}".`;
+            
+            for (let m of mots) {
+                try { 
+                    const en = await traduireFRversEN(m); 
+                    if (en !== m) { 
+                        let p = extraireSection(contenu, en); 
+                        if (p) return await traduireENversFR(p); 
+                    }                 } catch(e) {}
+            }
+            
+            // Suggestions aléatoires avec traduction FR
+            await afficherSuggestionsAleatoires(contenu);
+            return `Je n'ai pas trouvé de réponse exacte pour "${msg}". Voici quelques sujets disponibles dans ce mode :`;
         }
 
         function sauvegarderHistorique() {
@@ -779,47 +671,31 @@
             document.title = `Petio - ${nomBot}`;
         }
 
-        // ---------- DÉCONNEXION COMPLÈTE ----------
         function deconnexionComplete() {
             localStorage.removeItem('pierre_bot_access');
-            localStorage.removeItem('chatHistory');            localStorage.removeItem('petio_procedure_unlocked');
+            localStorage.removeItem('chatHistory');
+            localStorage.removeItem('petio_procedure_unlocked');
             window.location.reload();
         }
 
-        // ---------- GESTION DU DÉBLOCAGE PROCÉDURE ----------
         const UNLOCK_STORAGE_KEY = 'petio_procedure_unlocked';
         let unlockModal = document.getElementById('unlock-modal');
         let stepCode = document.getElementById('unlock-step-code');
         let stepPayment = document.getElementById('unlock-step-payment');
 
-        function isProcedureUnlocked() {
-            return localStorage.getItem(UNLOCK_STORAGE_KEY) === 'true';
-        }
-
-        function setProcedureUnlocked() {
-            localStorage.setItem(UNLOCK_STORAGE_KEY, 'true');
-        }
-
-        function showUnlockModal() {
-            stepCode.classList.add('active');
-            stepPayment.classList.remove('active');
+        function isProcedureUnlocked() { return localStorage.getItem(UNLOCK_STORAGE_KEY) === 'true'; }
+        function setProcedureUnlocked() { localStorage.setItem(UNLOCK_STORAGE_KEY, 'true'); }        function showUnlockModal() {
+            stepCode.classList.add('active'); stepPayment.classList.remove('active');
             document.getElementById('unlock-code-input').value = '';
             unlockModal.classList.add('show');
         }
-
-        window.closeUnlockModal = function() {
-            unlockModal.classList.remove('show');
-        };
+        window.closeUnlockModal = function() { unlockModal.classList.remove('show'); };
 
         window.contacterAdmin = function(context) {
             let message = "Bonjour, je souhaite débloquer l'accès au mode Procédure.";
-            if (context === 'payment') {
-                message = "Bonjour, le code saisi est invalide. Je souhaite obtenir un accès au mode Procédure.";
-            } else if (context === 'vip') {
-                message = "Bonjour, je souhaite obtenir un accès VIP pour Petio.";
-            }
-            const url = `https://wa.me/qr/UWYBOFF7GXRSB1?text=${encodeURIComponent(message)}`;
-            window.open(url, '_blank');
+            if (context === 'payment') message = "Bonjour, le code saisi est invalide. Je souhaite obtenir un accès au mode Procédure.";
+            else if (context === 'vip') message = "Bonjour, je souhaite obtenir un accès VIP pour Petio.";
+            window.open(`https://wa.me/qr/UWYBOFF7GXRSB1?text=${encodeURIComponent(message)}`, '_blank');
         };
 
         async function verifierCodeAcces() {
@@ -827,16 +703,13 @@
             const email = localStorage.getItem('userEmail') || '';
             if (!code) { afficherErreur("Veuillez saisir un code."); return; }
             if (!email) { afficherErreur("Email utilisateur introuvable. Reconnectez-vous."); return; }
-
             try {
                 const res = await fetch(`${URL_GAS}?action=checkProcedureCode&email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}`);
                 const result = await res.text();
-                if (result.trim() === "VALIDE") {                    setProcedureUnlocked();
-                    closeUnlockModal();
-                    await activerModeProcedure();
+                if (result.trim() === "VALIDE") {
+                    setProcedureUnlocked(); closeUnlockModal(); await activerModeProcedure();
                 } else {
-                    stepCode.classList.remove('active');
-                    stepPayment.classList.add('active');
+                    stepCode.classList.remove('active'); stepPayment.classList.add('active');
                 }
             } catch (e) { afficherErreur("Erreur réseau. Veuillez réessayer."); }
         }
@@ -844,34 +717,25 @@
         async function activerModeProcedure() {
             modeActuel = 'Procedure';
             document.getElementById('modeText').textContent = `🤖 MODE: PROCEDURE`;
-            closeMenu();
-            afficherMessage(`✅ Mode changé : Procedure`, 'bot');
+            closeMenu(); afficherMessage(`✅ Mode changé : Procedure`, 'bot');
         }
 
-        // Surcharge de changerMode
         const changerModeOriginal = async function(n) {
             if (!await chargerFichiersMode(n)) { afficherErreur(`Mode ${n} sans fichier`); return; }
             modeActuel = n;
             document.getElementById('modeText').textContent = `🤖 MODE: ${n.toUpperCase()}`;
-            closeMenu();
-            afficherMessage(`✅ Mode changé : ${n}`, 'bot');
+            closeMenu(); afficherMessage(`✅ Mode changé : ${n}`, 'bot');
         };
 
         window.changerMode = async function(n) {
             if (n === 'Procedure') {
-                if (isProcedureUnlocked()) {
-                    await changerModeOriginal(n);
-                } else {
-                    showUnlockModal();
-                }
+                if (isProcedureUnlocked()) await changerModeOriginal(n);
+                else showUnlockModal();
             } else {
                 await changerModeOriginal(n);
-            }
-        };
-
+            }        };
         window.verifierCodeAcces = verifierCodeAcces;
 
-        // Initialisation
         window.addEventListener('DOMContentLoaded', async () => {
             loadStatus.style.display = 'block';
             const contenu = await chargerFichiersMode('Cerveau');
@@ -880,6 +744,7 @@
             setTimeout(() => loadStatus.style.display = 'none', 2000);
             initApp();
         });
+
         function initApp() {
             mettreAJourNomBot();
             if (localStorage.getItem('pierre_bot_access') === 'true') { showPage('robot'); chargerHistorique(); }
@@ -894,6 +759,7 @@
         function openSettings() { document.getElementById('settingsPage').classList.add('open'); }
         function closeSettings() { document.getElementById('settingsPage').classList.remove('open'); }
         async function resetMode() { await changerMode('Cerveau'); }
+        
         async function verifierAcces() {
             const email = document.getElementById('userEmail').value.trim(), code = document.getElementById('userCode').value.trim(), btn = document.getElementById('btnValid');
             if (!email || !code) { afficherErreur("Champs obligatoires."); return; }
@@ -903,24 +769,20 @@
                 if (!r.ok) throw new Error(`Erreur ${r.status}`);
                 const result = await r.text();
                 if (result.trim() === "VALIDE") { 
-                    localStorage.setItem('pierre_bot_access', 'true');
-                    localStorage.setItem('userEmail', email);
-                    showPage('robot'); 
-                    chargerHistorique();
-                } else { 
-                    openPay(); 
-                }
+                    localStorage.setItem('pierre_bot_access', 'true'); localStorage.setItem('userEmail', email);
+                    showPage('robot'); chargerHistorique();
+                } else { openPay(); }
             } catch(e) { afficherErreur("Erreur réseau."); }
             finally { btn.disabled = false; btn.innerText = "Valider"; }
         }
+
         function openPay() { document.getElementById('pay-sheet').classList.add('show'); document.getElementById('overlay').classList.add('show'); }
         function closePay() { document.getElementById('pay-sheet').classList.remove('show'); document.getElementById('overlay').classList.remove('show'); }
         function afficherErreur(msg) { const p = document.getElementById('error-popup'); document.getElementById('error-msg').innerText = msg; p.classList.add('show'); setTimeout(() => p.classList.remove('show'), 4000); }
         function toggleTheme() { document.body.classList.toggle('dark-theme'); const i = document.getElementById('themeIcon'); i.className = document.body.classList.contains('dark-theme') ? 'ph ph-sun' : 'ph ph-moon'; localStorage.setItem('theme', document.body.classList.contains('dark-theme') ? 'dark' : 'light'); }
         function copierMessage(btn) {
             const txt = btn.closest('.message').querySelector('.message-text').textContent.trim();
-            navigator.clipboard.writeText(txt).then(() => {
-                btn.innerHTML = '<i class="ph-fill ph-check"></i>'; btn.classList.add('copied');
+            navigator.clipboard.writeText(txt).then(() => {                btn.innerHTML = '<i class="ph-fill ph-check"></i>'; btn.classList.add('copied');
                 setTimeout(() => { btn.innerHTML = '<i class="ph ph-copy"></i>'; btn.classList.remove('copied'); }, 2000);
             }).catch(() => {});
         }
@@ -929,7 +791,8 @@
             const msg = textarea.value.trim(); if (!msg) return;
             suggestionsContainer.classList.remove('show');
             afficherMessage(msg, 'user'); resetInputBar();
-            document.getElementById('typing').classList.add('show');            try {
+            document.getElementById('typing').classList.add('show');
+            try {
                 const rep = await rechercherDansFichiers(modeActuel, msg);
                 document.getElementById('typing').classList.remove('show');
                 afficherMessage(rep, 'bot');
@@ -940,22 +803,13 @@
         }
         textarea.addEventListener('keypress', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); envoyerMessage(); } });
 
-        // Expositions globales
-        window.verifierAcces = verifierAcces;
-        window.openPay = openPay;
-        window.closePay = closePay;
-        window.toggleTheme = toggleTheme;
-        window.handleInput = handleInput;
-        window.toggleMenu = toggleMenu;
-        window.closeMenu = closeMenu;
-        window.openSettings = openSettings;
-        window.closeSettings = closeSettings;
-        window.resetMode = resetMode;
-        window.envoyerMessage = envoyerMessage;
-        window.copierMessage = copierMessage;
-        window.contacterAdmin = contacterAdmin;
-        window.verifierCodeAcces = verifierCodeAcces;
+        window.verifierAcces = verifierAcces; window.openPay = openPay; window.closePay = closePay;
+        window.toggleTheme = toggleTheme; window.handleInput = handleInput; window.toggleMenu = toggleMenu;
+        window.closeMenu = closeMenu; window.openSettings = openSettings; window.closeSettings = closeSettings;
+        window.resetMode = resetMode; window.envoyerMessage = envoyerMessage; window.copierMessage = copierMessage;
+        window.contacterAdmin = contacterAdmin; window.verifierCodeAcces = verifierCodeAcces;
         window.deconnexionComplete = deconnexionComplete;
+        window.toggleSettingDesc = toggleSettingDesc;
     })();
 </script>
 </body>
