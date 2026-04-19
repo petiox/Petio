@@ -11,7 +11,7 @@
     <link rel="apple-touch-icon" sizes="180x180" href="https://i.ibb.co/zVsc6LDk/62943fce33c7f18d50a127290140782f.jpg">
     
     <!-- PWA - Manifest -->
-    <link rel="manifest" href="application/manifest+json,{{MANIFEST}}">
+    <link rel="manifest" href="data:application/manifest+json,{{MANIFEST}}">
     <link rel="icon" type="image/jpeg" href="https://i.ibb.co/zVsc6LDk/62943fce33c7f18d50a127290140782f.jpg">
     
     <title>Petio - Assistant</title>
@@ -215,7 +215,17 @@
         #pwa-install-sheet.show { top: 0; }
         .pwa-sheet-header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
         .pwa-sheet-header i { font-size: 40px; color: var(--accent); }
-        .install-btn-top { background: var(--accent); color: white; border: none; padding: 8px 16px; border-radius: 30px; font-weight: 700; font-size: 14px; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; margin-left: auto; }
+        /* Bouton Installer ajusté - bleu juste autour du texte */
+        .install-btn-top { 
+            background: var(--accent); color: white; border: none; 
+            padding: 6px 14px; /* Réduit pour ajuster au texte */
+            border-radius: 20px; 
+            font-weight: 700; font-size: 13px;
+            display: inline-flex; align-items: center; gap: 4px; 
+            cursor: pointer; margin-left: auto; 
+            box-shadow: none; /* Enlève l'ombre/contour bleu excessif */
+        }
+        .install-btn-top:active { transform: scale(0.95); opacity: 0.9; }
         .pwa-steps { margin: 20px 0; }
         .pwa-step { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; font-weight: 700; }
         .pwa-close-btn { background: transparent; border: 1px solid var(--border); color: var(--text); padding: 12px; border-radius: 14px; width: 100%; cursor: pointer; font-weight: 700; }
@@ -233,8 +243,7 @@
         .unlock-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         .unlock-secondary { background: transparent; border: 1px solid var(--border); color: var(--text); }
         .error-message { color: #ff3b30; background: rgba(255,59,48,0.1); padding: 15px; border-radius: 14px; margin-bottom: 20px; text-align: center; font-weight: 700; }
-    </style>
-</head>
+    </style></head>
 <body>
 
 <div id="load-status">Chargement des connaissances...</div>
@@ -243,7 +252,8 @@
 
 <div id="pay-sheet">
     <h2>Accès VIP Requis</h2>
-    <p>Aucun abonnement trouvé pour ces informations.</p>    <a href="https://my.moneyfusion.net/69dfaeb42819ad4c3a7fc265" class="btn-pay">Débloquer l'accès (500 XOF)</a>
+    <p>Aucun abonnement trouvé pour ces informations.</p>
+    <a href="https://my.moneyfusion.net/69dfaeb42819ad4c3a7fc265" class="btn-pay">Débloquer l'accès (500 XOF)</a>
     <button class="contact-admin-btn" onclick="contacterAdmin('vip')">Contacter l'admin</button>
     <p class="close-link" onclick="closePay()">Fermer</p>
 </div>
@@ -252,7 +262,9 @@
     <div class="pwa-sheet-header">
         <i class="ph ph-device-mobile"></i>
         <h3 style="margin:0;">Installer Petio</h3>
-        <button class="install-btn-top" id="forceInstallBtn"><i class="ph ph-download-simple"></i> Installer</button>
+        <button class="install-btn-top" id="forceInstallBtn">
+            <i class="ph ph-download-simple"></i> Installer
+        </button>
     </div>
     <div class="pwa-steps">
         <div class="pwa-step"><i class="ph ph-android-logo"></i><span><strong>Android</strong> : appuyez sur "Installer" ou menu → "Ajouter à l'écran d'accueil".</span></div>
@@ -280,8 +292,7 @@
     </div>
     <div id="unlock-step-code" class="unlock-step active">
         <p style="margin-bottom: 15px;">Entrez le code reçu après paiement :</p>
-        <input type="text" id="unlock-code-input" class="unlock-input" placeholder="Code d'accès">
-        <button class="unlock-btn" onclick="verifierCodeAcces()">Valider</button>
+        <input type="text" id="unlock-code-input" class="unlock-input" placeholder="Code d'accès">        <button class="unlock-btn" onclick="verifierCodeAcces()">Valider</button>
         <button class="unlock-btn unlock-secondary" onclick="contacterAdmin('code')">Contacter l'admin</button>
     </div>
     <div id="unlock-step-payment" class="unlock-step">
@@ -292,6 +303,7 @@
         <button class="unlock-btn unlock-secondary" onclick="contacterAdmin('payment')">Contacter l'admin</button>
     </div>
 </div>
+
 <div id="page-auth" class="page active">
     <div class="auth-container">
         <div class="auth-content">
@@ -329,8 +341,7 @@
         </div>
 
         <div class="settings-page" id="settingsPage">
-            <div class="settings-header">
-                <div class="header-btn" style="color:var(--text)" onclick="closeSettings()"><i class="ph ph-caret-left"></i></div>
+            <div class="settings-header">                <div class="header-btn" style="color:var(--text)" onclick="closeSettings()"><i class="ph ph-caret-left"></i></div>
                 <span style="font-weight:700; color:var(--text)">Paramètres</span>
             </div>
             <div class="settings-content">
@@ -341,7 +352,8 @@
                 <div class="setting-item" onclick="afficherBanniereInstallation()">
                     <div class="setting-main"><i class="setting-icon ph ph-device-mobile"></i><span>Installer l'application</span></div>
                     <div class="setting-desc">Ajouter Petio à l'écran d'accueil.</div>
-                </div>                <div class="setting-item" onclick="window.open('https://wa.me/qr/UWYBOFF7GXRSB1', '_blank')">
+                </div>
+                <div class="setting-item" onclick="window.open('https://wa.me/12496806826', '_blank')">
                     <div class="setting-main"><i class="setting-icon ph ph-whatsapp-logo"></i><span>Contact</span></div>
                     <div class="setting-desc">Besoin d'aide ? Écrivez-nous sur WhatsApp.</div>
                 </div>
@@ -378,8 +390,7 @@
             <div class="menu-row" onclick="changerMode('Procedure')"><div class="menu-item"><i class="ph-fill ph-folder-open"></i></div><span class="menu-label">2 Procédure</span></div>
             <div class="menu-row" onclick="changerMode('Novice')"><div class="menu-item"><i class="ph-fill ph-folder-open"></i></div><span class="menu-label">1 Novice</span></div>
         </div>
-        <div class="input-bar">
-            <div class="btn-plus" id="btnPlus" onclick="toggleMenu(event)"><i class="ph ph-plus-circle"></i></div>
+        <div class="input-bar">            <div class="btn-plus" id="btnPlus" onclick="toggleMenu(event)"><i class="ph ph-plus-circle"></i></div>
             <div class="input-container"><textarea id="userInput" placeholder="Message..." rows="1" oninput="handleInput(this)"></textarea></div>
             <div class="btn-send" id="btnSend" onclick="envoyerMessage()"><i class="ph-fill ph-paper-plane-right"></i></div>
         </div>
@@ -388,47 +399,99 @@
 
 <script>
     (function(){
-        // ==================== PWA ====================
+        // ==================== PWA MANIFEST ====================
         const MANIFEST_DATA = {
-            name: "Petio Assistant", short_name: "Petio", description: "Assistant intelligent",            start_url: ".", display: "standalone", background_color: "#ffffff", theme_color: "#007aff",
-            icons: [{ src: "https://i.ibb.co/zVsc6LDk/62943fce33c7f18d50a127290140782f.jpg", sizes: "512x512", type: "image/jpeg" }]
+            name: "Petio Assistant",
+            short_name: "Petio",
+            description: "Assistant intelligent local",
+            start_url: ".",
+            display: "standalone",
+            background_color: "#ffffff",
+            theme_color: "#007aff",
+            icons: [
+                { src: "https://i.ibb.co/zVsc6LDk/62943fce33c7f18d50a127290140782f.jpg", sizes: "512x512", type: "image/jpeg", purpose: "any maskable" }
+            ]
         };
         const manifestBlob = new Blob([JSON.stringify(MANIFEST_DATA)], {type: 'application/manifest+json'});
-        document.querySelector('link[rel="manifest"]').href = URL.createObjectURL(manifestBlob);
+        const manifestURL = URL.createObjectURL(manifestBlob);
+        document.querySelector('link[rel="manifest"]').href = manifestURL;
 
+        // ==================== SERVICE WORKER ====================
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register(URL.createObjectURL(new Blob([`
-                    const CACHE_NAME = 'petio-final';
-                    self.addEventListener('install', e => e.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(['.', 'https://unpkg.com/@phosphor-icons/web@2.1.1', 'https://i.ibb.co/zVsc6LDk/62943fce33c7f18d50a127290140782f.jpg']))));
-                    self.addEventListener('fetch', e => e.respondWith(caches.match(e.request).then(r => r || fetch(e.request))));
-                `], {type: 'application/javascript'})));
+                const swCode = `
+                    const CACHE_NAME = 'petio-v1';
+                    const ASSETS = ['.', 'https://unpkg.com/@phosphor-icons/web@2.1.1', 'https://i.ibb.co/zVsc6LDk/62943fce33c7f18d50a127290140782f.jpg'];
+                    
+                    self.addEventListener('install', e => {
+                        e.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS)));
+                        self.skipWaiting();
+                    });
+                    
+                    self.addEventListener('activate', e => {
+                        e.waitUntil(clients.claim());
+                    });
+                    
+                    self.addEventListener('fetch', e => {
+                        e.respondWith(
+                            caches.match(e.request).then(res => res || fetch(e.request).catch(() => caches.match('.')))
+                        );
+                    });
+                `;
+                const swBlob = new Blob([swCode], {type: 'application/javascript'});
+                const swURL = URL.createObjectURL(swBlob);                navigator.serviceWorker.register(swURL).catch(err => console.log('SW registration failed:', err));
             });
         }
 
-        let deferredPrompt;
+        // ==================== INSTALL PWA ====================
+        let deferredPrompt = null;
         const installSheet = document.getElementById('pwa-install-sheet');
         const forceInstallBtn = document.getElementById('forceInstallBtn');
-        window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; });
+        
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+        });
+        
         forceInstallBtn.addEventListener('click', async () => {
-            if (deferredPrompt) { deferredPrompt.prompt(); await deferredPrompt.userChoice; deferredPrompt = null; }
-            else alert('Installation non disponible. Suivez les instructions iOS.');
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                console.log('Installation outcome:', outcome);
+                deferredPrompt = null;
+            } else {
+                // Fallback pour iOS
+                alert('Pour installer Petio sur iOS : Appuyez sur Partager → "Sur l\'écran d\'accueil"');
+            }
             installSheet.classList.remove('show');
         });
-        window.afficherBanniereInstallation = function() { closeSettings(); installSheet.classList.add('show'); };
-
-        // ==================== MODAL NOM ====================
-        window.openNameModal = function() { closeSettings(); document.getElementById('newBotNameInput').value = nomBot; document.getElementById('nameModal').classList.add('show'); };
-        window.closeNameModal = function() { document.getElementById('nameModal').classList.remove('show'); };
-        window.confirmChangeName = function() {
-            const n = document.getElementById('newBotNameInput').value.trim();
-            if (n) { nomBot = n; localStorage.setItem('botName', nomBot); mettreAJourNomBot(); afficherMessage(`✨ Assistant renommé en "${nomBot}".`, 'bot'); }
-            closeNameModal();
+        
+        window.afficherBanniereInstallation = function() { 
+            closeSettings(); 
+            installSheet.classList.add('show'); 
         };
 
-        // ==================== GESTION DES DESCRIPTIONS PARAMÈTRES (une seule ouverte à la fois) ====================
+        // ==================== MODAL NOM ====================
+        window.openNameModal = function() { 
+            closeSettings(); 
+            document.getElementById('newBotNameInput').value = nomBot; 
+            document.getElementById('nameModal').classList.add('show'); 
+        };
+        window.closeNameModal = function() { 
+            document.getElementById('nameModal').classList.remove('show'); 
+        };
+        window.confirmChangeName = function() {
+            const n = document.getElementById('newBotNameInput').value.trim();
+            if (n) { 
+                nomBot = n; 
+                localStorage.setItem('botName', nomBot); 
+                mettreAJourNomBot(); 
+                afficherMessage(`✨ Assistant renommé en "${nomBot}".`, 'bot'); 
+            }
+            closeNameModal();        };
+
+        // ==================== GESTION DES DESCRIPTIONS PARAMÈTRES ====================
         function toggleSettingDesc(id) {
-            // Fermer toutes les autres descriptions
             ['faq', 'cgu', 'confidentialite', 'apropos'].forEach(key => {
                 if (key !== id) {
                     const desc = document.getElementById(key + '-desc');
@@ -437,9 +500,9 @@
                     }
                 }
             });
-            // Toggle la description cliquée
             const clicked = document.getElementById(id + '-desc');
-            if (clicked) {                clicked.parentElement.classList.toggle('active');
+            if (clicked) {
+                clicked.parentElement.classList.toggle('active');
             }
         }
 
@@ -458,18 +521,23 @@
         const cacheFichiers = {};
         const SUGGESTION_PARAGRAPHS = new Map();
 
-        // Traduction Google (EN → FR)
+        // Traduction Google
         async function traduireGoogle(texte, source, cible) {
             if (!texte) return '';
             const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${source}&tl=${cible}&dt=t&q=${encodeURIComponent(texte)}`;
-            try { const r = await fetch(url); const d = await r.json(); return d[0].map(p => p[0]).join(''); } catch (e) { return texte; }
+            try { 
+                const r = await fetch(url); 
+                const d = await r.json(); 
+                return d[0].map(p => p[0]).join(''); 
+            } catch (e) { 
+                return texte; 
+            }
         }
         async function traduireENversFR(t) { return traduireGoogle(t, 'en', 'fr'); }
         async function traduireFRversEN(t) { return traduireGoogle(t, 'fr', 'en'); }
 
         // Chargement des fichiers d'un mode
-        async function chargerFichiersMode(mode) {
-            if (cacheFichiers[mode]) return cacheFichiers[mode];
+        async function chargerFichiersMode(mode) {            if (cacheFichiers[mode]) return cacheFichiers[mode];
             let contenu = '';
             const base = mode.toLowerCase();
             
@@ -488,7 +556,8 @@
                 let i = 1;
                 let consecutiveFails = 0;
                 while (i <= 500) {
-                    const url = motif(i);                    try {
+                    const url = motif(i);
+                    try {
                         const r = await fetch(url);
                         if (r.ok) {
                             contenu += await r.text() + '\n';
@@ -517,8 +586,7 @@
             if (l === l.toUpperCase() && l.length > 2) return true;
             if (/^\d+[\.\)_\-]\s*.+/.test(l)) return true;
             if (/^page(s)?\s*\d+/i.test(l)) return true;
-            return false;
-        }
+            return false;        }
 
         function extraireSection(contenu, mot) {
             const lignes = contenu.split('\n');
@@ -538,7 +606,8 @@
             }
             return null;
         }
-        // Suggestions aléatoires avec paragraphes complets + traduction FR
+
+        // Suggestions aléatoires avec traduction FR
         function afficherSuggestionsAleatoires(contenu) {
             const paragraphs = contenu.split(/\n\s*\n/).filter(p => p.trim().length > 50);
             SUGGESTION_PARAGRAPHS.clear();
@@ -550,7 +619,6 @@
                 const words = para.trim().split(/\s+/);
                 const preview = words.slice(0, 4).join(' ') + '...';
                 
-                // Traduire l'aperçu en français avant affichage
                 const previewFR = await traduireENversFR(preview);
                 const fullTextFR = await traduireENversFR(para.trim());
                 
@@ -567,8 +635,7 @@
                         afficherMessage(fullText, 'bot');
                         suggestionsContainer.classList.remove('show');
                     }
-                };
-                
+                };                
                 suggestionsScroll.appendChild(chip);
             });
             suggestionsContainer.classList.add('show');
@@ -586,7 +653,8 @@
             const copyBtn = document.createElement('button'); copyBtn.className = 'btn-copy';
             copyBtn.innerHTML = '<i class="ph ph-copy"></i>'; copyBtn.onclick = () => copierMessage(copyBtn);
             b.appendChild(span); b.appendChild(copyBtn);
-            c.appendChild(b);            let i = 0; const speed = 30;
+            c.appendChild(b);
+            let i = 0; const speed = 30;
             const texteAvecLiens = lierUrls(texte);
             function type() {
                 if (i < texte.length) {
@@ -613,11 +681,9 @@
         }
 
         async function afficherMessage(texte, type, skipSave = false) {
-            // Traduire en français si nécessaire avant affichage
             const texteFR = await traduireENversFR(texte);
             return type === 'bot' ? afficherMessageBot(texteFR, skipSave) : afficherMessageUser(texteFR, skipSave);
         }
-
         async function rechercherDansFichiers(mode, msg) {
             const contenu = await chargerFichiersMode(mode);
             if (!contenu) return `Désolé, la base du mode ${mode} est vide.`;
@@ -635,10 +701,10 @@
                     if (en !== m) { 
                         let p = extraireSection(contenu, en); 
                         if (p) return await traduireENversFR(p); 
-                    }                 } catch(e) {}
+                    } 
+                } catch(e) {}
             }
             
-            // Suggestions aléatoires avec traduction FR
             await afficherSuggestionsAleatoires(contenu);
             return `Je n'ai pas trouvé de réponse exacte pour "${msg}". Voici quelques sujets disponibles dans ce mode :`;
         }
@@ -667,8 +733,7 @@
 
         function mettreAJourNomBot() {
             document.getElementById('typingName').textContent = nomBot;
-            document.getElementById('currentBotName').textContent = nomBot;
-            document.title = `Petio - ${nomBot}`;
+            document.getElementById('currentBotName').textContent = nomBot;            document.title = `Petio - ${nomBot}`;
         }
 
         function deconnexionComplete() {
@@ -684,25 +749,40 @@
         let stepPayment = document.getElementById('unlock-step-payment');
 
         function isProcedureUnlocked() { return localStorage.getItem(UNLOCK_STORAGE_KEY) === 'true'; }
-        function setProcedureUnlocked() { localStorage.setItem(UNLOCK_STORAGE_KEY, 'true'); }        function showUnlockModal() {
+        function setProcedureUnlocked() { localStorage.setItem(UNLOCK_STORAGE_KEY, 'true'); }
+        function showUnlockModal() {
             stepCode.classList.add('active'); stepPayment.classList.remove('active');
             document.getElementById('unlock-code-input').value = '';
             unlockModal.classList.add('show');
         }
         window.closeUnlockModal = function() { unlockModal.classList.remove('show'); };
 
+        // ==================== WHATSAPP LINK - CORRIGÉ ====================
         window.contacterAdmin = function(context) {
-            let message = "Bonjour, je souhaite débloquer l'accès au mode Procédure.";
-            if (context === 'payment') message = "Bonjour, le code saisi est invalide. Je souhaite obtenir un accès au mode Procédure.";
-            else if (context === 'vip') message = "Bonjour, je souhaite obtenir un accès VIP pour Petio.";
-            window.open(`https://wa.me/qr/UWYBOFF7GXRSB1?text=${encodeURIComponent(message)}`, '_blank');
+            const phoneNumber = "12496806826";
+            let message = "Bonjour, je contacte l'administrateur de Petio.";
+            
+            switch(context) {
+                case 'vip':
+                    message = "Bonjour, je souhaite obtenir un accès VIP pour Petio.";
+                    break;
+                case 'payment':
+                    message = "Bonjour, le code saisi est invalide. Je souhaite obtenir un accès au mode Procédure.";
+                    break;
+                case 'code':
+                    message = "Bonjour, j'ai un problème avec le code d'accès Procédure.";
+                    break;
+            }
+            
+            const encodedMessage = encodeURIComponent(message);
+            const url = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+            window.open(url, '_blank', 'noopener,noreferrer');
         };
 
         async function verifierCodeAcces() {
             const code = document.getElementById('unlock-code-input').value.trim();
             const email = localStorage.getItem('userEmail') || '';
-            if (!code) { afficherErreur("Veuillez saisir un code."); return; }
-            if (!email) { afficherErreur("Email utilisateur introuvable. Reconnectez-vous."); return; }
+            if (!code) { afficherErreur("Veuillez saisir un code."); return; }            if (!email) { afficherErreur("Email utilisateur introuvable. Reconnectez-vous."); return; }
             try {
                 const res = await fetch(`${URL_GAS}?action=checkProcedureCode&email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}`);
                 const result = await res.text();
@@ -733,9 +813,11 @@
                 else showUnlockModal();
             } else {
                 await changerModeOriginal(n);
-            }        };
+            }
+        };
         window.verifierCodeAcces = verifierCodeAcces;
 
+        // Initialisation
         window.addEventListener('DOMContentLoaded', async () => {
             loadStatus.style.display = 'block';
             const contenu = await chargerFichiersMode('Cerveau');
@@ -750,40 +832,96 @@
             if (localStorage.getItem('pierre_bot_access') === 'true') { showPage('robot'); chargerHistorique(); }
             if (localStorage.getItem('theme') === 'dark') { document.body.classList.add('dark-theme'); document.getElementById('themeIcon').className = 'ph ph-sun'; }
         }
-
-        function showPage(n) { document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); document.getElementById(`page-${n}`).classList.add('active'); if (n==='robot') setTimeout(() => textarea.focus(), 100); }
-        function handleInput(el) { el.style.height = 'auto'; el.style.height = (el.scrollHeight > 40 ? el.scrollHeight : 'auto') + 'px'; const v = !!el.value.trim(); btnSend.classList.toggle('show', v); btnPlus.classList.toggle('hidden', v); }
-        function resetInputBar() { textarea.value = ''; handleInput(textarea); textarea.focus(); }
-        function toggleMenu(e) { e.stopPropagation(); menu.classList.toggle('show'); }
-        function closeMenu() { menu.classList.remove('show'); suggestionsContainer.classList.remove('show'); }
-        function openSettings() { document.getElementById('settingsPage').classList.add('open'); }
-        function closeSettings() { document.getElementById('settingsPage').classList.remove('open'); }
+        function showPage(n) { 
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); 
+            document.getElementById(`page-${n}`).classList.add('active'); 
+            if (n==='robot') setTimeout(() => textarea.focus(), 100); 
+        }
+        
+        function handleInput(el) { 
+            el.style.height = 'auto'; 
+            el.style.height = (el.scrollHeight > 40 ? el.scrollHeight : 'auto') + 'px'; 
+            const v = !!el.value.trim(); 
+            btnSend.classList.toggle('show', v); 
+            btnPlus.classList.toggle('hidden', v); 
+        }
+        
+        function resetInputBar() { 
+            textarea.value = ''; 
+            handleInput(textarea); 
+            textarea.focus(); 
+        }
+        
+        function toggleMenu(e) { 
+            e.stopPropagation(); 
+            menu.classList.toggle('show'); 
+        }
+        
+        function closeMenu() { 
+            menu.classList.remove('show'); 
+            suggestionsContainer.classList.remove('show'); 
+        }
+        
+        function openSettings() { 
+            document.getElementById('settingsPage').classList.add('open'); 
+        }
+        
+        function closeSettings() { 
+            document.getElementById('settingsPage').classList.remove('open'); 
+        }
+        
         async function resetMode() { await changerMode('Cerveau'); }
         
         async function verifierAcces() {
-            const email = document.getElementById('userEmail').value.trim(), code = document.getElementById('userCode').value.trim(), btn = document.getElementById('btnValid');
+            const email = document.getElementById('userEmail').value.trim(), 
+                  code = document.getElementById('userCode').value.trim(), 
+                  btn = document.getElementById('btnValid');
             if (!email || !code) { afficherErreur("Champs obligatoires."); return; }
             btn.disabled = true; btn.innerText = "Vérification...";
             try {
                 const r = await fetch(`${URL_GAS}?action=verif&email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}`);
-                if (!r.ok) throw new Error(`Erreur ${r.status}`);
-                const result = await r.text();
+                if (!r.ok) throw new Error(`Erreur ${r.status}`);                const result = await r.text();
                 if (result.trim() === "VALIDE") { 
-                    localStorage.setItem('pierre_bot_access', 'true'); localStorage.setItem('userEmail', email);
-                    showPage('robot'); chargerHistorique();
-                } else { openPay(); }
+                    localStorage.setItem('pierre_bot_access', 'true'); 
+                    localStorage.setItem('userEmail', email);
+                    showPage('robot'); 
+                    chargerHistorique();
+                } else { 
+                    openPay(); 
+                }
             } catch(e) { afficherErreur("Erreur réseau."); }
             finally { btn.disabled = false; btn.innerText = "Valider"; }
         }
 
-        function openPay() { document.getElementById('pay-sheet').classList.add('show'); document.getElementById('overlay').classList.add('show'); }
-        function closePay() { document.getElementById('pay-sheet').classList.remove('show'); document.getElementById('overlay').classList.remove('show'); }
-        function afficherErreur(msg) { const p = document.getElementById('error-popup'); document.getElementById('error-msg').innerText = msg; p.classList.add('show'); setTimeout(() => p.classList.remove('show'), 4000); }
-        function toggleTheme() { document.body.classList.toggle('dark-theme'); const i = document.getElementById('themeIcon'); i.className = document.body.classList.contains('dark-theme') ? 'ph ph-sun' : 'ph ph-moon'; localStorage.setItem('theme', document.body.classList.contains('dark-theme') ? 'dark' : 'light'); }
+        function openPay() { 
+            document.getElementById('pay-sheet').classList.add('show'); 
+            document.getElementById('overlay').classList.add('show'); 
+        }
+        function closePay() { 
+            document.getElementById('pay-sheet').classList.remove('show'); 
+            document.getElementById('overlay').classList.remove('show'); 
+        }
+        function afficherErreur(msg) { 
+            const p = document.getElementById('error-popup'); 
+            document.getElementById('error-msg').innerText = msg; 
+            p.classList.add('show'); 
+            setTimeout(() => p.classList.remove('show'), 4000); 
+        }
+        function toggleTheme() { 
+            document.body.classList.toggle('dark-theme'); 
+            const i = document.getElementById('themeIcon'); 
+            i.className = document.body.classList.contains('dark-theme') ? 'ph ph-sun' : 'ph ph-moon'; 
+            localStorage.setItem('theme', document.body.classList.contains('dark-theme') ? 'dark' : 'light'); 
+        }
         function copierMessage(btn) {
             const txt = btn.closest('.message').querySelector('.message-text').textContent.trim();
-            navigator.clipboard.writeText(txt).then(() => {                btn.innerHTML = '<i class="ph-fill ph-check"></i>'; btn.classList.add('copied');
-                setTimeout(() => { btn.innerHTML = '<i class="ph ph-copy"></i>'; btn.classList.remove('copied'); }, 2000);
+            navigator.clipboard.writeText(txt).then(() => {
+                btn.innerHTML = '<i class="ph-fill ph-check"></i>'; 
+                btn.classList.add('copied');
+                setTimeout(() => { 
+                    btn.innerHTML = '<i class="ph ph-copy"></i>'; 
+                    btn.classList.remove('copied'); 
+                }, 2000);
             }).catch(() => {});
         }
 
@@ -791,8 +929,7 @@
             const msg = textarea.value.trim(); if (!msg) return;
             suggestionsContainer.classList.remove('show');
             afficherMessage(msg, 'user'); resetInputBar();
-            document.getElementById('typing').classList.add('show');
-            try {
+            document.getElementById('typing').classList.add('show');            try {
                 const rep = await rechercherDansFichiers(modeActuel, msg);
                 document.getElementById('typing').classList.remove('show');
                 afficherMessage(rep, 'bot');
@@ -803,11 +940,21 @@
         }
         textarea.addEventListener('keypress', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); envoyerMessage(); } });
 
-        window.verifierAcces = verifierAcces; window.openPay = openPay; window.closePay = closePay;
-        window.toggleTheme = toggleTheme; window.handleInput = handleInput; window.toggleMenu = toggleMenu;
-        window.closeMenu = closeMenu; window.openSettings = openSettings; window.closeSettings = closeSettings;
-        window.resetMode = resetMode; window.envoyerMessage = envoyerMessage; window.copierMessage = copierMessage;
-        window.contacterAdmin = contacterAdmin; window.verifierCodeAcces = verifierCodeAcces;
+        // Expositions globales
+        window.verifierAcces = verifierAcces; 
+        window.openPay = openPay; 
+        window.closePay = closePay;
+        window.toggleTheme = toggleTheme; 
+        window.handleInput = handleInput; 
+        window.toggleMenu = toggleMenu;
+        window.closeMenu = closeMenu; 
+        window.openSettings = openSettings; 
+        window.closeSettings = closeSettings;
+        window.resetMode = resetMode; 
+        window.envoyerMessage = envoyerMessage; 
+        window.copierMessage = copierMessage;
+        window.contacterAdmin = contacterAdmin; 
+        window.verifierCodeAcces = verifierCodeAcces;
         window.deconnexionComplete = deconnexionComplete;
         window.toggleSettingDesc = toggleSettingDesc;
     })();
