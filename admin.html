@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#007aff">
+    <title>Petio Admin - Panneau de Contrôle</title>
+    <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+    <style>
+        :root {
+            --bg: #f2f2f7; --card: #ffffff; --text: #1c1c1e; --border: #e5e5ea;
+            --accent: #007aff; --success: #34c759; --danger: #ff3b30;
+            --shadow: 0 4px 16px rgba(0,0,0,0.06); --radius: 18px;
+        }
+        .dark-theme {
+            --bg: #000000; --card: #1c1c1e; --text: #ffffff; --border: #2c2c2e;
+            --shadow: 0 4px 16px rgba(0,0,0,0.4);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { background: var(--bg); color: var(--text); min-height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+        
+        /* LOGIN */
+        #login-screen {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(12px);
+            display: flex; align-items: center; justify-content: center; z-index: 9999;
+        }
+        .login-box {
+            background: var(--card); padding: 32px 24px; border-radius: 24px; width: 90%; max-width: 380px;
+            box-shadow: var(--shadow); text-align: center;
+        }
+        .login-box h2 { margin: 16px 0 24px; font-size: 24px; }
+        .input-wrap {
+            position: relative; margin-bottom: 16px;
+        }
+        .input-wrap input {
+            width: 100%; padding: 14px 44px 14px 14px; border: 2px solid var(--border);
+            border-radius: 14px; background: var(--bg); color: var(--text); font-size: 16px; outline: none;
+        }
+        .input-wrap input:focus { border-color: var(--accent); }
+        .toggle-pass {
+            position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+            background: none; border: none; cursor: pointer; font-size: 22px; color: var(--accent); padding: 4px;
+        }
+        .btn {
+            width: 100%; padding: 14px; border: none; border-radius: 14px; font-weight: 700;
+            font-size: 16px; cursor: pointer; transition: transform 0.15s, opacity 0.2s;
+        }
+        .btn:active { transform: scale(0.97); opacity: 0.9; }
+        .btn-primary { background: var(--accent); color: white; }
+        .btn-danger { background: var(--danger); color: white; margin-top: 12px; }        
+        /* ADMIN LAYOUT */
+        #admin-panel { display: none; height: 100vh; flex-direction: column; }
+        header {
+            background: var(--card); padding: 16px 20px; display: flex; align-items: center;
+            justify-content: space-between; border-bottom: 1px solid var(--border); flex-shrink: 0;
+        }
+        header h1 { font-size: 18px; display: flex; align-items: center; gap: 10px; }
+        .header-actions { display: flex; gap: 12px; }
+        .icon-btn {
+            width: 36px; height: 36px; border-radius: 50%; border: none; background: var(--bg);
+            display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 20px; color: var(--text);
+        }
+        
+        main { flex: 1; overflow-y: auto; padding: 20px; max-width: 800px; margin: 0 auto; width: 100%; }
+        
+        /* TABS */
+        .tabs { display: flex; gap: 8px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 4px; flex-shrink: 0; }
+        .tabs::-webkit-scrollbar { display: none; }
+        .tab {
+            padding: 10px 16px; border-radius: 20px; background: var(--card); border: 1px solid var(--border);
+            cursor: pointer; white-space: nowrap; font-weight: 600; font-size: 14px; transition: all 0.2s; color: var(--text);
+        }
+        .tab.active { background: var(--accent); color: white; border-color: var(--accent); }
+        
+        .section { display: none; animation: fadeUp 0.3s ease; }
+        .section.active { display: block; }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* CARDS & GRID */
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 20px; }
+        .stat-card {
+            background: var(--card); padding: 18px; border-radius: var(--radius); border: 1px solid var(--border);
+            box-shadow: var(--shadow); text-align: center; word-break: break-word;
+        }
+        .stat-val { font-size: 26px; font-weight: 800; color: var(--accent); margin: 6px 0; }
+        .stat-lbl { font-size: 13px; color: #8e8e93; font-weight: 600; }
+        
+        .card {
+            background: var(--card); padding: 20px; border-radius: var(--radius); border: 1px solid var(--border);
+            box-shadow: var(--shadow); margin-bottom: 16px; overflow: hidden;
+        }
+        .card h3 { margin-bottom: 16px; display: flex; align-items: center; gap: 8px; font-size: 17px; }
+        
+        /* FORMS & TABLES */
+        .form-group { margin-bottom: 14px; }
+        .form-group label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 14px; color: var(--text); }
+        .form-control {
+            width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 12px;
+            background: var(--bg); color: var(--text); font-size: 15px; outline: none;        }
+        table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 14px; }
+        th, td { padding: 12px 8px; text-align: left; border-bottom: 1px solid var(--border); word-break: break-word; }
+        th { font-weight: 700; color: #8e8e93; font-size: 13px; }
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; }
+        .badge-ok { background: rgba(52,199,89,0.15); color: var(--success); }
+        .badge-off { background: rgba(255,59,48,0.15); color: var(--danger); }
+        
+        .copy-row { display: flex; align-items: center; gap: 10px; background: var(--bg); padding: 12px; border-radius: 12px; margin-bottom: 12px; }
+        .copy-row code { flex: 1; font-family: monospace; font-size: 15px; font-weight: 700; word-break: break-all; }
+        .copy-btn {
+            background: var(--accent); color: white; border: none; width: 36px; height: 36px;
+            border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;
+        }
+        
+        .log-item { padding: 12px 0; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; font-size: 14px; }
+        .log-item:last-child { border-bottom: none; }
+        
+        /* TOAST */
+        #toast {
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px);
+            background: var(--card); color: var(--text); padding: 12px 20px; border-radius: 30px;
+            box-shadow: var(--shadow); border: 1px solid var(--border); font-weight: 600; font-size: 14px;
+            display: flex; align-items: center; gap: 8px; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 9999;
+        }
+        #toast.show { transform: translateX(-50%) translateY(0); }
+        
+        @media (max-width: 600px) {
+            .grid { grid-template-columns: 1fr 1fr; }
+            main { padding: 16px; }
+            .card { padding: 16px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div id="login-screen">
+    <div class="login-box">
+        <i class="ph-fill ph-shield-check" style="font-size: 52px; color: var(--accent);"></i>
+        <h2>Accès Admin Petio</h2>
+        <div class="input-wrap">
+            <input type="password" id="admin-pass" placeholder="Mot de passe administrateur">
+            <button type="button" class="toggle-pass" onclick="togglePass()">
+                <i class="ph ph-eye" id="eye-icon"></i>
+            </button>
+        </div>
+        <button class="btn btn-primary" onclick="attemptLogin()">Se connecter</button>
+        <p style="margin-top: 16px; font-size: 12px; color: #8e8e93;">Mot de passe : <code>Le BalzaC.5426</code></p>    </div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div id="admin-panel">
+    <header>
+        <h1><i class="ph-fill ph-robot" style="color: var(--accent);"></i> Petio Admin</h1>
+        <div class="header-actions">
+            <button class="icon-btn" onclick="toggleTheme()"><i id="theme-icon" class="ph ph-moon"></i></button>
+            <button class="icon-btn" onclick="logout()"><i class="ph ph-sign-out"></i></button>
+        </div>
+    </header>
+
+    <main>
+        <div class="tabs">
+            <div class="tab active" data-tab="dashboard"><i class="ph ph-chart-bar"></i> Tableau de bord</div>
+            <div class="tab" data-tab="vip"><i class="ph ph-key"></i> Codes VIP</div>
+            <div class="tab" data-tab="logs"><i class="ph ph-clock-counter-clockwise"></i> Journaux</div>
+            <div class="tab" data-tab="system"><i class="ph ph-gear"></i> Système</div>
+        </div>
+
+        <!-- DASHBOARD -->
+        <div id="dashboard" class="section active">
+            <div class="grid">
+                <div class="stat-card">
+                    <div class="stat-lbl">Utilisateurs vérifiés</div>
+                    <div class="stat-val" id="d-users">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-lbl">Codes VIP actifs</div>
+                    <div class="stat-val" id="d-vip">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-lbl">Mode actuel (global)</div>
+                    <div class="stat-val" id="d-mode" style="font-size:18px; line-height:1.2;">Cerveau</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-lbl">Dernière activité</div>
+                    <div class="stat-val" id="d-last" style="font-size:16px;">--:--</div>
+                </div>
+            </div>
+            <div class="card">
+                <h3><i class="ph ph-trend-up"></i> Activité récente</h3>
+                <div id="recent-list" style="max-height: 220px; overflow-y: auto;"></div>
+            </div>
+        </div>
+
+        <!-- VIP -->
+        <div id="vip" class="section">
+            <div class="card">                <h3><i class="ph ph-plus-circle"></i> Générer un code VIP</h3>
+                <div class="form-group">
+                    <label>Email du destinataire</label>
+                    <input type="email" id="vip-email" class="form-control" placeholder="user@email.com">
+                </div>
+                <div class="form-group">
+                    <label>Durée de validité (jours)</label>
+                    <input type="number" id="vip-days" class="form-control" value="30" min="1">
+                </div>
+                <button class="btn btn-primary" onclick="createVIP()"><i class="ph ph-sparkle"></i> Générer</button>
+            </div>
+            
+            <div id="vip-output" class="card" style="display:none; border: 2px solid var(--accent);">
+                <h3><i class="ph ph-check-circle"></i> Code généré avec succès</h3>
+                <div class="copy-row">
+                    <code id="new-code-display">VIP-XXXXXX</code>
+                    <button class="copy-btn" onclick="copyCode()"><i class="ph ph-copy"></i></button>
+                </div>
+                <p style="font-size:13px; color:#8e8e93; margin-top:8px;">Copié automatiquement ou cliquez sur l'icône.</p>
+            </div>
+
+            <div class="card">
+                <h3><i class="ph ph-list-dashes"></i> Codes enregistrés</h3>
+                <div style="overflow-x:auto;">
+                    <table>
+                        <thead><tr><th>Email</th><th>Code</th><th>État</th><th></th></tr></thead>
+                        <tbody id="vip-table"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- LOGS -->
+        <div id="logs" class="section">
+            <div class="card">
+                <h3><i class="ph ph-scroll"></i> Historique des vérifications</h3>
+                <div id="logs-list" style="max-height: 450px; overflow-y: auto;"></div>
+                <button class="btn btn-danger" onclick="clearData()"><i class="ph ph-trash"></i> Tout effacer</button>
+            </div>
+        </div>
+
+        <!-- SYSTEM -->
+        <div id="system" class="section">
+            <div class="card">
+                <h3><i class="ph ph-wrench"></i> Diagnostic fichiers</h3>
+                <div id="sys-check">En attente...</div>
+                <button class="btn btn-primary" style="margin-top:12px;" onclick="checkFiles()"><i class="ph ph-arrows-clockwise"></i> Tester</button>
+            </div>
+            <div class="card">
+                <h3><i class="ph ph-link-simple"></i> Accès rapide</h3>                <a href="index.html" style="display:flex; align-items:center; gap:10px; padding:12px; background:var(--bg); border-radius:12px; text-decoration:none; color:var(--text); margin-bottom:10px; font-weight:600;">
+                    <i class="ph ph-globe"></i> Ouvrir Petio (Utilisateur)
+                </a>
+                <a href="https://wa.me/12496806826" target="_blank" style="display:flex; align-items:center; gap:10px; padding:12px; background:var(--bg); border-radius:12px; text-decoration:none; color:var(--text); font-weight:600;">
+                    <i class="ph ph-whatsapp-logo"></i> WhatsApp Admin
+                </a>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- TOAST -->
+<div id="toast"><i class="ph-fill ph-check-circle" style="color:var(--success)"></i> <span id="toast-msg">Copié !</span></div>
+
+<script>
+    // ==================== CONFIG ====================
+    const ADMIN_PASS = "Le BalzaC.5426";
+    const PREFIX = "petio_admin_";
+    
+    // ==================== AUTH ====================
+    function attemptLogin() {
+        const val = document.getElementById('admin-pass').value;
+        if (val === ADMIN_PASS) {
+            localStorage.setItem(PREFIX + 'auth', 'true');
+            enterAdmin();
+        } else {
+            showToast('Mot de passe incorrect', 'ph-x-circle');
+        }
+    }
+    
+    function enterAdmin() {
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('admin-panel').style.display = 'flex';
+        refreshAll();
+    }
+    
+    if (localStorage.getItem(PREFIX + 'auth') === 'true') {
+        enterAdmin();
+    }
+    
+    function logout() {
+        localStorage.removeItem(PREFIX + 'auth');
+        location.reload();
+    }
+    
+    function togglePass() {
+        const inp = document.getElementById('admin-pass');
+        const icon = document.getElementById('eye-icon');
+        if (inp.type === 'password') { inp.type = 'text'; icon.className = 'ph ph-eye-slash'; }
+        else { inp.type = 'password'; icon.className = 'ph ph-eye'; }    }
+
+    // ==================== NAVIGATION & THEME ====================
+    document.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            tab.classList.add('active');
+            document.getElementById(tab.dataset.tab).classList.add('active');
+            if(tab.dataset.tab === 'vip') renderVIPTable();
+            if(tab.dataset.tab === 'logs') renderLogs();
+            if(tab.dataset.tab === 'system') checkFiles();
+        });
+    });
+    
+    function toggleTheme() {
+        document.body.classList.toggle('dark-theme');
+        document.getElementById('theme-icon').className = document.body.classList.contains('dark-theme') ? 'ph ph-sun' : 'ph ph-moon';
+        localStorage.setItem(PREFIX + 'theme', document.body.classList.contains('dark-theme') ? 'dark' : 'light');
+    }
+    if (localStorage.getItem(PREFIX + 'theme') === 'dark') {
+        document.body.classList.add('dark-theme');
+        document.getElementById('theme-icon').className = 'ph ph-sun';
+    }
+
+    // ==================== REAL-TIME SYNC ====================
+    function refreshAll() {
+        const users = JSON.parse(localStorage.getItem(PREFIX + 'users') || '[]');
+        const vips = JSON.parse(localStorage.getItem(PREFIX + 'vips') || '[]');
+        const logs = JSON.parse(localStorage.getItem(PREFIX + 'access_logs') || '[]');
+        const currentMode = localStorage.getItem('petio_current_mode') || 'Cerveau';
+        
+        // Dashboard
+        document.getElementById('d-users').textContent = users.length;
+        document.getElementById('d-vip').textContent = vips.filter(v => new Date(v.expiry) > new Date()).length;
+        document.getElementById('d-mode').textContent = currentMode;
+        document.getElementById('d-last').textContent = logs.length ? new Date(logs[logs.length-1].date).toLocaleTimeString() : '--:--';
+        
+        const recentEl = document.getElementById('recent-list');
+        recentEl.innerHTML = logs.slice(-6).reverse().map(l => `
+            <div class="log-item">
+                <div><strong>${l.email}</strong><br><small style="color:#8e8e93">${l.date}</small></div>
+                <span class="badge ${l.status==='VALIDE'?'badge-ok':'badge-off'}">${l.status}</span>
+            </div>
+        `).join('') || '<p style="padding:10px;color:#8e8e93;text-align:center">Aucune activité.</p>';
+        
+        renderVIPTable();
+        renderLogs();
+    }
+        // Écoute les changements en temps réel depuis d'autres onglets (Petio)
+    window.addEventListener('storage', (e) => {
+        if (e.key && e.key.startsWith('petio_')) refreshAll();
+    });
+    // Rafraîchissement périodique de secours
+    setInterval(refreshAll, 3000);
+
+    // ==================== VIP SYSTEM ====================
+    function createVIP() {
+        const email = document.getElementById('vip-email').value.trim();
+        const days = parseInt(document.getElementById('vip-days').value) || 30;
+        if (!email) return showToast('Email manquant', 'ph-warning');
+        
+        const code = 'VIP-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+        const expiry = new Date(); expiry.setDate(expiry.getDate() + days);
+        
+        const vips = JSON.parse(localStorage.getItem(PREFIX + 'vips') || '[]');
+        vips.push({ email, code, expiry: expiry.toISOString() });
+        localStorage.setItem(PREFIX + 'vips', JSON.stringify(vips));
+        
+        document.getElementById('vip-output').style.display = 'block';
+        document.getElementById('new-code-display').textContent = code;
+        document.getElementById('vip-email').value = '';
+        copyCode();
+        refreshAll();
+    }
+    
+    function renderVIPTable() {
+        const vips = JSON.parse(localStorage.getItem(PREFIX + 'vips') || '[]');
+        document.getElementById('vip-table').innerHTML = vips.map((v, i) => `
+            <tr>
+                <td>${v.email}</td>
+                <td>${v.code}</td>
+                <td><span class="badge ${new Date(v.expiry) > new Date() ? 'badge-ok' : 'badge-off'}">${new Date(v.expiry) > new Date() ? 'Actif' : 'Expiré'}</span></td>
+                <td><button onclick="deleteVIP(${i})" style="background:none;border:none;cursor:pointer;font-size:18px;color:var(--danger);padding:4px;"><i class="ph ph-trash"></i></button></td>
+            </tr>
+        `).join('') || '<tr><td colspan="4" style="text-align:center;color:#8e8e93;padding:16px">Aucun code</td></tr>';
+    }
+    
+    function deleteVIP(idx) {
+        if(!confirm('Supprimer ce code ?')) return;
+        const vips = JSON.parse(localStorage.getItem(PREFIX + 'vips') || '[]');
+        vips.splice(idx, 1);
+        localStorage.setItem(PREFIX + 'vips', JSON.stringify(vips));
+        refreshAll();
+    }
+
+    // ==================== LOGS & UTILS ====================
+    function renderLogs() {
+        const logs = JSON.parse(localStorage.getItem(PREFIX + 'access_logs') || '[]');        document.getElementById('logs-list').innerHTML = logs.reverse().map(l => `
+            <div class="log-item">
+                <div><strong>${l.email}</strong><br><small style="color:#8e8e93">${l.ip || 'App'} • ${l.date}</small></div>
+                <span class="badge ${l.status==='VALIDE'?'badge-ok':'badge-off'}">${l.status}</span>
+            </div>
+        `).join('') || '<p style="padding:20px;text-align:center;color:#8e8e93">Vide.</p>';
+    }
+    
+    function clearData() {
+        if(!confirm('Effacer TOUTES les données admin ?')) return;
+        localStorage.removeItem(PREFIX + 'users');
+        localStorage.removeItem(PREFIX + 'vips');
+        localStorage.removeItem(PREFIX + 'access_logs');
+        refreshAll();
+        showToast('Données effacées', 'ph-check-circle');
+    }
+    
+    function copyCode() {
+        const txt = document.getElementById('new-code-display').textContent;
+        navigator.clipboard.writeText(txt).then(() => showToast('Code copié !', 'ph-copy'));
+    }
+    
+    async function checkFiles() {
+        const el = document.getElementById('sys-check');
+        el.innerHTML = '<p>⏳ Analyse...</p>';
+        const modes = ['cerveau', 'formate', 'procedure', 'novice', 'application'];
+        let html = '';
+        for(const m of modes) {
+            try {
+                const r = await fetch(`${m}.txt`);
+                html += `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);">
+                    <span><strong>${m.toUpperCase()}</strong></span>
+                    <span style="color:${r.ok?'var(--success)':'var(--danger)'}">${r.ok ? '✅ OK' : '❌ Manquant'}</span>
+                </div>`;
+            } catch(e) {
+                html += `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);">
+                    <span><strong>${m.toUpperCase()}</strong></span><span style="color:var(--danger)">❌ Réseau</span></div>`;
+            }
+        }
+        el.innerHTML = html;
+    }
+    
+    function showToast(msg, icon='ph-check-circle') {
+        const t = document.getElementById('toast');
+        t.innerHTML = `<i class="ph-fill ${icon}"></i> <span>${msg}</span>`;
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 2500);
+    }
+</script>
+</body></html>
