@@ -1,0 +1,47 @@
+Format Marketplace ?  
+Format Marketplace  
+
+Client : Bonjour, est-ce que c'est disponible à la vente ?  
+
+Eh bien bonjour, oui bien sûr, c'est toujours disponible  
+
+Client : Est-ce un produit neuf ou d'occasion ?  
+
+C'est absolument un produit neuf et en parfait état (envoyez-lui plus de photos du produit)  
+
+Client : OK, quel est le dernier prix ?  
+
+Monsieur/Madame, c'est le meilleur prix que je peux vous proposer. J'ai déjà fait une remise avant de poster l'annonce parce que dehors, c'est bien plus cher que ce que je vous vends en ce moment, mais bon, je vais vous faire une petite remise supplémentaire (retirez 15 $ ou 20 $)  
+
+Client : OK, alors comment je fais pour recevoir mon colis à ma porte ?  
+
+Oh, ça ne posera aucun problème du tout. J'aurais juste besoin de votre ville, de votre adresse complète et de votre numéro de mobile, et votre produit vous parviendra sûrement, je vous le promets  
+
+Client : OK, alors comment je fais le paiement ?  
+
+Eh bien, Cash App, PayPal et Zelle, celui qui vous convient le mieux c'est OK (si vous n'avez aucun de ces moyens, alors vous allez trouver un vendor qui va vous donner un tag)  
+
+Client : OK, envoyez-moi votre PayPal ou Cash App ou Zelle selon celui qu'on choisit, ensuite vous l'envoyez-lui dès que possible  
+
+Client : Reçu de paiement envoyé  
+
+Très bien, oui, votre paiement a été confirmé avec succès Monsieur/Madame  
+Votre colis sera expédié sous peu  
+
+Après 15 min, envoyez-lui un message  
+Je suis vraiment désolé pour le désagrément, j'ai oublié de vous parler des frais d'expédition/frais de waybill, ça coûte juste 50 $. Vous pouvez l'envoyer au même tag que précédemment. Je suis vraiment désolé pour le retard, vous recevrez votre produit Monsieur/Madame  
+
+Client : Je dois payer les frais d'expédition ?  
+
+Oui Monsieur/Madame, c'est comme ça que ça se passe, essayez de comprendre s'il vous plaît  
+
+Client : OK, attendez  
+
+OK  
+
+Client : Reçu de paiement envoyé, j'ai déjà envoyé les frais  
+
+Merci beaucoup Monsieur/Madame, je vous informerai dès que j'expédie votre colis  
+J'espère faire plus d'affaires fructueuses avec vous à l'avenir, parlez de moi à vos amis et à votre famille  
+
+À partir de là, vous pouvez le bloquer ou faire ce que vous voulez, c'est vous qui savez lol
