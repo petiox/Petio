@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Numéros virtuels · Bientôt disponible</title>
+  <!-- Lucide Icons (léger & moderne) -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(145deg, #f9fafc 0%, #eef0f5 100%);
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      color: #1e1e2a;
+    }
+
+    .card {
+      max-width: 500px;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border-radius: 48px;
+      padding: 36px 28px 40px;
+      box-shadow: 0 25px 40px -12px rgba(0, 0, 0, 0.18), 0 8px 18px rgba(0, 0, 0, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      text-align: center;
+      transition: all 0.2s ease;
+    }
+
+    .icon-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #1e1e2a;
+      width: 80px;
+      height: 80px;
+      border-radius: 30px;
+      margin-bottom: 24px;
+      box-shadow: 0 12px 22px -8px rgba(0, 0, 0, 0.2);
+    }
+
+    .icon-badge i {
+      color: #ffffff;
+      width: 48px;
+      height: 48px;
+    }
+
+    h1 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 12px;
+      color: #12121a;
+    }
+
+    .highlight {
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      font-weight: 800;
+    }
+
+    .subhead {
+      font-size: 1.15rem;
+      font-weight: 400;
+      color: #4b4b60;
+      margin-bottom: 32px;
+      line-height: 1.5;
+      padding: 0 8px;
+    }
+
+    .timer-container {
+      background: rgba(30, 30, 42, 0.04);
+      border-radius: 60px;
+      padding: 18px 16px;
+      margin-bottom: 30px;
+      border: 1px dashed rgba(59, 130, 246, 0.3);
+    }
+
+    .timer-label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      font-size: 1rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #3b3b50;
+      margin-bottom: 10px;
+    }
+
+    .timer-label i {
+      width: 22px;
+      height: 22px;
+      color: #3b82f6;
+    }
+
+    #countdown {
+      font-size: 2.6rem;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      background: #ffffffd6;
+      display: inline-block;
+      padding: 12px 32px;
+      border-radius: 100px;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.02), 0 8px 12px -6px rgba(0,0,0,0.1);
+      color: #0f0f1a;
+      border: 1px solid rgba(255,255,255,0.7);
+      backdrop-filter: blur(4px);
+    }
+
+    .features {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 28px;
+      margin: 32px 0 24px;
+    }
+
+    .feature-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .feature-item i {
+      width: 30px;
+      height: 30px;
+      color: #2563eb;
+      background: rgba(37, 99, 235, 0.1);
+      padding: 8px;
+      border-radius: 16px;
+      box-sizing: content-box;
+    }
+
+    .feature-item span {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #2c2c44;
+    }
+
+    .notify-btn {
+      background: #1e1e2a;
+      color: white;
+      border: none;
+      padding: 18px 24px;
+      width: 100%;
+      border-radius: 60px;
+      font-size: 1.2rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      cursor: pointer;
+      box-shadow: 0 12px 22px -8px rgba(30, 30, 42, 0.3);
+      transition: all 0.25s;
+      border: 1px solid rgba(255,255,255,0.08);
+      margin-top: 12px;
+    }
+
+    .notify-btn i {
+      width: 24px;
+      height: 24px;
+      color: white;
+    }
+
+    .notify-btn:active {
+      transform: scale(0.97);
+      background: #2d2d3f;
+      box-shadow: 0 6px 12px -4px #0f0f1f;
+    }
+
+    .footnote {
+      margin-top: 24px;
+      font-size: 0.8rem;
+      color: #6f6f8a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .footnote i {
+      width: 16px;
+      height: 16px;
+      opacity: 0.7;
+    }
+
+    /* dark mode automatic adaptation */
+    @media (prefers-color-scheme: dark) {
+      body {
+        background: #0c0c14;
+      }
+      .card {
+        background: rgba(22, 22, 32, 0.8);
+        border-color: rgba(70, 70, 90, 0.4);
+        color: #e9e9f0;
+      }
+      h1 { color: #f0f0ff; }
+      .subhead { color: #b0b0cc; }
+      .icon-badge { background: #2f2f44; }
+      .timer-container { background: rgba(255,255,255,0.03); border-color: #3b4b70; }
+      .timer-label { color: #c0c0e0; }
+      #countdown { background: #1f1f2e; color: #f0f0ff; border-color: #3d3d60; }
+      .feature-item span { color: #cbcbe5; }
+      .feature-item i { background: #2a3a60; color: #90b4ff; }
+      .notify-btn { background: #3b3b60; box-shadow: 0 12px 22px -8px #04040c; }
+      .footnote { color: #8f8fb0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <!-- Icône principale avec Lucide : téléphone + étoile (création de compte / numéro) -->
+    <div class="icon-badge">
+      <i data-lucide="smartphone"></i>
+    </div>
+    
+    <h1>
+      <span class="highlight">Numéros</span> virtuels
+    </h1>
+    <div class="subhead">
+      Création de compte simplifiée · 100% privé<br>
+      Disponible dans quelques jours.
+    </div>
+
+    <!-- Compteur dynamique (7 jours) -->
+    <div class="timer-container">
+      <div class="timer-label">
+        <i data-lucide="hourglass"></i>
+        <span>Lancement dans</span>
+      </div>
+      <div id="countdown">7j 00h 00m 00s</div>
+    </div>
+
+    <!-- Mini features avec icônes Lucide adaptées -->
+    <div class="features">
+      <div class="feature-item">
+        <i data-lucide="phone"></i>
+        <span>Numéros réels</span>
+      </div>
+      <div class="feature-item">
+        <i data-lucide="key-round"></i>
+        <span>SMS vérifiés</span>
+      </div>
+      <div class="feature-item">
+        <i data-lucide="shield-check"></i>
+        <span>Anonymat</span>
+      </div>
+    </div>
+
+    <!-- Bouton d'action (notif / rappel) -->
+    <button class="notify-btn" id="remindBtn">
+      <i data-lucide="bell-ring"></i>
+      Prévenez-moi au lancement
+    </button>
+
+    <div class="footnote">
+      <i data-lucide="calendar"></i>
+      <span>Ouverture prévue le <span id="targetDateDisplay"></span></span>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      // Initialisation des icônes Lucide
+      lucide.createIcons();
+
+      // ----- Gestion du compte à rebours (7 jours à partir de maintenant) -----
+      const now = new Date();
+      const targetDate = new Date(now);
+      targetDate.setDate(now.getDate() + 7); // Dans exactement 7 jours
+
+      // Formatage date lisible
+      const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+      const formattedDate = targetDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+      document.getElementById('targetDateDisplay').textContent = formattedDate;
+
+      function updateCountdown() {
+        const current = new Date();
+        const diff = targetDate - current;
+
+        if (diff <= 0) {
+          document.getElementById('countdown').textContent = "C'est maintenant ! 🎉";
+          return;
+        }
+
+        const totalSeconds = Math.floor(diff / 1000);
+        const days = Math.floor(totalSeconds / 86400);
+        const hours = Math.floor((totalSeconds % 86400) / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+
+        document.getElementById('countdown').textContent = 
+          `${days}j ${hours.toString().padStart(2, '0')}h ${minutes.toString().padStart(2, '0')}m ${seconds.toString().padStart(2, '0')}s`;
+      }
+
+      updateCountdown();
+      const interval = setInterval(updateCountdown, 1000);
+
+      // ----- Bouton "Prévenez-moi" : simulation d'inscription (alerte + feedback) -----
+      const remindBtn = document.getElementById('remindBtn');
+      remindBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        // Feedback visuel
+        const originalContent = remindBtn.innerHTML;
+        remindBtn.innerHTML = '<i data-lucide="check-circle"></i> Ajouté !';
+        lucide.createIcons(); // recrée les icônes après changement HTML
+        
+        // Message utilisateur (simulation d'enregistrement)
+        alert("📩 Vous serez notifié dès que le service sera disponible. Merci de votre intérêt !");
+        
+        // Restaurer le bouton après 2 secondes
+        setTimeout(() => {
+          remindBtn.innerHTML = originalContent;
+          lucide.createIcons();
+        }, 2000);
+        
+        // Option : enregistrer dans localStorage que l'utilisateur veut être notifié
+        localStorage.setItem('petio_notify_numbers', 'true');
+      });
+
+      // Vérifie si déjà notifié au chargement (petite subtilité)
+      if (localStorage.getItem('petio_notify_numbers') === 'true') {
+        // On pourrait pré-remplir, mais on laisse simplement l'état
+        console.log("🔔 Utilisateur déjà intéressé par les numéros virtuels.");
+      }
+
+      // Nettoyage optionnel (pas obligatoire car la page vit peu)
+      window.addEventListener('beforeunload', () => clearInterval(interval));
+    })();
+  </script>
+</body>
+</html>
