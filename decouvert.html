@@ -132,8 +132,8 @@
         const DRIVE_FOLDER_ID = '1iqlRjauMrSsazy--eA3AVzr7t33La_3x';
         const UNLOCK_KEY = 'petio_procedure_unlocked';
 
-        // Modes locaux à inclure
-        const LOCAL_MODES = ['novice', 'formate', 'procedure', 'application'];
+        // Modes locaux à inclure (y compris divers)
+        const LOCAL_MODES = ['novice', 'formate', 'procedure', 'application', 'divers'];
 
         // ---------- THÈME ----------
         function toggleTheme() {
@@ -317,7 +317,13 @@
                 const res = await fetch(url);
                 const data = await res.json();
                 if (data.files) {
-                    data.files.forEach(f => { if (!f.name.endsWith('.jpg') && !f.name.endsWith('.png')) filesArray.push({ name: f.name, source:'drive', id: f.id, mimeType: f.mimeType }); });
+                    data.files.forEach(f => {
+                        // Exclure les images
+                        const lower = f.name.toLowerCase();
+                        if (!lower.endsWith('.jpg') && !lower.endsWith('.jpeg') && !lower.endsWith('.png') && !lower.endsWith('.gif') && !lower.endsWith('.webp')) {
+                            filesArray.push({ name: f.name, source:'drive', id: f.id, mimeType: f.mimeType });
+                        }
+                    });
                 }
             } catch(e) { console.warn('Drive error', e); }
         }
