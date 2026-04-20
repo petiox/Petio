@@ -130,9 +130,10 @@
         // ---------- CONFIGURATION ----------
         const DRIVE_API_KEY = 'AIzaSyDiZNla26G3wblOh9ZFLs2vvPFDI1ZTDJo';
         const DRIVE_FOLDER_ID = '1iqlRjauMrSsazy--eA3AVzr7t33La_3x';
+        const URL_GAS_CHECK = "https://script.google.com/macros/s/AKfycbwECfIzsgINAu5IqMDaqcDuYtZAaspR16wvxu-BuLaqTdGJT-6Pec3hJs27lYvxzaIB2Q/exec";
         const UNLOCK_KEY = 'petio_procedure_unlocked';
 
-        // Modes locaux à inclure (inclut divers)
+        // Modes locaux à inclure (les mêmes que Petio sauf Cerveau et Gallery)
         const LOCAL_MODES = ['novice', 'formate', 'procedure', 'application', 'divers'];
 
         // ---------- THÈME ----------
@@ -155,7 +156,7 @@
             const code = document.getElementById('vip-code-input').value.trim();
             const email = localStorage.getItem('userEmail') || '';
             if (!code) { document.getElementById('vip-error').textContent = 'Code requis.'; return; }
-            fetch(`https://script.google.com/macros/s/AKfycbwECfIzsgINAu5IqMDaqcDuYtZAaspR16wvxu-BuLaqTdGJT-6Pec3hJs27lYvxzaIB2Q/exec?action=checkProcedureCode&email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}`)
+            fetch(`${URL_GAS_CHECK}?action=checkProcedureCode&email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}`)
                 .then(r => r.text())
                 .then(result => {
                     if (result.trim() === 'VALIDE') {
@@ -175,7 +176,7 @@
         }
         if (isUnlocked()) showLibrary();
 
-        // ---------- TRADUCTION (Google Translate) ----------
+        // ---------- TRADUCTION ----------
         async function traduireFR(texte) {
             if (!texte) return '';
             try {
@@ -185,66 +186,31 @@
             } catch(e) { return texte; }
         }
 
-        // ---------- EXTRACTION TEXTE (local + Drive) ----------
-        async function extractText(file, isDrive = false) {
+        // ---------- EXTRACTION TEXTE LOCAL (identique à Petio) ----------
+        async function extractLocalText(fileName) {
             try {
-                if (!isDrive) {
-                    const res = await fetch(file.path);
-                    if (!res.ok) throw new Error('Fichier inaccessible');
-                    const lower = file.name.toLowerCase();
-                    if (lower.endsWith('.txt')) return await res.text();
-                    if (lower.endsWith('.pdf')) {
-                        const buf = await res.arrayBuffer();
-                        const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
-                        let text = '';
-                        for (let i = 1; i <= pdf.numPages; i++) {
-                            const page = await pdf.getPage(i);
-                            const content = await page.getTextContent();
-                            text += content.items.map(it => it.str).join(' ') + '\n';
-                        }
-                        return text;
+                const res = await fetch(fileName);
+                if (!res.ok) return null;
+                const lower = fileName.toLowerCase();
+                if (lower.endsWith('.txt')) return await res.text();
+                if (lower.endsWith('.pdf')) {
+                    const buf = await res.arrayBuffer();
+                    const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
+                    let text = '';
+                    for (let i = 1; i <= pdf.numPages; i++) {
+                        const page = await pdf.getPage(i);
+                        const content = await page.getTextContent();
+                        text += content.items.map(it => it.str).join(' ') + '\n';
                     }
-                    if (lower.endsWith('.docx') || lower.endsWith('.doc')) {
-                        const buf = await res.arrayBuffer();
-                        const result = await mammoth.extractRawText({ arrayBuffer: buf });
-                        return result.value;
-                    }
-                    return 'Format non supporté.';
-                } else {
-                    // Drive
-                    const mime = file.mimeType;
-                    if (mime === 'application/vnd.google-apps.document') {
-                        const exportUrl = `https://www.googleapis.com/drive/v3/files/${file.id}/export?mimeType=text/plain&key=${DRIVE_API_KEY}`;
-                        const res = await fetch(exportUrl);
-                        return await res.text();
-                    } else if (mime === 'application/pdf') {
-                        const res = await fetch(`https://www.googleapis.com/drive/v3/files/${file.id}?alt=media&key=${DRIVE_API_KEY}`);
-                        const buf = await res.arrayBuffer();
-                        const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
-                        let text = '';
-                        for (let i = 1; i <= pdf.numPages; i++) {
-                            const page = await pdf.getPage(i);
-                            const content = await page.getTextContent();
-                            text += content.items.map(it => it.str).join(' ') + '\n';
-                        }
-                        return text;
-                    } else {
-                        try {
-                            const exportUrl = `https://www.googleapis.com/drive/v3/files/${file.id}/export?mimeType=text/plain&key=${DRIVE_API_KEY}`;
-                            const res = await fetch(exportUrl);
-                            if (res.ok) return await res.text();
-                        } catch(e){}
-                        const dlRes = await fetch(`https://www.googleapis.com/drive/v3/files/${file.id}?alt=media&key=${DRIVE_API_KEY}`);
-                        const blob = await dlRes.blob();
-                        if (blob.type.includes('word')) {
-                            const buf = await blob.arrayBuffer();
-                            const result = await mammoth.extractRawText({ arrayBuffer: buf });
-                            return result.value;
-                        }
-                        return await blob.text();
-                    }
+                    return text;
                 }
-            } catch(e) { return 'Erreur de lecture.'; }
+                if (lower.endsWith('.docx') || lower.endsWith('.doc')) {
+                    const buf = await res.arrayBuffer();
+                    const result = await mammoth.extractRawText({ arrayBuffer: buf });
+                    return result.value;
+                }
+                return null;
+            } catch(e) { return null; }
         }
 
         // ---------- CHARGEMENT DE TOUS LES FICHIERS ----------
@@ -258,12 +224,64 @@
 
             try {
                 const files = [];
-                // 1. Fichiers locaux
+                
+                // 1. Fichiers locaux (exactement les mêmes motifs que chargerFichiersMode dans Petio)
                 for (const mode of LOCAL_MODES) {
-                    await addLocalFiles(mode, files);
+                    const base = mode;
+                    const extensions = ['txt', 'pdf', 'docx', 'doc'];
+                    
+                    // Fichier de base (ex: formate.pdf)
+                    for (const ext of extensions) {
+                        const name = `${base}.${ext}`;
+                        if (await extractLocalText(name) !== null) {
+                            files.push({ name, source: 'local', path: name });
+                        }
+                    }
+
+                    // Motifs numérotés (ex: formate1.txt, formate_2.pdf, formate-3.docx)
+                    const patterns = [];
+                    for (const ext of extensions) {
+                        patterns.push(
+                            (i) => `${base}${i}.${ext}`,
+                            (i) => `${base}_${i}.${ext}`,
+                            (i) => `${base}-${i}.${ext}`
+                        );
+                    }
+
+                    for (const pat of patterns) {
+                        let i = 1;
+                        let consecutiveFails = 0;
+                        while (i <= 500) {
+                            const name = pat(i);
+                            if (await extractLocalText(name) !== null) {
+                                files.push({ name, source: 'local', path: name });
+                                consecutiveFails = 0;
+                            } else {
+                                consecutiveFails++;
+                            }
+                            if (consecutiveFails >= 3) break;
+                            i++;
+                        }
+                    }
                 }
-                // 2. Fichiers Drive
-                await addDriveFiles(files);
+
+                // 2. Fichiers Drive (via API Drive, sans modifier le GAS)
+                try {
+                    const driveUrl = `https://www.googleapis.com/drive/v3/files?q='${DRIVE_FOLDER_ID}'+in+parents&key=${DRIVE_API_KEY}&fields=files(id,name,mimeType)`;
+                    const driveRes = await fetch(driveUrl);
+                    const driveData = await driveRes.json();
+                    if (driveData.files) {
+                        driveData.files.forEach(f => {
+                            const lower = f.name.toLowerCase();
+                            // Exclure les images pour ne garder que les documents
+                            if (!lower.match(/\.(jpg|jpeg|png|gif|webp|bmp|svg)$/)) {
+                                files.push({ name: f.name, source: 'drive', id: f.id, mimeType: f.mimeType });
+                            }
+                        });
+                    }
+                } catch (e) {
+                    console.warn('Erreur Drive (vérifiez la clé API et le dossier) :', e);
+                }
 
                 console.log('Fichiers trouvés:', files.map(f => f.name));
 
@@ -287,67 +305,6 @@
             }
         }
 
-        async function addLocalFiles(mode, filesArray) {
-            const base = mode;
-            const extensions = ['txt', 'pdf', 'docx', 'doc'];
-            
-            // Fichier de base sans numéro (ex: formate.pdf)
-            for (const ext of extensions) {
-                const name = `${base}.${ext}`;
-                try {
-                    const res = await fetch(name, { method: 'HEAD' });
-                    if (res.ok) {
-                        filesArray.push({ name, source: 'local', path: name });
-                    }
-                } catch (e) {}
-            }
-
-            // Patterns numérotés
-            const patterns = [];
-            for (const ext of extensions) {
-                patterns.push(
-                    (i) => `${base}${i}.${ext}`,
-                    (i) => `${base}_${i}.${ext}`,
-                    (i) => `${base}-${i}.${ext}`
-                );
-            }
-
-            for (const pat of patterns) {
-                let i = 1, fails = 0;
-                while (i <= 500) {
-                    const name = pat(i);
-                    try {
-                        const res = await fetch(name, { method: 'HEAD' });
-                        if (res.ok) {
-                            filesArray.push({ name, source: 'local', path: name });
-                            fails = 0;
-                        } else {
-                            fails++;
-                        }
-                    } catch (e) { fails++; }
-                    if (fails >= 3) break;
-                    i++;
-                }
-            }
-        }
-
-        async function addDriveFiles(filesArray) {
-            try {
-                const url = `https://www.googleapis.com/drive/v3/files?q='${DRIVE_FOLDER_ID}'+in+parents&key=${DRIVE_API_KEY}&fields=files(id,name,mimeType)`;
-                const res = await fetch(url);
-                const data = await res.json();
-                if (data.files) {
-                    data.files.forEach(f => {
-                        const lower = f.name.toLowerCase();
-                        // Exclure les images
-                        if (!lower.match(/\.(jpg|jpeg|png|gif|webp|bmp|svg)$/)) {
-                            filesArray.push({ name: f.name, source: 'drive', id: f.id, mimeType: f.mimeType });
-                        }
-                    });
-                }
-            } catch (e) { console.warn('Drive error', e); }
-        }
-
         // ---------- OUVERTURE FICHIER + TRADUCTION ----------
         async function openFile(file) {
             const modal = document.getElementById('modal');
@@ -358,9 +315,47 @@
             modal.classList.add('show');
 
             try {
-                const raw = await extractText(file, file.source === 'drive');
-                const translated = await traduireFR(raw);
-                textDiv.textContent = translated || '(Fichier vide)';
+                let raw = '';
+                if (file.source === 'local') {
+                    raw = await extractLocalText(file.path);
+                } else {
+                    // Drive : extraction selon le type MIME
+                    const mime = file.mimeType;
+                    if (mime === 'application/vnd.google-apps.document') {
+                        const exportUrl = `https://www.googleapis.com/drive/v3/files/${file.id}/export?mimeType=text/plain&key=${DRIVE_API_KEY}`;
+                        const res = await fetch(exportUrl);
+                        raw = await res.text();
+                    } else if (mime === 'application/pdf') {
+                        const res = await fetch(`https://www.googleapis.com/drive/v3/files/${file.id}?alt=media&key=${DRIVE_API_KEY}`);
+                        const buf = await res.arrayBuffer();
+                        const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
+                        for (let i = 1; i <= pdf.numPages; i++) {
+                            const page = await pdf.getPage(i);
+                            const content = await page.getTextContent();
+                            raw += content.items.map(it => it.str).join(' ') + '\n';
+                        }
+                    } else {
+                        // Essayer export texte ou téléchargement direct
+                        try {
+                            const exportUrl = `https://www.googleapis.com/drive/v3/files/${file.id}/export?mimeType=text/plain&key=${DRIVE_API_KEY}`;
+                            const res = await fetch(exportUrl);
+                            if (res.ok) raw = await res.text();
+                        } catch(e) {}
+                        if (!raw) {
+                            const dlRes = await fetch(`https://www.googleapis.com/drive/v3/files/${file.id}?alt=media&key=${DRIVE_API_KEY}`);
+                            const blob = await dlRes.blob();
+                            if (blob.type.includes('word')) {
+                                const buf = await blob.arrayBuffer();
+                                const result = await mammoth.extractRawText({ arrayBuffer: buf });
+                                raw = result.value;
+                            } else {
+                                raw = await blob.text();
+                            }
+                        }
+                    }
+                }
+                const translated = await traduireFR(raw || '(Fichier vide)');
+                textDiv.textContent = translated;
             } catch (e) {
                 textDiv.textContent = 'Erreur de lecture.';
             }
