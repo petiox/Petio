@@ -17,6 +17,8 @@
     <meta name="theme-color" content="#007aff">
     <title>Petio Admin - Panneau de Contrôle</title>
     <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+    <!-- Plugin Upload ImgBB -->
+    <script async src="https://imgbb.com/upload.js"></script>
     <style>
         :root {
             --bg: #f2f2f7; --card: #ffffff; --text: #1c1c1e; --border: #e5e5ea;
@@ -68,10 +70,15 @@
             justify-content: space-between; border-bottom: 1px solid var(--border); flex-shrink: 0;
         }
         header h1 { font-size: 18px; display: flex; align-items: center; gap: 10px; }
-        .header-actions { display: flex; gap: 12px; }
+        .header-actions { display: flex; gap: 12px; align-items: center; }
         .icon-btn {
             width: 36px; height: 36px; border-radius: 50%; border: none; background: var(--bg);
             display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 20px; color: var(--text);
+        }
+        .admin-avatar {
+            width: 36px; height: 36px; border-radius: 50%; background: var(--accent); color: white;
+            display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px;
+            background-size: cover; background-position: center; cursor: pointer; margin-right: 8px;
         }
         
         main { flex: 1; overflow-y: auto; padding: 20px; max-width: 800px; margin: 0 auto; width: 100%; }
@@ -126,6 +133,12 @@
         
         .log-item { padding: 12px 0; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; font-size: 14px; }
         .log-item:last-child { border-bottom: none; }
+        
+        /* Gallery thumbnails */
+        .gallery-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; margin-top: 16px; }
+        .gallery-thumb { aspect-ratio: 1; border-radius: 12px; overflow: hidden; border: 2px solid var(--border); position: relative; }
+        .gallery-thumb img { width: 100%; height: 100%; object-fit: cover; }
+        .gallery-thumb .actions { position: absolute; top: 4px; right: 4px; display: flex; gap: 4px; }
         
         /* INSTALL BANNER */
         #install-banner {
@@ -194,6 +207,7 @@
     <header>
         <h1><i class="ph-fill ph-robot" style="color: var(--accent);"></i> Petio Admin</h1>
         <div class="header-actions">
+            <div class="admin-avatar" id="adminAvatar" onclick="changeAdminPhoto()" title="Changer la photo"></div>
             <button class="icon-btn" onclick="toggleTheme()"><i id="theme-icon" class="ph ph-moon"></i></button>
             <button class="icon-btn" onclick="logout()"><i class="ph ph-sign-out"></i></button>
         </div>
@@ -203,6 +217,7 @@
         <div class="tabs">
             <div class="tab active" data-tab="dashboard"><i class="ph ph-chart-bar"></i> Tableau de bord</div>
             <div class="tab" data-tab="vip"><i class="ph ph-key"></i> Codes VIP</div>
+            <div class="tab" data-tab="gallery"><i class="ph ph-image"></i> Gallery</div>
             <div class="tab" data-tab="logs"><i class="ph ph-clock-counter-clockwise"></i> Journaux</div>
             <div class="tab" data-tab="system"><i class="ph ph-gear"></i> Système</div>
         </div>
@@ -210,32 +225,14 @@
         <!-- DASHBOARD -->
         <div id="dashboard" class="section active">
             <div class="grid">
-                <div class="stat-card">
-                    <div class="stat-lbl">Utilisateurs vérifiés</div>
-                    <div class="stat-val" id="d-users">0</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-lbl">Codes VIP actifs</div>
-                    <div class="stat-val" id="d-vip">0</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-lbl">Mode actuel (global)</div>
-                    <div class="stat-val" id="d-mode" style="font-size:18px; line-height:1.2;">Cerveau</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-lbl">Dernière activité</div>
-                    <div class="stat-val" id="d-last" style="font-size:16px;">--:--</div>
-                </div>
+                <div class="stat-card"><div class="stat-lbl">Utilisateurs vérifiés</div><div class="stat-val" id="d-users">0</div></div>
+                <div class="stat-card"><div class="stat-lbl">Codes VIP actifs</div><div class="stat-val" id="d-vip">0</div></div>
+                <div class="stat-card"><div class="stat-lbl">Mode actuel</div><div class="stat-val" id="d-mode" style="font-size:18px;">Cerveau</div></div>
+                <div class="stat-card"><div class="stat-lbl">Dernière activité</div><div class="stat-val" id="d-last" style="font-size:16px;">--:--</div></div>
             </div>
             <div class="grid">
-                <div class="stat-card">
-                    <div class="stat-lbl">Fichiers locaux</div>
-                    <div class="stat-val" id="d-total-files">--</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-lbl">État Global</div>
-                    <div class="stat-val" id="d-global-status" style="font-size:15px;">⏳</div>
-                </div>
+                <div class="stat-card"><div class="stat-lbl">Fichiers locaux</div><div class="stat-val" id="d-total-files">--</div></div>
+                <div class="stat-card"><div class="stat-lbl">État Global</div><div class="stat-val" id="d-global-status" style="font-size:15px;">⏳</div></div>
             </div>
             <div class="card">
                 <h3><i class="ph ph-trend-up"></i> Activité récente</h3>
@@ -247,33 +244,41 @@
         <div id="vip" class="section">
             <div class="card">
                 <h3><i class="ph ph-plus-circle"></i> Générer un code VIP</h3>
-                <div class="form-group">
-                    <label>Email du destinataire</label>
-                    <input type="email" id="vip-email" class="form-control" placeholder="user@email.com">
-                </div>
-                <div class="form-group">
-                    <label>Durée de validité (jours)</label>
-                    <input type="number" id="vip-days" class="form-control" value="30" min="1">
-                </div>
+                <div class="form-group"><label>Email du destinataire</label><input type="email" id="vip-email" class="form-control" placeholder="user@email.com"></div>
+                <div class="form-group"><label>Durée de validité (jours)</label><input type="number" id="vip-days" class="form-control" value="30" min="1"></div>
                 <button class="btn btn-primary" onclick="createVIP()"><i class="ph ph-sparkle"></i> Générer</button>
             </div>            
             <div id="vip-output" class="card" style="display:none; border: 2px solid var(--accent);">
-                <h3><i class="ph ph-check-circle"></i> Code généré avec succès</h3>
-                <div class="copy-row">
-                    <code id="new-code-display">VIP-XXXXXX</code>
-                    <button class="copy-btn" onclick="copyCode()"><i class="ph ph-copy"></i></button>
-                </div>
-                <p style="font-size:13px; color:#8e8e93; margin-top:8px;">Copié automatiquement ou cliquez sur l'icône.</p>
+                <h3><i class="ph ph-check-circle"></i> Code généré</h3>
+                <div class="copy-row"><code id="new-code-display">VIP-XXXXXX</code><button class="copy-btn" onclick="copyCode()"><i class="ph ph-copy"></i></button></div>
             </div>
-
             <div class="card">
                 <h3><i class="ph ph-list-dashes"></i> Codes enregistrés</h3>
-                <div style="overflow-x:auto;">
-                    <table>
-                        <thead><tr><th>Email</th><th>Code</th><th>État</th><th></th></tr></thead>
-                        <tbody id="vip-table"></tbody>
-                    </table>
-                </div>
+                <div style="overflow-x:auto;"><table><thead><tr><th>Email</th><th>Code</th><th>État</th><th></th></tr></thead><tbody id="vip-table"></tbody></table></div>
+            </div>
+        </div>
+
+        <!-- GALLERY -->
+        <div id="gallery" class="section">
+            <div class="card">
+                <h3><i class="ph ph-cloud-arrow-up"></i> Ajouter une image (ImgBB)</h3>
+                <p>Cliquez pour uploader. L'URL sera ajoutée à gallery.txt</p>
+                <button class="btn btn-primary" id="uploadImgBtn"><i class="ph ph-upload"></i> Choisir une image</button>
+                <p style="font-size:13px; margin-top:8px;">Clé API : 65e3d72095ac5a63817fa3b72fa75b32</p>
+            </div>
+            <div class="card">
+                <h3><i class="ph ph-images"></i> Images actuelles (gallery.txt)</h3>
+                <div id="galleryImageList" class="gallery-list">Chargement...</div>
+                <button class="btn btn-primary" id="refreshGalleryBtn" style="margin-top:12px;"><i class="ph ph-arrows-clockwise"></i> Rafraîchir</button>
+            </div>
+            <div class="card">
+                <h3><i class="ph ph-plus-circle"></i> Ajouter URL manuellement</h3>
+                <input type="text" id="manualImgUrl" class="form-control" placeholder="https://i.ibb.co/...">
+                <button class="btn btn-primary" id="addUrlBtn" style="margin-top:10px;">Ajouter</button>
+            </div>
+            <div class="card">
+                <h3><i class="ph ph-download-simple"></i> Exporter gallery.txt</h3>
+                <button class="btn btn-primary" id="exportGalleryBtn"><i class="ph ph-file-text"></i> Télécharger gallery.txt</button>
             </div>
         </div>
 
@@ -289,18 +294,28 @@
         <!-- SYSTEM -->
         <div id="system" class="section">
             <div class="card">
+                <h3><i class="ph ph-lock"></i> Sécurité Admin</h3>
+                <div class="form-group"><label>Nouveau mot de passe</label><input type="password" id="newAdminPass" class="form-control"></div>
+                <div class="form-group"><label>Confirmer</label><input type="password" id="confirmAdminPass" class="form-control"></div>
+                <button class="btn btn-primary" onclick="changeAdminPassword()">Mettre à jour</button>
+            </div>
+            <div class="card">
+                <h3><i class="ph ph-user-plus"></i> Accès Gmail + Code unique</h3>
+                <div class="form-group"><label>Email Gmail</label><input type="email" id="accessEmail" class="form-control"></div>
+                <div class="form-group"><label>Code unique</label><input type="text" id="accessCode" class="form-control"></div>
+                <button class="btn btn-primary" onclick="addAuthorizedUser()">Ajouter</button>
+                <div style="margin-top:16px;"><strong>Utilisateurs autorisés :</strong></div>
+                <div id="authorizedUsersList" style="margin-top:8px;"></div>
+            </div>
+            <div class="card">
                 <h3><i class="ph ph-wrench"></i> Diagnostic fichiers</h3>
                 <div id="sys-check">En attente...</div>
                 <button class="btn btn-primary" style="margin-top:12px;" onclick="checkFiles()"><i class="ph ph-arrows-clockwise"></i> Tester</button>
             </div>
             <div class="card">
                 <h3><i class="ph ph-link-simple"></i> Accès rapide</h3>
-                <a href="index.html" style="display:flex; align-items:center; gap:10px; padding:12px; background:var(--bg); border-radius:12px; text-decoration:none; color:var(--text); margin-bottom:10px; font-weight:600;">
-                    <i class="ph ph-globe"></i> Ouvrir Petio (Utilisateur)
-                </a>
-                <a href="https://wa.me/12496806826" target="_blank" style="display:flex; align-items:center; gap:10px; padding:12px; background:var(--bg); border-radius:12px; text-decoration:none; color:var(--text); font-weight:600;">
-                    <i class="ph ph-whatsapp-logo"></i> WhatsApp Admin
-                </a>
+                <a href="index.html" style="display:flex; align-items:center; gap:10px; padding:12px; background:var(--bg); border-radius:12px; text-decoration:none; color:var(--text); margin-bottom:10px; font-weight:600;"><i class="ph ph-globe"></i> Ouvrir Petio (Utilisateur)</a>
+                <a href="https://wa.me/12496806826" target="_blank" style="display:flex; align-items:center; gap:10px; padding:12px; background:var(--bg); border-radius:12px; text-decoration:none; color:var(--text); font-weight:600;"><i class="ph ph-whatsapp-logo"></i> WhatsApp Admin</a>
             </div>
         </div>
     </main>
@@ -310,349 +325,276 @@
 <div id="toast"><i class="ph-fill ph-check-circle" style="color:var(--success)"></i> <span id="toast-msg">Copié !</span></div>
 
 <script>
-    // ==================== PWA SETUP ====================
-    const ADMIN_MANIFEST = {
-        name: "Petio Admin",
-        short_name: "Petio Admin",
-        description: "Panneau d'administration Petio",
-        start_url: "admin.html",
-        display: "standalone",
-        background_color: "#f2f2f7",
-        theme_color: "#007aff",
-        icons: [
-            { src: "https://i.ibb.co/zVsc6LDk/62943fce33c7f18d50a127290140782f.jpg", sizes: "512x512", type: "image/jpeg", purpose: "any maskable" }
-        ]
-    };
-    
-    const manifestBlob = new Blob([JSON.stringify(ADMIN_MANIFEST)], {type: 'application/manifest+json'});
-    const manifestURL = URL.createObjectURL(manifestBlob);
-    document.querySelector('link[rel="manifest"]').href = manifestURL;
-    
-    // Service Worker
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            const swCode = `
-                const CACHE_NAME = 'petio-admin-v1';
-                const ASSETS = ['.', 'admin.html', 'https://unpkg.com/@phosphor-icons/web@2.1.1', 'https://i.ibb.co/zVsc6LDk/62943fce33c7f18d50a127290140782f.jpg'];
-                
-                self.addEventListener('install', e => {
-                    e.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS)));
-                    self.skipWaiting();
-                });
-                
-                self.addEventListener('activate', e => {
-                    e.waitUntil(clients.claim());
-                });
-                
-                self.addEventListener('fetch', e => {
-                    e.respondWith(
-                        caches.match(e.request).then(res => res || fetch(e.request).catch(() => caches.match('.')))
-                    );
-                });
-            `;
-            const swBlob = new Blob([swCode], {type: 'application/javascript'});
-            const swURL = URL.createObjectURL(swBlob);
-            navigator.serviceWorker.register(swURL).catch(err => console.log('SW registration failed:', err));
+    // ==================== PWA ====================
+    const ADMIN_MANIFEST = { name:"Petio Admin", short_name:"Petio Admin", start_url:"admin.html", display:"standalone", background_color:"#f2f2f7", theme_color:"#007aff", icons:[{ src:"https://i.ibb.co/zVsc6LDk/62943fce33c7f18d50a127290140782f.jpg", sizes:"512x512", type:"image/jpeg" }] };
+    const manifestBlob = new Blob([JSON.stringify(ADMIN_MANIFEST)], {type:'application/manifest+json'});
+    document.querySelector('link[rel="manifest"]').href = URL.createObjectURL(manifestBlob);
+    if('serviceWorker' in navigator){
+        window.addEventListener('load',()=>{
+            const swCode = `const CACHE_NAME='petio-admin-v1';const ASSETS=['.','admin.html','https://unpkg.com/@phosphor-icons/web@2.1.1','https://i.ibb.co/zVsc6LDk/62943fce33c7f18d50a127290140782f.jpg'];self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE_NAME).then(cache=>cache.addAll(ASSETS)));self.skipWaiting();});self.addEventListener('activate',e=>{e.waitUntil(clients.claim());});self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(res=>res||fetch(e.request).catch(()=>caches.match('.'))));});`;
+            const swBlob = new Blob([swCode],{type:'application/javascript'});
+            navigator.serviceWorker.register(URL.createObjectURL(swBlob));
         });
     }
-    
-    // Install Prompt
     let deferredPrompt = null;
-    window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        deferredPrompt = e;
-        setTimeout(() => {
-            document.getElementById('install-banner').classList.add('show');
-        }, 2000);
-    });
-    
-    function installPWA() {
-        if (deferredPrompt) {
-            deferredPrompt.prompt();
-            deferredPrompt.userChoice.then(() => {
-                deferredPrompt = null;
-                dismissInstall();
-            });
-        }
-    }
-    
-    function dismissInstall() {
-        document.getElementById('install-banner').classList.remove('show');
-    }
-    
+    window.addEventListener('beforeinstallprompt',(e)=>{ e.preventDefault(); deferredPrompt = e; setTimeout(()=>document.getElementById('install-banner').classList.add('show'),2000); });
+    function installPWA(){ if(deferredPrompt){ deferredPrompt.prompt(); deferredPrompt.userChoice.then(()=>{ deferredPrompt=null; dismissInstall(); }); } }
+    function dismissInstall(){ document.getElementById('install-banner').classList.remove('show'); }
+
     // ==================== CONFIG ====================
-    const ADMIN_PASS = "Le BalzaC.5426";
     const PREFIX = "petio_admin_";
-    
+    let ADMIN_PASS = localStorage.getItem(PREFIX+'admin_pass') || "Le BalzaC.5426";
+    const IMGBB_API_KEY = '65e3d72095ac5a63817fa3b72fa75b32';
+    const GALLERY_TXT_URL = '../gallery.txt'; // Adaptez si nécessaire
+
     // ==================== AUTH ====================
-    function attemptLogin() {
+    function attemptLogin(){
         const val = document.getElementById('admin-pass').value;
-        if (val === ADMIN_PASS) {
-            localStorage.setItem(PREFIX + 'auth', 'true');
-            enterAdmin();
-        } else {
-            showToast('Mot de passe incorrect', 'ph-x-circle');
-        }
+        // Vérifier d'abord les utilisateurs autorisés (email+code)
+        const authUsers = JSON.parse(localStorage.getItem(PREFIX+'auth_users')||'[]');
+        const matched = authUsers.find(u=> u.email === val || u.code === val);
+        if(matched){ enterAdmin(); return; }
+        if(val === ADMIN_PASS){ enterAdmin(); return; }
+        showToast('Mot de passe incorrect', 'ph-x-circle');
     }
-    
-    function enterAdmin() {
+    function enterAdmin(){
+        localStorage.setItem(PREFIX+'auth', 'true'); // Mémoriser la connexion
         document.getElementById('login-screen').style.display = 'none';
         document.getElementById('admin-panel').style.display = 'flex';
+        loadAdminPhoto();
         refreshAll();
     }
-    
-    if (localStorage.getItem(PREFIX + 'auth') === 'true') {
-        enterAdmin();
-    }
-    
-    function logout() {
-        localStorage.removeItem(PREFIX + 'auth');
+    if(localStorage.getItem(PREFIX+'auth')==='true') enterAdmin();
+    function logout(){
+        localStorage.removeItem(PREFIX+'auth');
         location.reload();
     }
-    
-    function togglePass() {
+    function togglePass(){
         const inp = document.getElementById('admin-pass');
         const icon = document.getElementById('eye-icon');
-        if (inp.type === 'password') { inp.type = 'text'; icon.className = 'ph ph-eye-slash'; }
-        else { inp.type = 'password'; icon.className = 'ph ph-eye'; }
+        inp.type = inp.type==='password'?'text':'password';
+        icon.className = inp.type==='password'?'ph ph-eye':'ph ph-eye-slash';
     }
 
-    // ==================== NAVIGATION & THEME ====================
-    document.querySelectorAll('.tab').forEach(tab => {
-        tab.addEventListener('click', () => {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    // ==================== PHOTO ADMIN ====================
+    function loadAdminPhoto(){
+        const avatar = document.getElementById('adminAvatar');
+        const photo = localStorage.getItem(PREFIX+'admin_photo');
+        if(photo){ avatar.style.backgroundImage = `url(${photo})`; avatar.style.color = 'transparent'; avatar.textContent = ''; }
+        else { avatar.style.backgroundImage = ''; avatar.style.color = 'white'; avatar.textContent = 'A'; }
+    }
+    window.changeAdminPhoto = function(){
+        const input = document.createElement('input'); input.type = 'file'; input.accept = 'image/*';
+        input.onchange = (e) => {
+            const file = e.target.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                localStorage.setItem(PREFIX+'admin_photo', ev.target.result);
+                loadAdminPhoto();
+            };
+            reader.readAsDataURL(file);
+        };
+        input.click();
+    };
+
+    // ==================== THEME & NAV ====================
+    document.querySelectorAll('.tab').forEach(tab=>{
+        tab.addEventListener('click',()=>{
+            document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+            document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
             tab.classList.add('active');
             document.getElementById(tab.dataset.tab).classList.add('active');
-            if(tab.dataset.tab === 'vip') renderVIPTable();
-            if(tab.dataset.tab === 'logs') renderLogs();
-            if(tab.dataset.tab === 'system') checkFiles();
+            if(tab.dataset.tab==='vip') renderVIPTable();
+            if(tab.dataset.tab==='logs') renderLogs();
+            if(tab.dataset.tab==='system') { renderAuthorizedUsers(); checkFiles(); }
+            if(tab.dataset.tab==='gallery') loadGalleryImages();
         });
     });
-    
-    function toggleTheme() {
+    function toggleTheme(){
         document.body.classList.toggle('dark-theme');
-        document.getElementById('theme-icon').className = document.body.classList.contains('dark-theme') ? 'ph ph-sun' : 'ph ph-moon';
-        localStorage.setItem(PREFIX + 'theme', document.body.classList.contains('dark-theme') ? 'dark' : 'light');
+        document.getElementById('theme-icon').className = document.body.classList.contains('dark-theme')?'ph ph-sun':'ph ph-moon';
+        localStorage.setItem(PREFIX+'theme', document.body.classList.contains('dark-theme')?'dark':'light');
     }
-    if (localStorage.getItem(PREFIX + 'theme') === 'dark') {
-        document.body.classList.add('dark-theme');
-        document.getElementById('theme-icon').className = 'ph ph-sun';
-    }
+    if(localStorage.getItem(PREFIX+'theme')==='dark'){ document.body.classList.add('dark-theme'); document.getElementById('theme-icon').className='ph ph-sun'; }
 
-    // ==================== REAL-TIME SYNC ====================
-    function refreshAll() {
-        const users = JSON.parse(localStorage.getItem(PREFIX + 'users') || '[]');
-        const vips = JSON.parse(localStorage.getItem(PREFIX + 'vips') || '[]');
-        const logs = JSON.parse(localStorage.getItem(PREFIX + 'access_logs') || '[]');
-        const currentMode = localStorage.getItem('petio_current_mode') || 'Cerveau';
-        
+    // ==================== DASHBOARD ====================
+    function refreshAll(){
+        const users = JSON.parse(localStorage.getItem(PREFIX+'users')||'[]');
+        const vips = JSON.parse(localStorage.getItem(PREFIX+'vips')||'[]');
+        const logs = JSON.parse(localStorage.getItem(PREFIX+'access_logs')||'[]');
+        const currentMode = localStorage.getItem('petio_current_mode')||'Cerveau';
         document.getElementById('d-users').textContent = users.length;
-        document.getElementById('d-vip').textContent = vips.filter(v => new Date(v.expiry) > new Date()).length;
+        document.getElementById('d-vip').textContent = vips.filter(v=>new Date(v.expiry)>new Date()).length;
         document.getElementById('d-mode').textContent = currentMode;
-        document.getElementById('d-last').textContent = logs.length ? new Date(logs[logs.length-1].date).toLocaleTimeString() : '--:--';
-        
-        const recentEl = document.getElementById('recent-list');
-        recentEl.innerHTML = logs.slice(-6).reverse().map(l => `
-            <div class="log-item">
-                <div><strong>${l.email}</strong><br><small style="color:#8e8e93">${l.date}</small></div>
-                <span class="badge ${l.status==='VALIDE'?'badge-ok':'badge-off'}">${l.status}</span>
-            </div>
-        `).join('') || '<p style="padding:10px;color:#8e8e93;text-align:center">Aucune activité.</p>';
-        
+        document.getElementById('d-last').textContent = logs.length?new Date(logs[logs.length-1].date).toLocaleTimeString():'--:--';
+        document.getElementById('recent-list').innerHTML = logs.slice(-6).reverse().map(l=>`<div class="log-item"><div><strong>${l.email}</strong><br><small>${l.date}</small></div><span class="badge ${l.status==='VALIDE'?'badge-ok':'badge-off'}">${l.status}</span></div>`).join('')||'<p style="padding:10px;color:#8e8e93;text-align:center">Aucune activité.</p>';
         renderVIPTable();
         renderLogs();
-        updateDashboardFileStats(); // Mise à jour des stats de fichiers
+        updateDashboardFileStats();
     }
-    
-    window.addEventListener('storage', (e) => {
-        if (e.key && e.key.startsWith('petio_')) refreshAll();
-    });
-    setInterval(refreshAll, 3000);
+    window.addEventListener('storage',(e)=>{ if(e.key&&e.key.startsWith('petio_')) refreshAll(); });
+    setInterval(refreshAll,3000);
 
-    // ==================== FILE STATS ====================
-    async function updateDashboardFileStats() {
-        const modes = [
-            { base: 'cerveau' }, { base: 'novice' }, { base: 'procedure' },
-            { base: 'formate' }, { base: 'application' }
-        ];
-        let totalFiles = 0;
-        
-        for (const mode of modes) {
-            const base = mode.base;
-            try { if ((await fetch(`${base}.txt`)).ok) totalFiles++; } catch(e) {}
-            
-            const patterns = [
-                (i) => `${base}${i}.txt`,
-                (i) => `${base}_${i}.txt`,
-                (i) => `${base}-${i}.txt`
-            ];
-            for (const pattern of patterns) {
-                let i = 1, fails = 0;
-                while (i <= 500) {
-                    try {
-                        const r = await fetch(pattern(i));
-                        if (r.ok) { totalFiles++; fails = 0; }
-                        else fails++;
-                    } catch(e) { fails++; }
-                    if (fails >= 3) break;
-                    i++;
-                }
-            }
+    async function updateDashboardFileStats(){
+        const modes = [{base:'cerveau'},{base:'novice'},{base:'procedure'},{base:'formate'},{base:'application'}];
+        let total=0;
+        for(const m of modes){
+            const b=m.base;
+            try{ if((await fetch(b+'.txt')).ok) total++; }catch(e){}
+            const patterns=[(i)=>`${b}${i}.txt`,(i)=>`${b}_${i}.txt`,(i)=>`${b}-${i}.txt`];
+            for(const p of patterns){ let i=1,fails=0; while(i<=500){ try{ const r=await fetch(p(i)); if(r.ok){ total++; fails=0; }else fails++; }catch(e){ fails++; } if(fails>=3)break; i++; } }
         }
-        document.getElementById('d-total-files').textContent = totalFiles;
-        
-        // Global status
-        try {
-            const API_URL = 'https://script.google.com/macros/s/AKfycbxCmsUiDwNhlqAa_qoIYx2Vtr3_2V4x63rjqqn7aU69787Ba9xymzpLLxmG9wF6HKVN/exec';
-            const res = await fetch(`${API_URL}?action=health`);
-            const data = await res.json();
-            document.getElementById('d-global-status').innerHTML = data.status === 'ok' ? '✅ En ligne' : '⚠️ Erreur';
-        } catch(e) {
-            document.getElementById('d-global-status').innerHTML = '❌ Hors ligne';
-        }
+        document.getElementById('d-total-files').textContent = total;
+        try{
+            const res=await fetch('https://script.google.com/macros/s/AKfycbxCmsUiDwNhlqAa_qoIYx2Vtr3_2V4x63rjqqn7aU69787Ba9xymzpLLxmG9wF6HKVN/exec?action=health');
+            const d=await res.json();
+            document.getElementById('d-global-status').innerHTML = d.status==='ok'?'✅ En ligne':'⚠️ Erreur';
+        }catch(e){ document.getElementById('d-global-status').innerHTML='❌ Hors ligne'; }
     }
 
-    async function checkFiles() {
-        const el = document.getElementById('sys-check');
-        el.innerHTML = '<p>⏳ Analyse des fichiers en cours...</p>';
-        
-        const modes = [
-            { name: 'Cerveau', base: 'cerveau' },
-            { name: 'Novice', base: 'novice' },
-            { name: 'Procédure', base: 'procedure' },
-            { name: 'Formate', base: 'formate' },
-            { name: 'Application', base: 'application' }
-        ];
-        
-        let html = '<div style="margin-bottom: 16px;"><strong>📁 Fichiers locaux</strong></div>';
-        
-        for (const mode of modes) {
-            let count = 0;
-            const base = mode.base;
-            
-            try { if ((await fetch(`${base}.txt`)).ok) count++; } catch(e) {}
-            
-            const patterns = [
-                (i) => `${base}${i}.txt`,
-                (i) => `${base}_${i}.txt`,
-                (i) => `${base}-${i}.txt`
-            ];
-            for (const pattern of patterns) {
-                let i = 1, fails = 0;
-                while (i <= 500) {
-                    try {
-                        const r = await fetch(pattern(i));
-                        if (r.ok) { count++; fails = 0; }
-                        else fails++;
-                    } catch(e) { fails++; }
-                    if (fails >= 3) break;
-                    i++;
-                }
-            }
-            
-            const status = count > 0 ? '✅' : '❌';
-            const color = count > 0 ? 'var(--success)' : 'var(--danger)';
-            html += `<div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid var(--border);">
-                <span><strong>${mode.name}</strong></span>
-                <span style="color:${color};">${status} ${count} fichier(s)</span>
-            </div>`;
+    async function checkFiles(){
+        const el=document.getElementById('sys-check');
+        el.innerHTML='<p>⏳ Analyse...</p>';
+        const modes=[{name:'Cerveau',base:'cerveau'},{name:'Novice',base:'novice'},{name:'Procédure',base:'procedure'},{name:'Formate',base:'formate'},{name:'Application',base:'application'}];
+        let html='<div style="margin-bottom:16px;"><strong>📁 Fichiers locaux</strong></div>';
+        for(const m of modes){
+            let count=0; const b=m.base;
+            try{ if((await fetch(b+'.txt')).ok) count++; }catch(e){}
+            const patterns=[(i)=>`${b}${i}.txt`,(i)=>`${b}_${i}.txt`,(i)=>`${b}-${i}.txt`];
+            for(const p of patterns){ let i=1,fails=0; while(i<=500){ try{ const r=await fetch(p(i)); if(r.ok){ count++; fails=0; }else fails++; }catch(e){ fails++; } if(fails>=3)break; i++; } }
+            html+=`<div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);"><span><strong>${m.name}</strong></span><span style="color:${count?'var(--success)':'var(--danger)'};">${count?'✅':'❌'} ${count} fichier(s)</span></div>`;
         }
-        
-        // Mode Global
-        html += '<div style="margin: 20px 0 16px;"><strong>🌐 Mode Global</strong></div>';
-        try {
-            const API_URL = 'https://script.google.com/macros/s/AKfycbxCmsUiDwNhlqAa_qoIYx2Vtr3_2V4x63rjqqn7aU69787Ba9xymzpLLxmG9wF6HKVN/exec';
-            const res = await fetch(`${API_URL}?action=health`);
-            const data = await res.json();
-            const status = data.status === 'ok' ? '✅ Connecté' : '⚠️ Actif mais erreur';
-            html += `<div style="display:flex; justify-content:space-between; padding:10px 0;">
-                <span><strong>API Global</strong></span>
-                <span style="color:var(--success);">${status}</span>
-            </div>`;
-            html += `<div style="font-size:13px; color:#8e8e93; margin-top:8px;">Dossier : ${data.folder || 'N/A'}</div>`;
-        } catch(e) {
-            html += `<div style="display:flex; justify-content:space-between; padding:10px 0;">
-                <span><strong>API Global</strong></span>
-                <span style="color:var(--danger);">❌ Injoignable</span>
-            </div>`;
-        }
-        
-        el.innerHTML = html;
-        updateDashboardFileStats(); // Synchroniser les stats dashboard
+        html+='<div style="margin:20px 0 16px;"><strong>🌐 Mode Global</strong></div>';
+        try{
+            const res=await fetch('https://script.google.com/macros/s/AKfycbxCmsUiDwNhlqAa_qoIYx2Vtr3_2V4x63rjqqn7aU69787Ba9xymzpLLxmG9wF6HKVN/exec?action=health');
+            const d=await res.json();
+            html+=`<div>✅ Connecté - Dossier: ${d.folder||'N/A'}</div>`;
+        }catch(e){ html+='<div style="color:var(--danger);">❌ Injoignable</div>'; }
+        el.innerHTML=html;
+        updateDashboardFileStats();
     }
 
-    // ==================== VIP SYSTEM ====================
-    function createVIP() {
-        const email = document.getElementById('vip-email').value.trim();
-        const days = parseInt(document.getElementById('vip-days').value) || 30;
-        if (!email) return showToast('Email manquant', 'ph-warning');
-        
-        const code = 'VIP-' + Math.random().toString(36).substring(2, 8).toUpperCase();
-        const expiry = new Date(); expiry.setDate(expiry.getDate() + days);
-        
-        const vips = JSON.parse(localStorage.getItem(PREFIX + 'vips') || '[]');
-        vips.push({ email, code, expiry: expiry.toISOString() });
-        localStorage.setItem(PREFIX + 'vips', JSON.stringify(vips));
-        
-        document.getElementById('vip-output').style.display = 'block';
-        document.getElementById('new-code-display').textContent = code;
-        document.getElementById('vip-email').value = '';
-        copyCode();
-        refreshAll();
+    // ==================== VIP ====================
+    function createVIP(){
+        const email=document.getElementById('vip-email').value.trim(), days=parseInt(document.getElementById('vip-days').value)||30;
+        if(!email) return showToast('Email manquant','ph-warning');
+        const code='VIP-'+Math.random().toString(36).substring(2,8).toUpperCase();
+        const expiry=new Date(); expiry.setDate(expiry.getDate()+days);
+        const vips=JSON.parse(localStorage.getItem(PREFIX+'vips')||'[]');
+        vips.push({email,code,expiry:expiry.toISOString()});
+        localStorage.setItem(PREFIX+'vips',JSON.stringify(vips));
+        document.getElementById('vip-output').style.display='block';
+        document.getElementById('new-code-display').textContent=code;
+        document.getElementById('vip-email').value='';
+        copyCode(); refreshAll();
     }
-    
-    function renderVIPTable() {
-        const vips = JSON.parse(localStorage.getItem(PREFIX + 'vips') || '[]');
-        document.getElementById('vip-table').innerHTML = vips.map((v, i) => `
-            <tr>
-                <td>${v.email}</td>
-                <td>${v.code}</td>
-                <td><span class="badge ${new Date(v.expiry) > new Date() ? 'badge-ok' : 'badge-off'}">${new Date(v.expiry) > new Date() ? 'Actif' : 'Expiré'}</span></td>
-                <td><button onclick="deleteVIP(${i})" style="background:none;border:none;cursor:pointer;font-size:18px;color:var(--danger);padding:4px;"><i class="ph ph-trash"></i></button></td>
-            </tr>
-        `).join('') || '<tr><td colspan="4" style="text-align:center;color:#8e8e93;padding:16px">Aucun code</td></tr>';
+    function renderVIPTable(){
+        const vips=JSON.parse(localStorage.getItem(PREFIX+'vips')||'[]');
+        document.getElementById('vip-table').innerHTML=vips.map((v,i)=>`<tr><td>${v.email}</td><td>${v.code}</td><td><span class="badge ${new Date(v.expiry)>new Date()?'badge-ok':'badge-off'}">${new Date(v.expiry)>new Date()?'Actif':'Expiré'}</span></td><td><button onclick="deleteVIP(${i})" style="background:none;border:none;cursor:pointer;font-size:18px;color:var(--danger);"><i class="ph ph-trash"></i></button></td></tr>`).join('')||'<tr><td colspan="4" style="text-align:center;color:#8e8e93;padding:16px">Aucun code</td></tr>';
     }
-    
-    function deleteVIP(idx) {
-        if(!confirm('Supprimer ce code ?')) return;
-        const vips = JSON.parse(localStorage.getItem(PREFIX + 'vips') || '[]');
-        vips.splice(idx, 1);
-        localStorage.setItem(PREFIX + 'vips', JSON.stringify(vips));
-        refreshAll();
-    }
+    window.deleteVIP=(idx)=>{ if(!confirm('Supprimer ?')) return; const vips=JSON.parse(localStorage.getItem(PREFIX+'vips')||'[]'); vips.splice(idx,1); localStorage.setItem(PREFIX+'vips',JSON.stringify(vips)); refreshAll(); };
 
-    // ==================== LOGS & UTILS ====================
-    function renderLogs() {
-        const logs = JSON.parse(localStorage.getItem(PREFIX + 'access_logs') || '[]');
-        document.getElementById('logs-list').innerHTML = logs.reverse().map(l => `
-            <div class="log-item">
-                <div><strong>${l.email}</strong><br><small style="color:#8e8e93">${l.ip || 'App'} • ${l.date}</small></div>
-                <span class="badge ${l.status==='VALIDE'?'badge-ok':'badge-off'}">${l.status}</span>
-            </div>
-        `).join('') || '<p style="padding:20px;text-align:center;color:#8e8e93">Vide.</p>';
+    // ==================== LOGS ====================
+    function renderLogs(){
+        const logs=JSON.parse(localStorage.getItem(PREFIX+'access_logs')||'[]');
+        document.getElementById('logs-list').innerHTML=logs.reverse().map(l=>`<div class="log-item"><div><strong>${l.email}</strong><br><small>${l.ip||'App'} • ${l.date}</small></div><span class="badge ${l.status==='VALIDE'?'badge-ok':'badge-off'}">${l.status}</span></div>`).join('')||'<p style="padding:20px;text-align:center;color:#8e8e93">Vide.</p>';
     }
-    
-    function clearData() {
+    function clearData(){
         if(!confirm('Effacer TOUTES les données admin ?')) return;
-        localStorage.removeItem(PREFIX + 'users');
-        localStorage.removeItem(PREFIX + 'vips');
-        localStorage.removeItem(PREFIX + 'access_logs');
-        refreshAll();
-        showToast('Données effacées', 'ph-check-circle');
+        localStorage.removeItem(PREFIX+'users'); localStorage.removeItem(PREFIX+'vips'); localStorage.removeItem(PREFIX+'access_logs');
+        refreshAll(); showToast('Données effacées','ph-check-circle');
     }
-    
-    function copyCode() {
-        const txt = document.getElementById('new-code-display').textContent;
-        navigator.clipboard.writeText(txt).then(() => showToast('Code copié !', 'ph-copy'));
+    function copyCode(){ navigator.clipboard.writeText(document.getElementById('new-code-display').textContent).then(()=>showToast('Code copié !','ph-copy')); }
+
+    // ==================== GALLERY ====================
+    let currentGalleryImages = [];
+    async function loadGalleryImages(){
+        const container = document.getElementById('galleryImageList');
+        try{
+            const res = await fetch(GALLERY_TXT_URL);
+            if(!res.ok) throw new Error('Fichier introuvable');
+            const text = await res.text();
+            const lines = text.split('\n').filter(l=>l.trim());
+            currentGalleryImages = lines.map(l=>l.split('|')[0].trim()).filter(u=>u.startsWith('http'));
+            renderGalleryList();
+        }catch(e){ container.innerHTML = '<p>Erreur de chargement ou fichier vide.</p>'; }
     }
-    
-    function showToast(msg, icon='ph-check-circle') {
-        const t = document.getElementById('toast');
-        t.innerHTML = `<i class="ph-fill ${icon}"></i> <span>${msg}</span>`;
+    function renderGalleryList(){
+        const container = document.getElementById('galleryImageList');
+        if(currentGalleryImages.length===0){ container.innerHTML='<p>Aucune image.</p>'; return; }
+        let html='';
+        currentGalleryImages.forEach((url,i)=>{
+            html+=`<div class="gallery-thumb"><img src="${url}" loading="lazy"><div class="actions"><button class="icon-btn" style="width:28px;height:28px;" onclick="copyGalleryUrl('${url}')"><i class="ph ph-copy"></i></button><button class="icon-btn" style="background:var(--danger);width:28px;height:28px;" onclick="removeGalleryImage(${i})"><i class="ph ph-trash"></i></button></div></div>`;
+        });
+        container.innerHTML = html;
+    }
+    window.copyGalleryUrl = (url)=>{ navigator.clipboard.writeText(url); showToast('URL copiée'); };
+    window.removeGalleryImage = (idx)=>{ currentGalleryImages.splice(idx,1); renderGalleryList(); };
+    function addImageUrl(url){
+        if(!url.startsWith('http')){ showToast('URL invalide','ph-warning'); return; }
+        if(currentGalleryImages.includes(url)){ showToast('URL déjà présente','ph-warning'); return; }
+        currentGalleryImages.push(url); renderGalleryList();
+    }
+    document.getElementById('uploadImgBtn').addEventListener('click',()=>{
+        if(typeof imgbbUpload !== 'undefined'){
+            imgbbUpload({ key: IMGBB_API_KEY, success: (res)=>{ addImageUrl(res.data.url); }, error: (err)=>showToast('Erreur upload','ph-warning') });
+        } else { window.open('https://imgbb.com/upload','_blank'); alert('Veuillez copier l\'URL manuellement.'); }
+    });
+    document.getElementById('addUrlBtn').addEventListener('click',()=>{ const url=document.getElementById('manualImgUrl').value.trim(); if(url){ addImageUrl(url); document.getElementById('manualImgUrl').value=''; } });
+    document.getElementById('refreshGalleryBtn').addEventListener('click',loadGalleryImages);
+    document.getElementById('exportGalleryBtn').addEventListener('click',()=>{
+        const content = currentGalleryImages.join('\n');
+        const blob = new Blob([content],{type:'text/plain'});
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'gallery.txt'; a.click();
+        showToast('Fichier généré. Remplacez-le sur votre serveur.');
+    });
+
+    // ==================== SYSTEM : PASSWORD & AUTHORIZED USERS ====================
+    window.changeAdminPassword = function(){
+        const p1 = document.getElementById('newAdminPass').value;
+        const p2 = document.getElementById('confirmAdminPass').value;
+        if(!p1 || p1!==p2) return showToast('Mots de passe différents','ph-warning');
+        ADMIN_PASS = p1;
+        localStorage.setItem(PREFIX+'admin_pass', p1);
+        showToast('Mot de passe mis à jour','ph-check-circle');
+        document.getElementById('newAdminPass').value = document.getElementById('confirmAdminPass').value = '';
+    };
+    window.addAuthorizedUser = function(){
+        const email = document.getElementById('accessEmail').value.trim();
+        const code = document.getElementById('accessCode').value.trim();
+        if(!email||!code) return showToast('Email et code requis','ph-warning');
+        const users = JSON.parse(localStorage.getItem(PREFIX+'auth_users')||'[]');
+        if(users.find(u=>u.email===email)) return showToast('Email déjà autorisé','ph-warning');
+        users.push({email,code});
+        localStorage.setItem(PREFIX+'auth_users',JSON.stringify(users));
+        renderAuthorizedUsers();
+        document.getElementById('accessEmail').value = document.getElementById('accessCode').value = '';
+        showToast('Utilisateur ajouté','ph-check-circle');
+    };
+    function renderAuthorizedUsers(){
+        const users = JSON.parse(localStorage.getItem(PREFIX+'auth_users')||'[]');
+        const container = document.getElementById('authorizedUsersList');
+        container.innerHTML = users.map((u,i)=>`<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);"><span>${u.email} (code: ${u.code})</span><button class="icon-btn" style="width:28px;height:28px;" onclick="removeAuthUser(${i})"><i class="ph ph-trash"></i></button></div>`).join('')||'<p style="color:#8e8e93;">Aucun</p>';
+    }
+    window.removeAuthUser = (idx)=>{
+        const users = JSON.parse(localStorage.getItem(PREFIX+'auth_users')||'[]');
+        users.splice(idx,1);
+        localStorage.setItem(PREFIX+'auth_users',JSON.stringify(users));
+        renderAuthorizedUsers();
+    };
+
+    // ==================== UTILS ====================
+    function showToast(msg,icon='ph-check-circle'){
+        const t=document.getElementById('toast');
+        t.innerHTML=`<i class="ph-fill ${icon}"></i><span>${msg}</span>`;
         t.classList.add('show');
-        setTimeout(() => t.classList.remove('show'), 2500);
+        setTimeout(()=>t.classList.remove('show'),2500);
     }
+
+    // Initialisation
+    loadAdminPhoto();
+    renderAuthorizedUsers();
 </script>
 </body>
 </html>
