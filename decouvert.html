@@ -127,12 +127,12 @@
     </div>
 
     <script>
-        // ---------- CONFIG ----------
+        // ---------- CONFIGURATION ----------
         const DRIVE_API_KEY = 'AIzaSyDiZNla26G3wblOh9ZFLs2vvPFDI1ZTDJo';
         const DRIVE_FOLDER_ID = '1iqlRjauMrSsazy--eA3AVzr7t33La_3x';
         const UNLOCK_KEY = 'petio_procedure_unlocked';
 
-        // Modes locaux à inclure (y compris divers)
+        // Modes locaux à inclure (inclut divers)
         const LOCAL_MODES = ['novice', 'formate', 'procedure', 'application', 'divers'];
 
         // ---------- THÈME ----------
@@ -229,7 +229,6 @@
                         }
                         return text;
                     } else {
-                        // Par défaut, essayer export texte ou téléchargement
                         try {
                             const exportUrl = `https://www.googleapis.com/drive/v3/files/${file.id}/export?mimeType=text/plain&key=${DRIVE_API_KEY}`;
                             const res = await fetch(exportUrl);
@@ -248,7 +247,7 @@
             } catch(e) { return 'Erreur de lecture.'; }
         }
 
-        // ---------- CHARGEMENT DES FICHIERS ----------
+        // ---------- CHARGEMENT DE TOUS LES FICHIERS ----------
         async function loadAllFiles() {
             const listEl = document.getElementById('files-list');
             const loadingEl = document.getElementById('loading-indicator');
@@ -259,17 +258,19 @@
 
             try {
                 const files = [];
-                // 1. Locaux
+                // 1. Fichiers locaux
                 for (const mode of LOCAL_MODES) {
                     await addLocalFiles(mode, files);
                 }
-                // 2. Drive
+                // 2. Fichiers Drive
                 await addDriveFiles(files);
+
+                console.log('Fichiers trouvés:', files.map(f => f.name));
 
                 if (files.length === 0) {
                     listEl.innerHTML = '<p style="text-align:center; padding:20px; color:#8e8e93;">Aucun fichier trouvé.</p>';
                 } else {
-                    files.sort((a,b) => a.name.localeCompare(b.name));
+                    files.sort((a, b) => a.name.localeCompare(b.name));
                     files.forEach(file => {
                         const btn = document.createElement('button');
                         btn.className = 'suggestion-btn';
@@ -278,7 +279,7 @@
                         listEl.appendChild(btn);
                     });
                 }
-            } catch(e) {
+            } catch (e) {
                 errorEl.innerHTML = 'Erreur de chargement.';
                 console.error(e);
             } finally {
@@ -288,23 +289,42 @@
 
         async function addLocalFiles(mode, filesArray) {
             const base = mode;
-            // Fichier de base .txt
-            try { if ((await fetch(`${base}.txt`, {method:'HEAD'})).ok) filesArray.push({ name: `${base}.txt`, source:'local', path:`${base}.txt` }); } catch(e){}
-            const patterns = [
-                (i) => `${base}${i}.txt`, (i) => `${base}_${i}.txt`, (i) => `${base}-${i}.txt`,
-                (i) => `${base}${i}.pdf`, (i) => `${base}_${i}.pdf`, (i) => `${base}-${i}.pdf`,
-                (i) => `${base}${i}.docx`, (i) => `${base}_${i}.docx`, (i) => `${base}-${i}.docx`,
-                (i) => `${base}${i}.doc`, (i) => `${base}_${i}.doc`, (i) => `${base}-${i}.doc`
-            ];
+            const extensions = ['txt', 'pdf', 'docx', 'doc'];
+            
+            // Fichier de base sans numéro (ex: formate.pdf)
+            for (const ext of extensions) {
+                const name = `${base}.${ext}`;
+                try {
+                    const res = await fetch(name, { method: 'HEAD' });
+                    if (res.ok) {
+                        filesArray.push({ name, source: 'local', path: name });
+                    }
+                } catch (e) {}
+            }
+
+            // Patterns numérotés
+            const patterns = [];
+            for (const ext of extensions) {
+                patterns.push(
+                    (i) => `${base}${i}.${ext}`,
+                    (i) => `${base}_${i}.${ext}`,
+                    (i) => `${base}-${i}.${ext}`
+                );
+            }
+
             for (const pat of patterns) {
                 let i = 1, fails = 0;
                 while (i <= 500) {
                     const name = pat(i);
                     try {
-                        const res = await fetch(name, { method:'HEAD' });
-                        if (res.ok) { filesArray.push({ name, source:'local', path:name }); fails = 0; }
-                        else fails++;
-                    } catch(e) { fails++; }
+                        const res = await fetch(name, { method: 'HEAD' });
+                        if (res.ok) {
+                            filesArray.push({ name, source: 'local', path: name });
+                            fails = 0;
+                        } else {
+                            fails++;
+                        }
+                    } catch (e) { fails++; }
                     if (fails >= 3) break;
                     i++;
                 }
@@ -318,14 +338,14 @@
                 const data = await res.json();
                 if (data.files) {
                     data.files.forEach(f => {
-                        // Exclure les images
                         const lower = f.name.toLowerCase();
-                        if (!lower.endsWith('.jpg') && !lower.endsWith('.jpeg') && !lower.endsWith('.png') && !lower.endsWith('.gif') && !lower.endsWith('.webp')) {
-                            filesArray.push({ name: f.name, source:'drive', id: f.id, mimeType: f.mimeType });
+                        // Exclure les images
+                        if (!lower.match(/\.(jpg|jpeg|png|gif|webp|bmp|svg)$/)) {
+                            filesArray.push({ name: f.name, source: 'drive', id: f.id, mimeType: f.mimeType });
                         }
                     });
                 }
-            } catch(e) { console.warn('Drive error', e); }
+            } catch (e) { console.warn('Drive error', e); }
         }
 
         // ---------- OUVERTURE FICHIER + TRADUCTION ----------
@@ -341,7 +361,7 @@
                 const raw = await extractText(file, file.source === 'drive');
                 const translated = await traduireFR(raw);
                 textDiv.textContent = translated || '(Fichier vide)';
-            } catch(e) {
+            } catch (e) {
                 textDiv.textContent = 'Erreur de lecture.';
             }
         }
