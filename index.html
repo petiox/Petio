@@ -181,7 +181,7 @@
         .setting-item.active .setting-desc { max-height: 500px; opacity: 1; margin-top: 8px; }
         .setting-icon { font-size: 20px; color: var(--accent); }
 
-        /* Menu "+" amélioré avec flou */
+        /* Menu "+" amélioré avec flou - 3 colonnes */
         .extra-menu {
             position: absolute;
             bottom: 85px;
@@ -197,7 +197,7 @@
             border-radius: 28px;
             border: 1px solid rgba(255,255,255,0.15);
             box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-            max-width: 320px;
+            max-width: 360px;
         }
         .extra-menu.show {
             display: flex;
@@ -210,7 +210,7 @@
         }
         .menu-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(3, 1fr);
             gap: 10px;
         }
         .menu-row {
@@ -220,7 +220,7 @@
             text-decoration: none;
             cursor: pointer;
             background: rgba(255,255,255,0.1);
-            padding: 12px 8px;
+            padding: 12px 4px;
             border-radius: 16px;
             transition: transform 0.15s, background 0.2s;
             border: 1px solid rgba(255,255,255,0.1);
@@ -230,41 +230,32 @@
             background: rgba(255,255,255,0.2);
         }
         .menu-item {
-            width: 48px;
-            height: 48px;
+            width: 44px;
+            height: 44px;
             background: var(--accent);
             color: white;
             border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 24px;
+            font-size: 22px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
             margin-bottom: 6px;
         }
         .menu-label {
             background: transparent;
-            padding: 4px 8px;
+            padding: 4px 4px;
             border-radius: 12px;
-            font-size: 13px;
+            font-size: 12px;
             color: white;
             font-weight: 700;
             text-align: center;
             text-shadow: 0 1px 3px rgba(0,0,0,0.3);
-        }
-        .menu-separator {
-            grid-column: span 2;
-            text-align: center;
-            color: rgba(255,255,255,0.7);
-            font-size: 11px;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            margin: 4px 0 2px;
-            text-transform: uppercase;
+            white-space: nowrap;
         }
 
-        /* Galerie */
-        .gallery-header {
+        /* Galerie et Bibliothèque (headers) */
+        .gallery-header, .bibliotheque-header {
             background: var(--header-grad);
             padding: 8px 12px;
             display: flex;
@@ -274,7 +265,7 @@
             border-bottom-left-radius: 15px;
             border-bottom-right-radius: 15px;
         }
-        .gallery-header .title {
+        .gallery-header .title, .bibliotheque-header .title {
             font-size: 18px;
             font-weight: 900;
             flex: 1;
@@ -364,13 +355,75 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
             transition: background 0.2s;
         }
-        .lightbox-download-btn.downloaded {
-            background: #34c759;
+        .lightbox-download-btn.downloaded { background: #34c759; }
+
+        /* Bibliothèque */
+        .bibliotheque-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
         }
-        .gallery-loading {
-            text-align: center;
-            padding: 40px;
-            color: var(--text);
+        .bibliotheque-suggestions {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        /* Modal lecture (Bibliothèque) */
+        .lecture-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(6px);
+            z-index: 4000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+        }
+        .lecture-modal.show { display: flex; }
+        .lecture-card {
+            background: var(--card);
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        .lecture-header {
+            padding: 18px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .lecture-title { font-size: 18px; font-weight: 800; }
+        .lecture-close { font-size: 28px; cursor: pointer; padding: 8px; }
+        .lecture-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-break: break-word;
+            font-weight: 400;
+            line-height: 1.5;
+        }
+        .lecture-copy {
+            position: absolute;
+            bottom: 24px;
+            right: 24px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            z-index: 10;
         }
 
         .input-bar { padding: 10px 15px calc(20px + var(--safe-bottom)); display: flex; align-items: flex-end; gap: 10px; border-top: 1px solid var(--border); background: var(--card); }
@@ -455,21 +508,7 @@
         .unlock-secondary { background: transparent; border: 1px solid var(--border); color: var(--text); }
         .error-message { color: #ff3b30; background: rgba(255,59,48,0.1); padding: 15px; border-radius: 14px; margin-bottom: 20px; text-align: center; font-weight: 700; }
 
-        /* Bouton Lire la suite */
-        .suite-btn {
-            display: block;
-            margin-top: 12px;
-            padding: 8px 16px;
-            background: var(--accent);
-            color: white;
-            border: none;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            width: fit-content;
-        }
+        .suite-btn { display: block; margin-top: 12px; padding: 8px 16px; background: var(--accent); color: white; border: none; border-radius: 20px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; width: fit-content; }
         .suite-btn:active { transform: scale(0.96); opacity: 0.9; }
     </style>
 </head>
@@ -491,9 +530,7 @@
     <div class="pwa-sheet-header">
         <i class="ph ph-device-mobile"></i>
         <h3 style="margin:0;">Installer Petio</h3>
-        <button class="install-btn-top" id="forceInstallBtn">
-            <i class="ph ph-download-simple"></i> Installer
-        </button>
+        <button class="install-btn-top" id="forceInstallBtn"><i class="ph ph-download-simple"></i> Installer</button>
     </div>
     <div class="pwa-steps">
         <div class="pwa-step"><i class="ph ph-android-logo"></i><span><strong>Android</strong> : appuyez sur "Installer" ou menu → "Ajouter à l'écran d'accueil".</span></div>
@@ -525,10 +562,7 @@
         <button class="unlock-btn unlock-secondary" onclick="contacterAdmin('code')">Contacter l'admin</button>
     </div>
     <div id="unlock-step-payment" class="unlock-step">
-        <div class="error-message">
-            <i class="ph ph-warning-circle" style="font-size: 24px; margin-bottom: 8px; display: block;"></i>
-            Le code que vous avez saisi est invalide ou ne correspond pas. Pour accéder à ce menu, veuillez contacter l'administrateur.
-        </div>
+        <div class="error-message"><i class="ph ph-warning-circle" style="font-size:24px;margin-bottom:8px;display:block;"></i>Le code que vous avez saisi est invalide ou ne correspond pas. Pour accéder à ce menu, veuillez contacter l'administrateur.</div>
         <button class="unlock-btn unlock-secondary" onclick="contacterAdmin('payment')">Contacter l'admin</button>
     </div>
 </div>
@@ -542,10 +576,8 @@
             <input type="email" id="userEmail" class="input-field" placeholder="Email d'achat">
             <input type="text" id="userCode" class="input-field" placeholder="Code de transaction">
             <button class="btn-valid" id="btnValid" onclick="verifierAcces()">Valider</button>
-            <button class="btn-valid" style="background: var(--pay-btn); margin-top: 12px;" onclick="openPay()">🔑 Avoir mes accès</button>
-            <div class="footer-icons">
-                <i class="ph ph-fingerprint"></i><i class="ph ph-key"></i><i class="ph ph-cpu"></i>
-            </div>
+            <button class="btn-valid" style="background: var(--pay-btn); margin-top:12px;" onclick="openPay()">🔑 Avoir mes accès</button>
+            <div class="footer-icons"><i class="ph ph-fingerprint"></i><i class="ph ph-key"></i><i class="ph ph-cpu"></i></div>
         </div>
     </div>
 </div>
@@ -553,125 +585,79 @@
     <div class="chat-container">
         <div class="header" id="mainHeader">
             <div class="header-btn" onclick="openSettings()"><i class="ph ph-gear"></i></div>
-            <div id="modeContainer">
-                <span id="modeText">🤖 MODE: CERVEAU</span>
-                <button class="btn-reset-mode" onclick="resetMode()"><i class="ph ph-arrow-counter-clockwise"></i></button>
-            </div>
-            <div class="header-actions" style="display:flex;gap:8px;">
-                <div class="user-avatar" id="userAvatar" onclick="changeUserPhoto()" title="Changer la photo de profil"></div>
-                <div class="header-btn" onclick="toggleTheme()"><i id="themeIcon" class="ph ph-moon"></i></div>
-            </div>
+            <div id="modeContainer"><span id="modeText">🤖 MODE: CERVEAU</span><button class="btn-reset-mode" onclick="resetMode()"><i class="ph ph-arrow-counter-clockwise"></i></button></div>
+            <div class="header-actions" style="display:flex;gap:8px;"><div class="user-avatar" id="userAvatar" onclick="changeUserPhoto()" title="Changer la photo de profil"></div><div class="header-btn" onclick="toggleTheme()"><i id="themeIcon" class="ph ph-moon"></i></div></div>
         </div>
 
+        <!-- Header Gallery -->
         <div class="gallery-header" id="galleryHeader" style="display:none;">
             <div class="header-btn" onclick="exitGalleryMode()"><i class="ph ph-arrow-left"></i></div>
             <span class="title">🖼️ Gallery</span>
             <div class="header-btn" onclick="refreshGallery()"><i class="ph ph-arrows-clockwise"></i></div>
         </div>
 
+        <!-- Header Bibliothèque -->
+        <div class="bibliotheque-header" id="bibliothequeHeader" style="display:none;">
+            <div class="header-btn" onclick="exitBibliothequeMode()"><i class="ph ph-arrow-left"></i></div>
+            <span class="title">📚 Bibliothèque</span>
+            <div class="header-btn" onclick="refreshBibliotheque()"><i class="ph ph-arrows-clockwise"></i></div>
+        </div>
+
         <div class="chat-content" id="chatArea" onclick="closeMenu()"></div>
         <div id="galleryView" style="display:none; flex:1; overflow-y:auto;"></div>
+        <div id="bibliothequeView" style="display:none; flex:1; overflow-y:auto;"></div>
         <div class="typing" id="typing"><span id="typingName">Petio</span> écrit...</div>
 
-        <div class="suggestions-container" id="suggestionsContainer">
-            <div class="suggestions-label">💡 Suggestions :</div>
-            <div class="suggestions-scroll" id="suggestionsScroll"></div>
-        </div>
+        <div class="suggestions-container" id="suggestionsContainer"><div class="suggestions-label">💡 Suggestions :</div><div class="suggestions-scroll" id="suggestionsScroll"></div></div>
 
         <!-- Galerie Lightbox -->
         <div class="gallery-lightbox" id="galleryLightbox" onclick="closeLightbox()">
             <span class="lightbox-close" onclick="closeLightbox()">&times;</span>
             <img class="lightbox-img" id="lightboxImg" src="" alt="">
-            <button class="lightbox-download-btn" id="lightboxDownloadBtn" onclick="downloadCurrentImage(event)">
-                <i class="ph ph-download-simple"></i>
-            </button>
+            <button class="lightbox-download-btn" id="lightboxDownloadBtn" onclick="downloadCurrentImage(event)"><i class="ph ph-download-simple"></i></button>
+        </div>
+
+        <!-- Modal lecture Bibliothèque -->
+        <div class="lecture-modal" id="lectureModal" onclick="closeLectureModal()">
+            <div class="lecture-card" onclick="event.stopPropagation()">
+                <div class="lecture-header">
+                    <span class="lecture-title" id="lectureTitle">Fichier</span>
+                    <span class="lecture-close" onclick="closeLectureModal()"><i class="ph ph-x"></i></span>
+                </div>
+                <div class="lecture-content" id="lectureContent">Chargement...</div>
+                <button class="lecture-copy" id="lectureCopyBtn" onclick="copyLectureContent()"><i class="ph ph-copy"></i> Copier</button>
+            </div>
         </div>
 
         <div class="settings-page" id="settingsPage">
-            <div class="settings-header">
-                <div class="header-btn" style="color:var(--text)" onclick="closeSettings()"><i class="ph ph-caret-left"></i></div>
-                <span style="font-weight:700; color:var(--text)">Paramètres</span>
-            </div>
+            <div class="settings-header"><div class="header-btn" style="color:var(--text)" onclick="closeSettings()"><i class="ph ph-caret-left"></i></div><span style="font-weight:700; color:var(--text)">Paramètres</span></div>
             <div class="settings-content">
-                <div class="setting-item" onclick="openNameModal()">
-                    <div class="setting-main"><i class="setting-icon ph ph-user-circle"></i><span>Nom de l'assistant</span></div>
-                    <div class="setting-desc">Actuellement : <span id="currentBotName">Petio</span></div>
-                </div>
-                <div class="setting-item" onclick="changeUserPhoto()">
-                    <div class="setting-main"><i class="setting-icon ph ph-camera"></i><span>Photo de profil</span></div>
-                    <div class="setting-desc">Choisir une photo pour votre avatar</div>
-                </div>
-                <div class="setting-item" onclick="afficherBanniereInstallation()">
-                    <div class="setting-main"><i class="setting-icon ph ph-device-mobile"></i><span>Installer l'application</span></div>
-                    <div class="setting-desc">Ajouter Petio à l'écran d'accueil.</div>
-                </div>
-                <div class="setting-item" onclick="window.open('https://wa.me/12496806826', '_blank')">
-                    <div class="setting-main"><i class="setting-icon ph ph-whatsapp-logo"></i><span>Contact</span></div>
-                    <div class="setting-desc">Besoin d'aide ? Écrivez-nous sur WhatsApp.</div>
-                </div>
-                <div class="setting-item" onclick="toggleSettingDesc('faq')">
-                    <div class="setting-main"><i class="setting-icon ph ph-question"></i><span>FAQ</span></div>
-                    <div class="setting-desc" id="faq-desc"><p><strong>Comment utiliser Petio ?</strong><br>Tapez votre question dans la zone de saisie. Petio analysera les fichiers du mode actif et vous répondra instantanément. Utilisez le menu <code>+</code> pour changer de mode.</p><p><strong>Que sont les "Modes" ?</strong><br>Chaque mode charge une base de connaissances différente. Par exemple, le mode <em>Novice</em> propose des explications simples, tandis que le mode <em>Formate</em> contient des procédures techniques avancées. Les réponses sont strictement limitées au mode sélectionné.</p><p><strong>Petio fonctionne-t-il hors ligne ?</strong><br>Oui. Une fois l'application installée en tant que PWA et les fichiers chargés, Petio fonctionne entièrement hors ligne.</p><p><strong>Comment obtenir un accès VIP ?</strong><br>Cliquez sur "Avoir mes accès" sur l'écran de vérification ou contactez l'administrateur via WhatsApp.</p></div>
-                </div>
-                <div class="setting-item" onclick="toggleSettingDesc('cgu')">
-                    <div class="setting-main"><i class="setting-icon ph ph-scales"></i><span>CGU</span></div>
-                    <div class="setting-desc" id="cgu-desc"><p><strong>1. Objet</strong><br>Les présentes Conditions Générales d'Utilisation (CGU) régissent l'accès et l'utilisation de l'application Petio.</p><p><strong>2. Nature du service</strong><br>Petio est un assistant numérique fonctionnant entièrement en local sur votre appareil. Il fournit des informations à partir de bases de connaissances textuelles chargées localement.</p><p><strong>3. 🛡️ CLAUSE DE NON-RESPONSABILITÉ</strong><br><strong>L'Administrateur et le créateur de Petio déclinent toute responsabilité, en aucun cas, concernant les décisions prises, les actions entreprises ou les conséquences subies par l'Utilisateur suite à l'utilisation de Petio.</strong> L'Utilisateur utilise l'application sous sa seule responsabilité.</p><p><strong>4. Accès et Modes</strong><br>Petio propose plusieurs modes de fonctionnement. Certains contenus peuvent être réservés aux utilisateurs disposant d'un accès VIP vérifié.</p><p><strong>5. Propriété intellectuelle</strong><br>L'interface, le code source et la structure de Petio sont la propriété exclusive de son créateur.</p></div>                </div>
-                <div class="setting-item" onclick="toggleSettingDesc('confidentialite')">
-                    <div class="setting-main"><i class="setting-icon ph ph-lock"></i><span>Confidentialité</span></div>
-                    <div class="setting-desc" id="confidentialite-desc"><p><strong>1. Collecte des données</strong><br>Petio <strong>ne collecte aucune donnée personnelle</strong> sur des serveurs externes. Votre adresse email et votre code de transaction sont uniquement utilisés localement pour vérifier votre statut d'accès.</p><p><strong>2. Stockage local</strong><br>- L'historique de vos conversations est sauvegardé exclusivement dans le <code>localStorage</code> de votre appareil.<br>- Les fichiers de connaissances sont mis en cache localement pour un fonctionnement hors ligne.<br>- Vous pouvez effacer toutes vos données via le bouton "Déconnexion".</p><p><strong>3. Sécurité</strong><br>- Petio fonctionne en environnement sandbox (navigateur).<br>- Les liens externes s'ouvrent dans un nouvel onglet sécurisé.<br>- Aucune publicité, tracker ou script d'analyse n'est intégré.</p><p><strong>4. Responsabilité</strong><br>Comme indiqué dans les CGU, <strong>l'Administrateur n'est responsable en aucun cas</strong> de l'usage que vous faites des informations fournies.</p></div>
-                </div>
-                <div class="setting-item" onclick="toggleSettingDesc('apropos')">
-                    <div class="setting-main"><i class="setting-icon ph ph-info"></i><span>À propos</span></div>
-                    <div class="setting-desc" id="apropos-desc"><p><strong>Petio – Assistant Intelligent Local</strong><br>Version 1.0 | Développé par Le Balzac</p><p>Petio est une application progressive (PWA) conçue pour offrir des réponses rapides, précises et privées. Contrairement aux assistants cloud, Petio ne dépend d'aucun serveur distant pour ses connaissances.</p><p><strong>🔹 Points forts :</strong><br>✅ <strong>100% Local</strong> : Vos données et l'historique restent sur votre appareil.<br>🚀 <strong>Ultra-rapide</strong> : Recherche optimisée dans plus de 1000 fichiers texte.<br>🔒 <strong>Cloisonné</strong> : Chaque mode est isolé pour éviter les mélanges d'informations.<br>📱 <strong>PWA</strong> : Installable sur écran d'accueil, fonctionne hors ligne.<br>🎨 <strong>Personnalisable</strong> : Thème sombre/clair, nom de l'assistant modifiable.</p><p>Petio a été créé pour simplifier l'accès à l'information technique et pratique, en gardant un contrôle total sur la confidentialité et la performance. Merci de votre confiance.</p></div>
-                </div>
-                <div class="setting-item" onclick="toggleTranslation()">
-                    <div class="setting-main">
-                        <i id="translationSettingIcon" class="setting-icon ph ph-translate"></i>
-                        <span>Traduction</span>
-                    </div>
-                    <div class="setting-desc">Activer/désactiver la traduction automatique (anglais ↔ français).</div>
-                </div>
-                <div class="setting-item" onclick="toggleTheme()">
-                    <div class="setting-main"><i class="setting-icon ph ph-paint-bucket"></i><span>Thème</span></div>
-                    <div class="setting-desc">Alterner clair/sombre.</div>
-                </div>
-                <div class="setting-item" onclick="deconnexionComplete()">
-                    <div class="setting-main"><i class="setting-icon ph ph-sign-out" style="color:#ff3b30"></i><span style="color:#ff3b30">Déconnexion</span></div>
-                    <div class="setting-desc">Se déconnecter.</div>
-                </div>
+                <div class="setting-item" onclick="openNameModal()"><div class="setting-main"><i class="setting-icon ph ph-user-circle"></i><span>Nom de l'assistant</span></div><div class="setting-desc">Actuellement : <span id="currentBotName">Petio</span></div></div>
+                <div class="setting-item" onclick="changeUserPhoto()"><div class="setting-main"><i class="setting-icon ph ph-camera"></i><span>Photo de profil</span></div><div class="setting-desc">Choisir une photo pour votre avatar</div></div>
+                <div class="setting-item" onclick="afficherBanniereInstallation()"><div class="setting-main"><i class="setting-icon ph ph-device-mobile"></i><span>Installer l'application</span></div><div class="setting-desc">Ajouter Petio à l'écran d'accueil.</div></div>
+                <div class="setting-item" onclick="window.open('https://wa.me/12496806826','_blank')"><div class="setting-main"><i class="setting-icon ph ph-whatsapp-logo"></i><span>Contact</span></div><div class="setting-desc">Besoin d'aide ? Écrivez-nous sur WhatsApp.</div></div>
+                <div class="setting-item" onclick="toggleSettingDesc('faq')"><div class="setting-main"><i class="setting-icon ph ph-question"></i><span>FAQ</span></div><div class="setting-desc" id="faq-desc"><p><strong>Comment utiliser Petio ?</strong><br>Tapez votre question dans la zone de saisie. Petio analysera les fichiers du mode actif et vous répondra instantanément. Utilisez le menu <code>+</code> pour changer de mode.</p><p><strong>Que sont les "Modes" ?</strong><br>Chaque mode charge une base de connaissances différente. Par exemple, le mode <em>Novice</em> propose des explications simples, tandis que le mode <em>Formate</em> contient des procédures techniques avancées. Les réponses sont strictement limitées au mode sélectionné.</p><p><strong>Petio fonctionne-t-il hors ligne ?</strong><br>Oui. Une fois l'application installée en tant que PWA et les fichiers chargés, Petio fonctionne entièrement hors ligne.</p><p><strong>Comment obtenir un accès VIP ?</strong><br>Cliquez sur "Avoir mes accès" sur l'écran de vérification ou contactez l'administrateur via WhatsApp.</p></div></div>
+                <div class="setting-item" onclick="toggleSettingDesc('cgu')"><div class="setting-main"><i class="setting-icon ph ph-scales"></i><span>CGU</span></div><div class="setting-desc" id="cgu-desc"><p><strong>1. Objet</strong><br>Les présentes Conditions Générales d'Utilisation (CGU) régissent l'accès et l'utilisation de l'application Petio.</p><p><strong>2. Nature du service</strong><br>Petio est un assistant numérique fonctionnant entièrement en local sur votre appareil. Il fournit des informations à partir de bases de connaissances textuelles chargées localement.</p><p><strong>3. 🛡️ CLAUSE DE NON-RESPONSABILITÉ</strong><br><strong>L'Administrateur et le créateur de Petio déclinent toute responsabilité, en aucun cas, concernant les décisions prises, les actions entreprises ou les conséquences subies par l'Utilisateur suite à l'utilisation de Petio.</strong> L'Utilisateur utilise l'application sous sa seule responsabilité.</p><p><strong>4. Accès et Modes</strong><br>Petio propose plusieurs modes de fonctionnement. Certains contenus peuvent être réservés aux utilisateurs disposant d'un accès VIP vérifié.</p><p><strong>5. Propriété intellectuelle</strong><br>L'interface, le code source et la structure de Petio sont la propriété exclusive de son créateur.</p></div></div>
+                <div class="setting-item" onclick="toggleSettingDesc('confidentialite')"><div class="setting-main"><i class="setting-icon ph ph-lock"></i><span>Confidentialité</span></div><div class="setting-desc" id="confidentialite-desc"><p><strong>1. Collecte des données</strong><br>Petio <strong>ne collecte aucune donnée personnelle</strong> sur des serveurs externes. Votre adresse email et votre code de transaction sont uniquement utilisés localement pour vérifier votre statut d'accès.</p><p><strong>2. Stockage local</strong><br>- L'historique de vos conversations est sauvegardé exclusivement dans le <code>localStorage</code> de votre appareil.<br>- Les fichiers de connaissances sont mis en cache localement pour un fonctionnement hors ligne.<br>- Vous pouvez effacer toutes vos données via le bouton "Déconnexion".</p><p><strong>3. Sécurité</strong><br>- Petio fonctionne en environnement sandbox (navigateur).<br>- Les liens externes s'ouvrent dans un nouvel onglet sécurisé.<br>- Aucune publicité, tracker ou script d'analyse n'est intégré.</p><p><strong>4. Responsabilité</strong><br>Comme indiqué dans les CGU, <strong>l'Administrateur n'est responsable en aucun cas</strong> de l'usage que vous faites des informations fournies.</p></div></div>
+                <div class="setting-item" onclick="toggleSettingDesc('apropos')"><div class="setting-main"><i class="setting-icon ph ph-info"></i><span>À propos</span></div><div class="setting-desc" id="apropos-desc"><p><strong>Petio – Assistant Intelligent Local</strong><br>Version 1.0 | Développé par Le Balzac</p><p>Petio est une application progressive (PWA) conçue pour offrir des réponses rapides, précises et privées. Contrairement aux assistants cloud, Petio ne dépend d'aucun serveur distant pour ses connaissances.</p><p><strong>🔹 Points forts :</strong><br>✅ <strong>100% Local</strong> : Vos données et l'historique restent sur votre appareil.<br>🚀 <strong>Ultra-rapide</strong> : Recherche optimisée dans plus de 1000 fichiers texte.<br>🔒 <strong>Cloisonné</strong> : Chaque mode est isolé pour éviter les mélanges d'informations.<br>📱 <strong>PWA</strong> : Installable sur écran d'accueil, fonctionne hors ligne.<br>🎨 <strong>Personnalisable</strong> : Thème sombre/clair, nom de l'assistant modifiable.</p><p>Petio a été créé pour simplifier l'accès à l'information technique et pratique, en gardant un contrôle total sur la confidentialité et la performance. Merci de votre confiance.</p></div></div>
+                <div class="setting-item" onclick="toggleTranslation()"><div class="setting-main"><i id="translationSettingIcon" class="setting-icon ph ph-translate"></i><span>Traduction</span></div><div class="setting-desc">Activer/désactiver la traduction automatique (anglais ↔ français).</div></div>
+                <div class="setting-item" onclick="toggleTheme()"><div class="setting-main"><i class="setting-icon ph ph-paint-bucket"></i><span>Thème</span></div><div class="setting-desc">Alterner clair/sombre.</div></div>
+                <div class="setting-item" onclick="deconnexionComplete()"><div class="setting-main"><i class="setting-icon ph ph-sign-out" style="color:#ff3b30"></i><span style="color:#ff3b30">Déconnexion</span></div><div class="setting-desc">Se déconnecter.</div></div>
             </div>
         </div>
 
+        <!-- Menu "+" 3 colonnes -->
         <div class="extra-menu" id="plusMenu">
             <div class="menu-grid">
-                <div class="menu-row" onclick="changerMode('Global')">
-                    <div class="menu-item"><i class="ph-fill ph-globe"></i></div>
-                    <span class="menu-label">🌐 Global</span>
-                </div>
-                <div class="menu-row" onclick="changerMode('Novice')">
-                    <div class="menu-item"><i class="ph-fill ph-folder-open"></i></div>
-                    <span class="menu-label">1 Novice</span>
-                </div>
-                <div class="menu-row" onclick="changerMode('Procedure')">
-                    <div class="menu-item"><i class="ph-fill ph-folder-open"></i></div>
-                    <span class="menu-label">2 Procédure</span>
-                </div>
-                <div class="menu-row" onclick="changerMode('Formate')">
-                    <div class="menu-item"><i class="ph-fill ph-folder-open"></i></div>
-                    <span class="menu-label">3 Formate</span>
-                </div>
-                <div class="menu-row" onclick="changerMode('Application')">
-                    <div class="menu-item"><i class="ph-fill ph-folder-open"></i></div>
-                    <span class="menu-label">4 Application</span>
-                </div>
-                <div class="menu-row" onclick="changerMode('Divers')">
-                    <div class="menu-item"><i class="ph-fill ph-folder-open"></i></div>
-                    <span class="menu-label">Divers</span>
-                </div>
-                <div class="menu-row" onclick="changerMode('Gallery')">
-                    <div class="menu-item"><i class="ph-fill ph-image"></i></div>
-                    <span class="menu-label">Gallery</span>
-                </div>
+                <div class="menu-row" onclick="changerMode('Global')"><div class="menu-item"><i class="ph-fill ph-globe"></i></div><span class="menu-label">Global</span></div>
+                <div class="menu-row" onclick="changerMode('Novice')"><div class="menu-item"><i class="ph-fill ph-folder-open"></i></div><span class="menu-label">Novice</span></div>
+                <div class="menu-row" onclick="changerMode('Procedure')"><div class="menu-item"><i class="ph-fill ph-folder-open"></i></div><span class="menu-label">Procédure</span></div>
+                <div class="menu-row" onclick="changerMode('Formate')"><div class="menu-item"><i class="ph-fill ph-folder-open"></i></div><span class="menu-label">Formate</span></div>
+                <div class="menu-row" onclick="changerMode('Application')"><div class="menu-item"><i class="ph-fill ph-folder-open"></i></div><span class="menu-label">Application</span></div>
+                <div class="menu-row" onclick="changerMode('Divers')"><div class="menu-item"><i class="ph-fill ph-folder-open"></i></div><span class="menu-label">Divers</span></div>
+                <div class="menu-row" onclick="changerMode('Gallery')"><div class="menu-item"><i class="ph-fill ph-image"></i></div><span class="menu-label">Gallery</span></div>
+                <div class="menu-row" onclick="changerMode('Bibliotheque')"><div class="menu-item"><i class="ph-fill ph-books"></i></div><span class="menu-label">Bibliothèque</span></div>
+                <div class="menu-row" onclick="window.location.href='virtnum.html'"><div class="menu-item"><i class="ph-fill ph-phone"></i></div><span class="menu-label">Virt‑Num</span></div>
             </div>
         </div>
 
@@ -684,888 +670,146 @@
 </div>
 
 <script>
-    (function(){
-        // ==================== CONFIG GALLERY ====================
-        const GALLERY_TXT_URL = 'gallery.txt';
-        let currentLightboxImageUrl = '';
-        let currentLightboxImageId = '';
-        let galleryModeActive = false;
+(function(){
+    // ==================== CONFIG ====================
+    const GALLERY_TXT_URL = 'gallery.txt';
+    const DRIVE_API_KEY = 'AIzaSyDiZNla26G3wblOh9ZFLs2vvPFDI1ZTDJo';
+    const DRIVE_FOLDER_ID = '1iqlRjauMrSsazy--eA3AVzr7t33La_3x';
+    const URL_GAS_CHECK = "https://script.google.com/macros/s/AKfycbwECfIzsgINAu5IqMDaqcDuYtZAaspR16wvxu-BuLaqTdGJT-6Pec3hJs27lYvxzaIB2Q/exec";
+    const URL_GAS_GLOBAL = 'https://script.google.com/macros/s/AKfycbxCmsUiDwNhlqAa_qoIYx2Vtr3_2V4x63rjqqn7aU69787Ba9xymzpLLxmG9wF6HKVN/exec';
+    const UNLOCK_KEY = 'petio_procedure_unlocked';
+    let modeActuel = 'Cerveau';
+    let galleryModeActive = false, bibliothequeModeActive = false;
+    let currentLightboxImageUrl = '', currentLightboxImageId = '';
+    const cacheFichiers = {}, fullTextCache = new Map();
+    const LOCAL_MODES_BIB = ['novice', 'formate', 'procedure', 'application', 'divers'];
+    const LOCAL_MODES = ['cerveau', 'novice', 'formate', 'procedure', 'application', 'divers'];
+    
+    // Éléments DOM
+    const textarea = document.getElementById('userInput');
+    const btnPlus = document.getElementById('btnPlus');
+    const btnSend = document.getElementById('btnSend');
+    const menu = document.getElementById('plusMenu');
+    const loadStatus = document.getElementById('load-status');
+    const suggestionsContainer = document.getElementById('suggestionsContainer');
+    let nomBot = localStorage.getItem('botName') || 'Petio';
+    let isLoadingHistory = false;
+    let traductionActive = localStorage.getItem('petio_traduction') !== 'false';
 
-        const downloadedKey = 'petio_gallery_downloaded';
-        function getDownloadedMap(){ try{ return JSON.parse(localStorage.getItem(downloadedKey)||'{}'); }catch(e){ return {}; } }
-        function setDownloaded(id){ const map = getDownloadedMap(); map[id] = true; localStorage.setItem(downloadedKey, JSON.stringify(map)); }
-        function isDownloaded(id){ return !!getDownloadedMap()[id]; }
+    // ==================== PWA & SERVICE WORKER (inchange) ====================
+    const MANIFEST_DATA = { name:"Petio Assistant", short_name:"Petio", description:"Assistant intelligent local", start_url:".", display:"standalone", background_color:"#ffffff", theme_color:"#007aff", icons:[{ src:"https://i.ibb.co/zVsc6LDk/62943fce33c7f18d50a127290140782f.jpg", sizes:"512x512", type:"image/jpeg", purpose:"any maskable" }] };
+    const manifestBlob = new Blob([JSON.stringify(MANIFEST_DATA)], {type:'application/manifest+json'});
+    document.querySelector('link[rel="manifest"]').href = URL.createObjectURL(manifestBlob);
+    if('serviceWorker' in navigator){ window.addEventListener('load',()=>{ const swCode = `const CACHE_NAME='petio-v1';const ASSETS=['.','https://unpkg.com/@phosphor-icons/web@2.1.1','https://i.ibb.co/zVsc6LDk/62943fce33c7f18d50a127290140782f.jpg'];self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE_NAME).then(cache=>cache.addAll(ASSETS)));self.skipWaiting();});self.addEventListener('activate',e=>{e.waitUntil(clients.claim());});self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(res=>res||fetch(e.request).catch(()=>caches.match('.'))));});`; const swBlob = new Blob([swCode],{type:'application/javascript'}); navigator.serviceWorker.register(URL.createObjectURL(swBlob)); }); }
 
-        async function loadGalleryFromTxt(){
-            const view = document.getElementById('galleryView');
-            view.innerHTML = '<div class="gallery-loading"><i class="ph ph-spinner"></i> Chargement de la galerie...</div>';
-            try {
-                const res = await fetch(GALLERY_TXT_URL);
-                if(!res.ok) throw new Error('Fichier introuvable');
-                const text = await res.text();
-                const lines = text.split('\n').filter(l=>l.trim()!=='');
-                const items = lines.map(line=>{
-                    const url = line.split('|')[0].trim();
-                    return { url, id: btoa(url).substring(0,20) };
-                }).filter(item=>item.url.startsWith('http'));
-                if(items.length===0){ view.innerHTML = '<div class="gallery-loading">Aucune image dans gallery.txt</div>'; return; }
-                let html = '<div class="gallery-container">';
-                items.forEach(item=>{
-                    const downloaded = isDownloaded(item.id);
-                    html += `<div class="gallery-item" data-id="${item.id}" data-url="${item.url}" onclick="openLightbox(this)">
-                        <img src="${item.url}" loading="lazy" onerror="this.style.display='none'">
-                        ${downloaded?'<span class="downloaded-badge"><i class="ph ph-check"></i></span>':''}
-                    </div>`;
-                });
-                html += '</div>';
-                view.innerHTML = html;
-            } catch(e){ view.innerHTML = '<div class="gallery-loading">Erreur de chargement.</div>'; console.error(e); }
-        }
+    // ==================== THEME & PHOTO ====================
+    function toggleTheme(){ document.body.classList.toggle('dark-theme'); document.getElementById('themeIcon').className = document.body.classList.contains('dark-theme')?'ph ph-sun':'ph ph-moon'; localStorage.setItem('theme', document.body.classList.contains('dark-theme')?'dark':'light'); }
+    if(localStorage.getItem('theme')==='dark'){ document.body.classList.add('dark-theme'); document.getElementById('themeIcon').className='ph ph-sun'; }
+    function loadUserPhoto(){ const a=document.getElementById('userAvatar'); const p=localStorage.getItem('petio_user_photo'); if(p){ a.style.backgroundImage=`url(${p})`; a.style.color='transparent'; a.textContent=''; } else { a.style.backgroundImage=''; a.style.color='white'; a.textContent='U'; } }
+    window.changeUserPhoto=function(){ const i=document.createElement('input'); i.type='file'; i.accept='image/*'; i.onchange=e=>{ const f=e.target.files[0]; if(!f)return; const r=new FileReader(); r.onload=ev=>{ localStorage.setItem('petio_user_photo',ev.target.result); loadUserPhoto(); }; r.readAsDataURL(f); }; i.click(); };
 
-        window.openLightbox = function(el){
-            const url = el.dataset.url;
-            const id = el.dataset.id;
-            currentLightboxImageUrl = url;
-            currentLightboxImageId = id;
-            document.getElementById('lightboxImg').src = url;
-            const btn = document.getElementById('lightboxDownloadBtn');
-            if(isDownloaded(id)){ btn.classList.add('downloaded'); } else { btn.classList.remove('downloaded'); }
-            document.getElementById('galleryLightbox').classList.add('show');
-        };
-        window.closeLightbox = function(){ document.getElementById('galleryLightbox').classList.remove('show'); };
-        window.downloadCurrentImage = function(event){
-            event.stopPropagation();
-            if(currentLightboxImageUrl){
-                const a = document.createElement('a'); a.href = currentLightboxImageUrl; a.download = ''; document.body.appendChild(a); a.click(); document.body.removeChild(a);
-                setDownloaded(currentLightboxImageId);
-                document.getElementById('lightboxDownloadBtn').classList.add('downloaded');
-                const item = document.querySelector(`.gallery-item[data-id="${currentLightboxImageId}"]`);
-                if(item && !item.querySelector('.downloaded-badge')){
-                    const badge = document.createElement('span'); badge.className = 'downloaded-badge'; badge.innerHTML = '<i class="ph ph-check"></i>'; item.appendChild(badge);
-                }
-            }
-        };
-        window.refreshGallery = function(){ if(galleryModeActive) loadGalleryFromTxt(); };
-        function enterGalleryMode(){
-            galleryModeActive = true;
-            document.getElementById('mainHeader').style.display = 'none';
-            document.getElementById('galleryHeader').style.display = 'flex';
-            document.getElementById('chatArea').style.display = 'none';
-            document.getElementById('galleryView').style.display = 'block';
-            document.getElementById('inputBar').style.display = 'none';
-            document.getElementById('modeText').textContent = '🖼️ MODE: GALLERY';
-            document.getElementById('plusMenu').classList.remove('show'); // Fermer le menu s'il était ouvert
-            loadGalleryFromTxt();
-        }
-        window.exitGalleryMode = function(){
-            galleryModeActive = false;
-            document.getElementById('mainHeader').style.display = 'flex';
-            document.getElementById('galleryHeader').style.display = 'none';
-            document.getElementById('chatArea').style.display = 'flex';
-            document.getElementById('galleryView').style.display = 'none';
-            document.getElementById('inputBar').style.display = 'flex';
-            changerMode('Cerveau');
-        };
+    // ==================== TRADUCTION ====================
+    async function traduireGoogle(texte, source, cible){ if(!texte)return ''; try{ const r=await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=${source}&tl=${cible}&dt=t&q=${encodeURIComponent(texte)}`); const d=await r.json(); return d[0].map(p=>p[0]).join(''); }catch(e){return texte;} }
+    async function traduireENversFR(t){ if(!traductionActive)return t; return traduireGoogle(t,'en','fr'); }
+    async function traduireFR(t){ return traduireGoogle(t,'en','fr'); } // Pour bibliothèque
 
-        // ==================== PHOTO DE PROFIL UTILISATEUR ====================
-        function loadUserPhoto(){
-            const avatar = document.getElementById('userAvatar');
-            const photo = localStorage.getItem('petio_user_photo');
-            if(photo){ avatar.style.backgroundImage = `url(${photo})`; avatar.style.color = 'transparent'; avatar.textContent = ''; }
-            else { avatar.style.backgroundImage = ''; avatar.style.color = 'white'; avatar.textContent = 'U'; }
-        }
-        window.changeUserPhoto = function(){
-            const input = document.createElement('input'); input.type = 'file'; input.accept = 'image/*';
-            input.onchange = (e) => {
-                const file = e.target.files[0];
-                if(!file) return;
-                const reader = new FileReader();
-                reader.onload = (ev) => {
-                    localStorage.setItem('petio_user_photo', ev.target.result);
-                    loadUserPhoto();
-                };
-                reader.readAsDataURL(file);
-            };
-            input.click();
-        };
+    // ==================== EXTRACTION TEXTE LOCAL ====================
+    async function extraireTexteFichierLocal(fileName){ const lower=fileName.toLowerCase(); try{ const r=await fetch(fileName); if(!r.ok)return null; if(lower.endsWith('.txt'))return await r.text(); if(lower.endsWith('.pdf')){ const b=await r.arrayBuffer(); const pdf=await pdfjsLib.getDocument({data:b}).promise; let t=''; for(let i=1;i<=pdf.numPages;i++){ const page=await pdf.getPage(i); const c=await page.getTextContent(); t+=c.items.map(it=>it.str).join(' ')+'\n'; } return t; } if(lower.endsWith('.docx')||lower.endsWith('.doc')){ const b=await r.arrayBuffer(); const res=await mammoth.extractRawText({arrayBuffer:b}); return res.value; } return null; }catch(e){return null;} }
 
-        // ==================== PWA MANIFEST ====================
-        const MANIFEST_DATA = {
-            name: "Petio Assistant",
-            short_name: "Petio",
-            description: "Assistant intelligent local",
-            start_url: ".",
-            display: "standalone",
-            background_color: "#ffffff",
-            theme_color: "#007aff",
-            icons: [
-                { src: "https://i.ibb.co/zVsc6LDk/62943fce33c7f18d50a127290140782f.jpg", sizes: "512x512", type: "image/jpeg", purpose: "any maskable" }
-            ]
-        };
-        const manifestBlob = new Blob([JSON.stringify(MANIFEST_DATA)], {type: 'application/manifest+json'});        const manifestURL = URL.createObjectURL(manifestBlob);
-        document.querySelector('link[rel="manifest"]').href = manifestURL;
+    // ==================== CHARGEMENT FICHIERS MODES ====================
+    async function chargerFichiersMode(mode){ if(cacheFichiers[mode])return cacheFichiers[mode]; let contenu=''; const base=mode.toLowerCase(); try{ const r=await fetch(`${base}.txt`); if(r.ok)contenu+=await r.text()+'\n'; }catch(e){} const motifs=[ i=>`${base}${i}.txt`, i=>`${base}_${i}.txt`, i=>`${base}-${i}.txt` ]; for(let motif of motifs){ let i=1,fails=0; while(i<=500){ const url=motif(i); try{ const r=await fetch(url); if(r.ok){ contenu+=await r.text()+'\n'; fails=0; }else fails++; }catch(e){ fails++; } if(fails>=3)break; i++; } } if(mode==='Procedure'){ const prefixes=['procedure','proc','doc']; const exts=['.pdf','.docx']; for(let p of prefixes){ for(let e of exts){ let i=1,fails=0; while(i<=500){ const fn=`${p}${i}${e}`; try{ const t=await extraireTexteFichierLocal(fn); if(t){ contenu+=`[Fichier: ${fn}]\n${t}\n\n`; fullTextCache.set(fn,t); fails=0; }else fails++; }catch(e){ fails++; } if(fails>=3)break; i++; } } } } if(mode==='Divers'){ const seps=['','_','-','.']; for(let num=1;num<=9;num++){ for(let s of seps){ const fn=`divers${s}${num}.txt`; try{ const r=await fetch(fn); if(r.ok)contenu+=`[Fichier: ${fn}]\n${await r.text()}\n\n`; }catch(e){} const fn2=`divers${num}${s}.txt`; try{ const r=await fetch(fn2); if(r.ok)contenu+=`[Fichier: ${fn2}]\n${await r.text()}\n\n`; }catch(e){} } } try{ const r=await fetch('divers.txt'); if(r.ok)contenu+=await r.text()+'\n'; }catch(e){} } if(!contenu.trim())return null; cacheFichiers[mode]=contenu; return contenu; }
+    function normalize(s){ return s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,''); }
 
-        // ==================== SERVICE WORKER ====================
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                const swCode = `
-                    const CACHE_NAME = 'petio-v1';
-                    const ASSETS = ['.', 'https://unpkg.com/@phosphor-icons/web@2.1.1', 'https://i.ibb.co/zVsc6LDk/62943fce33c7f18d50a127290140782f.jpg'];
-                    
-                    self.addEventListener('install', e => {
-                        e.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS)));
-                        self.skipWaiting();
-                    });
-                    
-                    self.addEventListener('activate', e => {
-                        e.waitUntil(clients.claim());
-                    });
-                    
-                    self.addEventListener('fetch', e => {
-                        e.respondWith(
-                            caches.match(e.request).then(res => res || fetch(e.request).catch(() => caches.match('.')))
-                        );
-                    });
-                `;
-                const swBlob = new Blob([swCode], {type: 'application/javascript'});
-                const swURL = URL.createObjectURL(swBlob);
-                navigator.serviceWorker.register(swURL).catch(err => console.log('SW registration failed:', err));
-            });
-        }
+    // ==================== RECHERCHE MODE GLOBAL ====================
+    async function rechercherModeGlobal(query){ try{ const url=`${URL_GAS_GLOBAL}?action=search&q=${encodeURIComponent(query)}`; const r=await fetch(url); const d=await r.json(); if(d.success&&d.results.length>0){ if(d.results.length===1&&!d.fallback) return await traduireENversFR(d.results[0].fullText); const matches=d.results.map(r=>({full:r.fullText, preview:r.excerpt.replace(/<[^>]*>/g,'')})); const msg=d.fallback?(d.message||`ℹ️ Aucun résultat exact. Suggestions aléatoires :`):`✅ Trouvé ${d.count} résultat(s) dans Petio_global. Choisissez une option ci-dessous :`; return {message:msg, matches}; } return d.success?`ℹ️ Aucun résultat pour "${query}" dans Petio_global.`:`⚠️ Erreur de connexion au mode Global.`; }catch(e){ return `⚠️ Impossible de contacter le mode Global.`; } }
 
-        // ==================== INSTALL PWA ====================
-        let deferredPrompt = null;
-        const installSheet = document.getElementById('pwa-install-sheet');
-        const forceInstallBtn = document.getElementById('forceInstallBtn');
-        
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-        });
-        
-        forceInstallBtn.addEventListener('click', async () => {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                console.log('Installation outcome:', outcome);
-                deferredPrompt = null;
-            } else {
-                alert('Pour installer Petio sur iOS : Appuyez sur Partager → "Sur l\'écran d\'accueil"');
-            }            installSheet.classList.remove('show');
-        });
-        
-        window.afficherBanniereInstallation = function() { 
-            closeSettings(); 
-            installSheet.classList.add('show'); 
-        };
+    // ==================== MOTEUR DE RECHERCHE ====================
+    async function rechercherDansFichiers(mode,msg){ if(mode==='Global')return await rechercherModeGlobal(msg); if(mode==='Gallery'||mode==='Bibliotheque')return null; const contenu=await chargerFichiersMode(mode); if(!contenu)return `Désolé, la base du mode ${mode} est vide.`; const paras=contenu.split(/\n\s*\n/).filter(p=>p.trim().length>20); const q=normalize(msg); const words=q.split(/[^a-z0-9]/i).filter(w=>w.length>=2); if(words.length===0)return `Je n'ai pas compris "${msg}".`; const matches=[]; for(let p of paras){ const np=normalize(p); if(words.every(w=>np.includes(w))){ const ww=p.trim().split(/\s+/); const preview=ww.slice(0,15).join(' ')+(ww.length>15?'...':''); let src=null; const fm=p.match(/^\[Fichier: (.*?)\]/); if(fm)src=fm[1]; matches.push({full:p.trim(),preview,sourceFile:src}); } } if(matches.length>0){ if(matches.length===1){ const s=matches[0]; const t=await traduireENversFR(s.full); if(s.sourceFile&&(s.sourceFile.endsWith('.pdf')||s.sourceFile.endsWith('.docx'))) return {__isDocumentMessage:true, text:t, sourceFile:s.sourceFile}; return t; } return { message:`J'ai trouvé ${matches.length} résultats pour "${msg}". Choisissez une option ci-dessous :`, matches }; } const rnd=paras.sort(()=>Math.random()-0.5).slice(0,3).map(p=>{ const ww=p.trim().split(/\s+/); const preview=ww.slice(0,15).join(' ')+(ww.length>15?'...':''); let src=null; const fm=p.match(/^\[Fichier: (.*?)\]/); if(fm)src=fm[1]; return {full:p.trim(),preview,sourceFile:src}; }); return { message:`Je n'ai pas trouvé d'information pour "${msg}" dans le mode ${mode}. Voici quelques suggestions aléatoires :`, matches:rnd }; }
 
-        // ==================== MODAL NOM ====================
-        window.openNameModal = function() { 
-            closeSettings(); 
-            document.getElementById('newBotNameInput').value = nomBot; 
-            document.getElementById('nameModal').classList.add('show'); 
-        };
-        window.closeNameModal = function() { 
-            document.getElementById('nameModal').classList.remove('show'); 
-        };
-        window.confirmChangeName = function() {
-            const n = document.getElementById('newBotNameInput').value.trim();
-            if (n) { 
-                nomBot = n; 
-                localStorage.setItem('botName', nomBot); 
-                mettreAJourNomBot(); 
-                afficherMessage(`✨ Assistant renommé en "${nomBot}".`, 'bot'); 
-            }
-            closeNameModal();
-        };
+    // ==================== GALLERY ====================
+    const downloadedKey='petio_gallery_downloaded';
+    function getDownloadedMap(){ try{ return JSON.parse(localStorage.getItem(downloadedKey)||'{}'); }catch(e){return{};} }
+    function isDownloaded(id){ return !!getDownloadedMap()[id]; }
+    function setDownloaded(id){ const m=getDownloadedMap(); m[id]=true; localStorage.setItem(downloadedKey,JSON.stringify(m)); }
+    async function loadGalleryFromTxt(){ const v=document.getElementById('galleryView'); v.innerHTML='<div class="gallery-loading"><i class="ph ph-spinner"></i> Chargement...</div>'; try{ const r=await fetch(GALLERY_TXT_URL); if(!r.ok)throw new Error(); const t=await r.text(); const lines=t.split('\n').filter(l=>l.trim()); const items=lines.map(l=>{ const u=l.split('|')[0].trim(); return {url:u, id:btoa(u).substring(0,20)}; }).filter(it=>it.url.startsWith('http')); if(!items.length){ v.innerHTML='<div class="gallery-loading">Aucune image.</div>'; return; } let h='<div class="gallery-container">'; items.forEach(it=>{ const dl=isDownloaded(it.id); h+=`<div class="gallery-item" data-id="${it.id}" data-url="${it.url}" onclick="openLightbox(this)"><img src="${it.url}" loading="lazy" onerror="this.style.display='none'">${dl?'<span class="downloaded-badge"><i class="ph ph-check"></i></span>':''}</div>`; }); h+='</div>'; v.innerHTML=h; }catch(e){ v.innerHTML='<div class="gallery-loading">Erreur.</div>'; } }
+    window.openLightbox=function(el){ currentLightboxImageUrl=el.dataset.url; currentLightboxImageId=el.dataset.id; document.getElementById('lightboxImg').src=currentLightboxImageUrl; const b=document.getElementById('lightboxDownloadBtn'); b.classList.toggle('downloaded',isDownloaded(currentLightboxImageId)); document.getElementById('galleryLightbox').classList.add('show'); };
+    window.closeLightbox=function(){ document.getElementById('galleryLightbox').classList.remove('show'); };
+    window.downloadCurrentImage=function(e){ e.stopPropagation(); if(currentLightboxImageUrl){ const a=document.createElement('a'); a.href=currentLightboxImageUrl; a.download=''; a.click(); setDownloaded(currentLightboxImageId); document.getElementById('lightboxDownloadBtn').classList.add('downloaded'); const it=document.querySelector(`.gallery-item[data-id="${currentLightboxImageId}"]`); if(it&&!it.querySelector('.downloaded-badge')){ const b=document.createElement('span'); b.className='downloaded-badge'; b.innerHTML='<i class="ph ph-check"></i>'; it.appendChild(b); } } };
+    window.refreshGallery=function(){ if(galleryModeActive)loadGalleryFromTxt(); };
 
-        // ==================== GESTION DES DESCRIPTIONS PARAMÈTRES ====================
-        function toggleSettingDesc(id) {
-            ['faq', 'cgu', 'confidentialite', 'apropos'].forEach(key => {
-                if (key !== id) {
-                    const desc = document.getElementById(key + '-desc');
-                    if (desc && desc.parentElement.classList.contains('active')) {
-                        desc.parentElement.classList.remove('active');
-                    }
-                }
-            });
-            const clicked = document.getElementById(id + '-desc');
-            if (clicked) {
-                clicked.parentElement.classList.toggle('active');
-            }
-        }
+    // ==================== BIBLIOTHÈQUE ====================
+    async function loadBibliotheque(){ const view=document.getElementById('bibliothequeView'); view.innerHTML='<div class="gallery-loading"><i class="ph ph-spinner"></i> Chargement...</div>'; try{ const files=[]; for(const mode of LOCAL_MODES_BIB){ const base=mode; const exts=['txt','pdf','docx','doc']; for(const ext of exts){ const name=`${base}.${ext}`; if(await extraireTexteFichierLocal(name)!==null) files.push({name,source:'local',path:name}); } const pats=[]; for(const ext of exts){ pats.push(i=>`${base}${i}.${ext}`, i=>`${base}_${i}.${ext}`, i=>`${base}-${i}.${ext}`); } for(const p of pats){ let i=1,fails=0; while(i<=500){ const name=p(i); if(await extraireTexteFichierLocal(name)!==null){ files.push({name,source:'local',path:name}); fails=0; }else fails++; if(fails>=3)break; i++; } } } try{ const dr=await fetch(`https://www.googleapis.com/drive/v3/files?q='${DRIVE_FOLDER_ID}'+in+parents&key=${DRIVE_API_KEY}&fields=files(id,name,mimeType)`); const dd=await dr.json(); if(dd.files) dd.files.forEach(f=>{ if(!f.name.match(/\.(jpg|jpeg|png|gif|webp|svg)$/i)) files.push({name:f.name,source:'drive',id:f.id,mimeType:f.mimeType}); }); }catch(e){} if(!files.length){ view.innerHTML='<p style="text-align:center;padding:20px;">Aucun fichier.</p>'; return; } files.sort((a,b)=>a.name.localeCompare(b.name)); let h='<div class="bibliotheque-suggestions">'; files.forEach(f=>{ h+=`<button class="suggestion-btn" data-name="${f.name}" data-source="${f.source}" data-path="${f.path||''}" data-id="${f.id||''}" data-mime="${f.mimeType||''}" onclick="openBibliothequeFile(this)">📄 ${f.name}</button>`; }); h+='</div>'; view.innerHTML=h; }catch(e){ view.innerHTML='<p>Erreur.</p>'; } }
+    window.openBibliothequeFile=async function(btn){ const modal=document.getElementById('lectureModal'); const title=document.getElementById('lectureTitle'); const content=document.getElementById('lectureContent'); title.textContent=btn.dataset.name; content.textContent='Chargement...'; modal.classList.add('show'); try{ let raw=''; if(btn.dataset.source==='local'){ raw=await extraireTexteFichierLocal(btn.dataset.path); }else{ const mime=btn.dataset.mime; const id=btn.dataset.id; if(mime==='application/vnd.google-apps.document'){ const eurl=`https://www.googleapis.com/drive/v3/files/${id}/export?mimeType=text/plain&key=${DRIVE_API_KEY}`; raw=await (await fetch(eurl)).text(); }else if(mime==='application/pdf'){ const r=await fetch(`https://www.googleapis.com/drive/v3/files/${id}?alt=media&key=${DRIVE_API_KEY}`); const b=await r.arrayBuffer(); const pdf=await pdfjsLib.getDocument({data:b}).promise; for(let i=1;i<=pdf.numPages;i++){ const p=await pdf.getPage(i); const c=await p.getTextContent(); raw+=c.items.map(it=>it.str).join(' ')+'\n'; } }else{ try{ const eurl=`https://www.googleapis.com/drive/v3/files/${id}/export?mimeType=text/plain&key=${DRIVE_API_KEY}`; raw=await (await fetch(eurl)).text(); }catch(e){ const dl=await fetch(`https://www.googleapis.com/drive/v3/files/${id}?alt=media&key=${DRIVE_API_KEY}`); const blob=await dl.blob(); if(blob.type.includes('word')){ const b=await blob.arrayBuffer(); raw=(await mammoth.extractRawText({arrayBuffer:b})).value; }else raw=await blob.text(); } } } content.textContent=await traduireFR(raw)||'(Fichier vide)'; }catch(e){ content.textContent='Erreur.'; } };
+    window.closeLectureModal=function(){ document.getElementById('lectureModal').classList.remove('show'); };
+    window.copyLectureContent=function(){ const t=document.getElementById('lectureContent').textContent; navigator.clipboard.writeText(t); alert('Copié !'); };
+    window.refreshBibliotheque=function(){ if(bibliothequeModeActive) loadBibliotheque(); };
 
-        // ==================== LOGIQUE PRINCIPALE ====================
-        const URL_GAS = "https://script.google.com/macros/s/AKfycbwECfIzsgINAu5IqMDaqcDuYtZAaspR16wvxu-BuLaqTdGJT-6Pec3hJs27lYvxzaIB2Q/exec";
-        let modeActuel = 'Cerveau';
-        const textarea = document.getElementById('userInput');
-        const btnPlus = document.getElementById('btnPlus');
-        const btnSend = document.getElementById('btnSend');        const menu = document.getElementById('plusMenu');
-        const loadStatus = document.getElementById('load-status');
-        const suggestionsContainer = document.getElementById('suggestionsContainer');
-        const suggestionsScroll = document.getElementById('suggestionsScroll');
-        let nomBot = localStorage.getItem('botName') || 'Petio';
-        let isLoadingHistory = false;
-        const cacheFichiers = {};
-        const fullTextCache = new Map();
-        
-        // ==================== GESTION TRADUCTION ====================
-        let traductionActive = localStorage.getItem('petio_traduction') !== 'false';
-        
-        function toggleTranslation() {
-            traductionActive = !traductionActive;
-            localStorage.setItem('petio_traduction', traductionActive);
-            
-            const icon = document.getElementById('translationSettingIcon');
-            if (traductionActive) {
-                icon.className = 'setting-icon ph ph-translate';
-                icon.style.opacity = '1';
-            } else {
-                icon.className = 'setting-icon ph ph-translate-slash';
-                icon.style.opacity = '0.5';
-            }
-        }
-        
-        function initTranslationButton() {
-            const icon = document.getElementById('translationSettingIcon');
-            if (!traductionActive) {
-                icon.className = 'setting-icon ph ph-translate-slash';
-                icon.style.opacity = '0.5';
-            }
-        }
+    // ==================== MODES (Gallery & Bibliotheque) ====================
+    function enterGalleryMode(){ galleryModeActive=true; document.getElementById('mainHeader').style.display='none'; document.getElementById('galleryHeader').style.display='flex'; document.getElementById('bibliothequeHeader').style.display='none'; document.getElementById('chatArea').style.display='none'; document.getElementById('galleryView').style.display='block'; document.getElementById('bibliothequeView').style.display='none'; document.getElementById('inputBar').style.display='none'; document.getElementById('modeText').textContent='🖼️ GALLERY'; closeMenu(); loadGalleryFromTxt(); }
+    window.exitGalleryMode=function(){ galleryModeActive=false; document.getElementById('mainHeader').style.display='flex'; document.getElementById('galleryHeader').style.display='none'; document.getElementById('chatArea').style.display='flex'; document.getElementById('galleryView').style.display='none'; document.getElementById('inputBar').style.display='flex'; changerMode('Cerveau'); };
+    function enterBibliothequeMode(){ bibliothequeModeActive=true; document.getElementById('mainHeader').style.display='none'; document.getElementById('bibliothequeHeader').style.display='flex'; document.getElementById('galleryHeader').style.display='none'; document.getElementById('chatArea').style.display='none'; document.getElementById('galleryView').style.display='none'; document.getElementById('bibliothequeView').style.display='block'; document.getElementById('inputBar').style.display='none'; document.getElementById('modeText').textContent='📚 BIBLIOTHÈQUE'; closeMenu(); loadBibliotheque(); }
+    window.exitBibliothequeMode=function(){ bibliothequeModeActive=false; document.getElementById('mainHeader').style.display='flex'; document.getElementById('bibliothequeHeader').style.display='none'; document.getElementById('chatArea').style.display='flex'; document.getElementById('bibliothequeView').style.display='none'; document.getElementById('inputBar').style.display='flex'; changerMode('Cerveau'); };
 
-        // Traduction Google
-        async function traduireGoogle(texte, source, cible) {
-            if (!texte) return '';
-            const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${source}&tl=${cible}&dt=t&q=${encodeURIComponent(texte)}`;
-            try { 
-                const r = await fetch(url); 
-                const d = await r.json(); 
-                return d[0].map(p => p[0]).join(''); 
-            } catch (e) { 
-                return texte; 
-            }
-        }
-        async function traduireENversFR(t) { 
-            if (!traductionActive) return t;
-            return traduireGoogle(t, 'en', 'fr'); 
-        }
-        async function traduireFRversEN(t) { 
-            if (!traductionActive) return t;
-            return traduireGoogle(t, 'fr', 'en'); 
-        }
+    // ==================== CHANGEMENT DE MODE ====================
+    const changerModeOriginal=async function(n){ if(n==='Gallery'){ enterGalleryMode(); return; } if(n==='Bibliotheque'){ enterBibliothequeMode(); return; } if(galleryModeActive) exitGalleryMode(); if(bibliothequeModeActive) exitBibliothequeMode(); if(n!=='Global'){ if(!await chargerFichiersMode(n)){ afficherErreur(`Mode ${n} sans fichier`); return; } } modeActuel=n; document.getElementById('modeText').textContent=`🤖 MODE: ${n.toUpperCase()}`; localStorage.setItem('petio_current_mode',n); closeMenu(); afficherMessage(`✅ Mode changé : ${n}`, 'bot'); };
+    window.changerMode=async function(n){ if(n==='Procedure'){ if(isProcedureUnlocked()) await changerModeOriginal(n); else showUnlockModal(); }else{ await changerModeOriginal(n); } };
 
-        // === EXTRACTION TEXTE FICHIER LOCAL ===
-        async function extraireTexteFichierLocal(fileName) {
-            const lower = fileName.toLowerCase();
-            try {
-                const response = await fetch(fileName);
-                if (!response.ok) return null;
-                
-                if (lower.endsWith('.txt')) {
-                    return await response.text();
-                } else if (lower.endsWith('.pdf')) {
-                    const arrayBuffer = await response.arrayBuffer();
-                    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-                    let fullText = '';
-                    for (let i = 1; i <= pdf.numPages; i++) {
-                        const page = await pdf.getPage(i);
-                        const content = await page.getTextContent();
-                        const strings = content.items.map(item => item.str);
-                        fullText += strings.join(' ') + '\n';
-                    }
-                    return fullText;
-                } else if (lower.endsWith('.docx')) {
-                    const arrayBuffer = await response.arrayBuffer();
-                    const result = await mammoth.extractRawText({ arrayBuffer });
-                    return result.value;
-                }
-                return null;
-            } catch (e) {
-                console.warn(`Erreur lecture ${fileName}:`, e);
-                return null;
-            }
-        }
+    // ==================== VIP ====================
+    function isProcedureUnlocked(){ return localStorage.getItem(UNLOCK_KEY)==='true'; }
+    function setProcedureUnlocked(){ localStorage.setItem(UNLOCK_KEY,'true'); }
+    function showUnlockModal(){ document.getElementById('unlock-step-code').classList.add('active'); document.getElementById('unlock-step-payment').classList.remove('active'); document.getElementById('unlock-code-input').value=''; document.getElementById('unlock-modal').classList.add('show'); }
+    window.closeUnlockModal=function(){ document.getElementById('unlock-modal').classList.remove('show'); };
+    window.contacterAdmin=function(c){ let m="Bonjour, je contacte l'administrateur de Petio."; if(c==='vip') m="Bonjour, je souhaite obtenir un accès VIP pour Petio."; else if(c==='payment') m="Bonjour, le code saisi est invalide. Je souhaite obtenir un accès au mode Procédure."; else if(c==='code') m="Bonjour, j'ai un problème avec le code d'accès Procédure."; window.open(`https://wa.me/12496806826?text=${encodeURIComponent(m)}`,'_blank'); };
+    async function verifierCodeAcces(){ const code=document.getElementById('unlock-code-input').value.trim(); const email=localStorage.getItem('userEmail')||''; if(!code){ afficherErreur("Veuillez saisir un code."); return; } if(!email){ afficherErreur("Email utilisateur introuvable."); return; } try{ const r=await fetch(`${URL_GAS_CHECK}?action=checkProcedureCode&email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}`); const t=await r.text(); if(t.trim()==='VALIDE'){ setProcedureUnlocked(); closeUnlockModal(); await activerModeProcedure(); }else{ document.getElementById('unlock-step-code').classList.remove('active'); document.getElementById('unlock-step-payment').classList.add('active'); } }catch(e){ afficherErreur("Erreur réseau."); } }
+    async function activerModeProcedure(){ modeActuel='Procedure'; document.getElementById('modeText').textContent='🤖 MODE: PROCEDURE'; closeMenu(); afficherMessage('✅ Mode changé : Procedure','bot'); }
 
-        // === CHARGEMENT DES FICHIERS ===
-        async function chargerFichiersMode(mode) {
-            if (cacheFichiers[mode]) return cacheFichiers[mode];
-            let contenu = '';
-            const base = mode.toLowerCase();
-            
-            try { 
-                const r = await fetch(`${base}.txt`); 
-                if (r.ok) contenu += await r.text() + '\n'; 
-            } catch(e) {}
-            
-            const motifs = [
-                (i) => `${base}${i}.txt`,
-                (i) => `${base}_${i}.txt`,
-                (i) => `${base}-${i}.txt`
-            ];
-            
-            for (let motif of motifs) {
-                let i = 1;
-                let consecutiveFails = 0;
-                while (i <= 500) {
-                    const url = motif(i);
-                    try {
-                        const r = await fetch(url);
-                        if (r.ok) {
-                            contenu += await r.text() + '\n';
-                            consecutiveFails = 0;
-                        } else {
-                            consecutiveFails++;
-                        }
-                    } catch(e) {
-                        consecutiveFails++;
-                    }
-                    if (consecutiveFails >= 3) break;
-                    i++;
-                }
-            }
+    // ==================== AFFICHAGE MESSAGES ====================
+    function lierUrls(t){ return t.replace(/(https?:\/\/[^\s]+)/g,'<a href="$1" target="_blank" rel="noopener">$1</a>'); }
+    function afficherMessageBot(texte,skip){ const c=document.getElementById('chatArea'); const b=document.createElement('div'); b.className='message bot'; const s=document.createElement('span'); s.className='message-text'; s.setAttribute('data-full-text',texte); const copy=document.createElement('button'); copy.className='btn-copy'; copy.innerHTML='<i class="ph ph-copy"></i>'; copy.onclick=()=>copierMessage(copy); b.appendChild(s); b.appendChild(copy); c.appendChild(b); let i=0; const speed=30; const txtAvecLiens=lierUrls(texte); function type(){ if(i<texte.length){ s.textContent+=texte.charAt(i); i++; c.scrollTop=c.scrollHeight; setTimeout(type,speed); }else{ s.innerHTML=txtAvecLiens; if(!isLoadingHistory&&!skip) sauvegarderHistorique(); } } type(); return new Promise(r=>setTimeout(r,texte.length*30+50)); }
+    function afficherMessageUser(texte,skip){ const c=document.getElementById('chatArea'); const b=document.createElement('div'); b.className='message user'; b.textContent=texte; c.appendChild(b); if(!isLoadingHistory&&!skip) sauvegarderHistorique(); c.scrollTop=c.scrollHeight; return Promise.resolve(); }
+    async function afficherMessage(texte,type,skip){ const t=await traduireENversFR(texte); return type==='bot'? afficherMessageBot(t,skip): afficherMessageUser(t,skip); }
+    function sauvegarderHistorique(){ if(isLoadingHistory)return; const msgs=[]; document.querySelectorAll('#chatArea .message').forEach(m=>{ const type=m.classList.contains('user')?'user':'bot'; let txt=type==='bot'?(m.querySelector('.message-text')?.getAttribute('data-full-text')||m.textContent):m.textContent; msgs.push({type,texte:txt}); }); localStorage.setItem('chatHistory',JSON.stringify(msgs)); }
+    function chargerHistorique(){ isLoadingHistory=true; document.getElementById('chatArea').innerHTML=''; const saved=localStorage.getItem('chatHistory'); if(!saved){ afficherMessage('Accès confirmé. Bonjour, comment puis-je vous aider ?','bot').then(()=>isLoadingHistory=false); return; } try{ const msgs=JSON.parse(saved); Promise.all(msgs.map(m=>afficherMessage(m.texte,m.type,true))).then(()=>{ isLoadingHistory=false; sauvegarderHistorique(); }); }catch(e){ afficherMessage('Accès confirmé. Bonjour, comment puis-je vous aider ?','bot').then(()=>isLoadingHistory=false); } }
+    function copierMessage(btn){ const txt=btn.closest('.message').querySelector('.message-text').textContent.trim(); navigator.clipboard.writeText(txt).then(()=>{ btn.innerHTML='<i class="ph-fill ph-check"></i>'; btn.classList.add('copied'); setTimeout(()=>{ btn.innerHTML='<i class="ph ph-copy"></i>'; btn.classList.remove('copied'); },2000); }); }
+    function mettreAJourNomBot(){ document.getElementById('typingName').textContent=nomBot; document.getElementById('currentBotName').textContent=nomBot; document.title=`Petio - ${nomBot}`; }
 
-            if (mode === 'Procedure') {
-                const prefixes = ['procedure', 'proc', 'doc'];
-                const extensions = ['.pdf', '.docx'];
-                for (const prefix of prefixes) {
-                    for (const ext of extensions) {
-                        let i = 1;
-                        let consecutiveFails = 0;
-                        while (i <= 500) {
-                            const fileName = `${prefix}${i}${ext}`;
-                            try {
-                                const texte = await extraireTexteFichierLocal(fileName);
-                                if (texte) {
-                                    contenu += `[Fichier: ${fileName}]\n${texte}\n\n`;
-                                    fullTextCache.set(fileName, texte);
-                                    consecutiveFails = 0;
-                                } else {
-                                    consecutiveFails++;
-                                }
-                            } catch(e) {
-                                consecutiveFails++;
-                            }
-                            if (consecutiveFails >= 3) break;
-                            i++;
-                        }
-                    }
-                }
-            }
+    // ==================== INIT & UTILS ====================
+    function toggleTranslation(){ traductionActive=!traductionActive; localStorage.setItem('petio_traduction',traductionActive); const i=document.getElementById('translationSettingIcon'); i.className=traductionActive?'setting-icon ph ph-translate':'setting-icon ph ph-translate-slash'; i.style.opacity=traductionActive?'1':'0.5'; }
+    function initTranslationButton(){ const i=document.getElementById('translationSettingIcon'); if(!traductionActive){ i.className='setting-icon ph ph-translate-slash'; i.style.opacity='0.5'; } }
+    function closeMenu(){ menu.classList.remove('show'); suggestionsContainer.classList.remove('show'); }
+    function openSettings(){ document.getElementById('settingsPage').classList.add('open'); }
+    function closeSettings(){ document.getElementById('settingsPage').classList.remove('open'); }
+    function afficherErreur(m){ const p=document.getElementById('error-popup'); document.getElementById('error-msg').innerText=m; p.classList.add('show'); setTimeout(()=>p.classList.remove('show'),4000); }
+    function resetMode(){ changerMode('Cerveau'); }
+    async function verifierAcces(){ const email=document.getElementById('userEmail').value.trim(), code=document.getElementById('userCode').value.trim(), btn=document.getElementById('btnValid'); if(!email||!code){ afficherErreur("Champs obligatoires."); return; } btn.disabled=true; btn.innerText="Vérification..."; try{ const r=await fetch(`https://script.google.com/macros/s/AKfycbwECfIzsgINAu5IqMDaqcDuYtZAaspR16wvxu-BuLaqTdGJT-6Pec3hJs27lYvxzaIB2Q/exec?action=verif&email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}`); const t=await r.text(); if(t.trim()==='VALIDE'){ localStorage.setItem('pierre_bot_access','true'); localStorage.setItem('userEmail',email); let adminUsers=JSON.parse(localStorage.getItem('petio_admin_users')||'[]'); if(!adminUsers.some(u=>u.email===email)){ adminUsers.push({email,date:new Date().toISOString()}); localStorage.setItem('petio_admin_users',JSON.stringify(adminUsers)); } showPage('robot'); chargerHistorique(); }else{ openPay(); } }catch(e){ afficherErreur("Erreur réseau."); } finally{ btn.disabled=false; btn.innerText="Valider"; } }
+    function openPay(){ document.getElementById('pay-sheet').classList.add('show'); document.getElementById('overlay').classList.add('show'); }
+    function closePay(){ document.getElementById('pay-sheet').classList.remove('show'); document.getElementById('overlay').classList.remove('show'); }
+    function showPage(n){ document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.getElementById(`page-${n}`).classList.add('active'); if(n==='robot')setTimeout(()=>textarea.focus(),100); }
+    function handleInput(el){ el.style.height='auto'; el.style.height=(el.scrollHeight>40?el.scrollHeight:'auto')+'px'; const v=!!el.value.trim(); btnSend.classList.toggle('show',v); btnPlus.classList.toggle('hidden',v); }
+    function resetInputBar(){ textarea.value=''; handleInput(textarea); textarea.focus(); }
+    function toggleMenu(e){ e.stopPropagation(); menu.classList.toggle('show'); }
+    async function envoyerMessage(){ const msg=textarea.value.trim(); if(!msg)return; if(modeActuel==='Gallery'||modeActuel==='Bibliotheque'){ afficherErreur('Ce mode n\'accepte pas de chat.'); return; } document.querySelectorAll('.suggestion-btn').forEach(b=>b.remove()); afficherMessage(msg,'user'); resetInputBar(); document.getElementById('typing').classList.add('show'); try{ const rep=await rechercherDansFichiers(modeActuel,msg); document.getElementById('typing').classList.remove('show'); if(rep&&rep.__isDocumentMessage){ await afficherMessageAvecBoutonDocument(rep.text,rep.sourceFile); }else if(rep&&rep.matches){ await afficherMessage(rep.message,'bot'); afficherSuggestionsInChat(rep.matches); }else{ afficherMessage(rep,'bot'); } }catch(e){ document.getElementById('typing').classList.remove('show'); afficherMessage("Erreur lors de la recherche.",'bot'); } }
+    function afficherSuggestionsInChat(matches){ const ca=document.getElementById('chatArea'); matches.forEach(m=>{ const b=document.createElement('button'); b.className='suggestion-btn'; traduireENversFR(m.preview).then(p=>b.textContent=p); b.onclick=async()=>{ document.querySelectorAll('.suggestion-btn').forEach(bt=>bt.remove()); const full=await traduireENversFR(m.full); if(m.sourceFile&&(m.sourceFile.endsWith('.pdf')||m.sourceFile.endsWith('.docx'))) await afficherMessageAvecBoutonDocument(full,m.sourceFile); else await afficherMessage(full,'bot'); }; ca.appendChild(b); }); ca.scrollTop=ca.scrollHeight; }
+    async function afficherMessageAvecBoutonDocument(textePartiel,sourceFile){ const c=document.getElementById('chatArea'); const b=document.createElement('div'); b.className='message bot'; const s=document.createElement('span'); s.className='message-text'; s.setAttribute('data-full-text',textePartiel); s.innerHTML=lierUrls(textePartiel); const copy=document.createElement('button'); copy.className='btn-copy'; copy.innerHTML='<i class="ph ph-copy"></i>'; copy.onclick=()=>copierMessage(copy); b.appendChild(s); b.appendChild(copy); const suite=document.createElement('button'); suite.className='suite-btn'; suite.innerHTML='<i class="ph ph-book-open"></i> Lire la suite du document'; suite.onclick=async()=>{ suite.disabled=true; suite.innerHTML='<i class="ph ph-spinner"></i> Chargement...'; try{ let full=fullTextCache.get(sourceFile); if(!full){ full=await extraireTexteFichierLocal(sourceFile); if(full)fullTextCache.set(sourceFile,full); } if(full){ const t=await traduireENversFR(full); await afficherMessage(`📄 **Document complet : ${sourceFile}**\n\n${t}`,'bot'); }else await afficherMessage(`❌ Impossible de charger le document "${sourceFile}".`,'bot'); }catch(e){ await afficherMessage(`❌ Erreur lors du chargement du document.`,'bot'); } suite.remove(); if(!isLoadingHistory) sauvegarderHistorique(); }; b.appendChild(suite); c.appendChild(b); if(!isLoadingHistory) sauvegarderHistorique(); c.scrollTop=c.scrollHeight; }
 
-            if (mode === 'Divers') {
-                const separators = ['', '_', '-', '.'];
-                for (let num = 1; num <= 9; num++) {
-                    for (const sep of separators) {
-                        const fileName = `divers${sep}${num}.txt`;
-                        try {
-                            const r = await fetch(fileName);
-                            if (r.ok) contenu += `[Fichier: ${fileName}]\n${await r.text()}\n\n`;
-                        } catch(e) {}
-                        const fileName2 = `divers${num}${sep}.txt`;
-                        try {
-                            const r = await fetch(fileName2);
-                            if (r.ok) contenu += `[Fichier: ${fileName2}]\n${await r.text()}\n\n`;
-                        } catch(e) {}
-                    }
-                }
-                try {
-                    const r = await fetch('divers.txt');
-                    if (r.ok) contenu += await r.text() + '\n';
-                } catch(e) {}
-            }
-            
-            if (!contenu.trim()) return null;
-            cacheFichiers[mode] = contenu;
-            return contenu;
-        }
+    // ==================== INIT APP ====================
+    window.addEventListener('DOMContentLoaded',async()=>{ loadStatus.style.display='block'; const contenu=await chargerFichiersMode('Cerveau'); loadStatus.className=contenu?'success':'error'; loadStatus.textContent=contenu?'✅ Prêt.':'⚠️ Fichier cerveau.txt manquant'; setTimeout(()=>loadStatus.style.display='none',2000); initTranslationButton(); loadUserPhoto(); mettreAJourNomBot(); if(localStorage.getItem('pierre_bot_access')==='true'){ showPage('robot'); chargerHistorique(); } if(localStorage.getItem('theme')==='dark'){ document.body.classList.add('dark-theme'); document.getElementById('themeIcon').className='ph ph-sun'; } });
+    function deconnexionComplete(){ localStorage.removeItem('pierre_bot_access'); localStorage.removeItem('chatHistory'); localStorage.removeItem('petio_procedure_unlocked'); window.location.reload(); }
 
-        function normalize(str) {
-            return str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-        }
-
-        // === RECHERCHE MODE GLOBAL ===
-        async function rechercherModeGlobal(query) {
-            const API_URL = 'https://script.google.com/macros/s/AKfycbxCmsUiDwNhlqAa_qoIYx2Vtr3_2V4x63rjqqn7aU69787Ba9xymzpLLxmG9wF6HKVN/exec';
-            
-            try {
-                const url = `${API_URL}?action=search&q=${encodeURIComponent(query)}`;
-                const response = await fetch(url);
-                const data = await response.json();
-                
-                if (data.success && data.results.length > 0) {
-                    if (data.results.length === 1 && !data.fallback) {
-                        return await traduireENversFR(data.results[0].fullText);
-                    }
-                    
-                    const matches = data.results.map(r => ({
-                        full: r.fullText,
-                        preview: r.excerpt.replace(/<[^>]*>/g, '')
-                    }));
-                    
-                    const message = data.fallback 
-                        ? (data.message || `ℹ️ Aucun résultat exact. Suggestions aléatoires :`)
-                        : `✅ Trouvé ${data.count} résultat(s) dans Petio_global. Choisissez une option ci-dessous :`;
-                        
-                    return { message, matches };
-                }
-                else if (data.success) {
-                    return `ℹ️ Aucun résultat pour "${query}" dans Petio_global.`;
-                }
-                else {
-                    return `⚠️ Erreur de connexion au mode Global.`;
-                }
-            } catch (e) {
-                console.error('Global error:', e);
-                return `⚠️ Impossible de contacter le mode Global.`;
-            }
-        }
-
-        // === MOTEUR DE RECHERCHE ===
-        async function rechercherDansFichiers(mode, msg) {
-            if (mode === 'Global') {
-                return await rechercherModeGlobal(msg);
-            }
-            if (mode === 'Gallery') {
-                return null;
-            }
-            
-            const contenu = await chargerFichiersMode(mode);
-            if (!contenu) return `Désolé, la base du mode ${mode} est vide.`;
-            
-            const paragraphs = contenu.split(/\n\s*\n/).filter(p => p.trim().length > 20);
-            const normalizedQuery = normalize(msg);
-            const queryWords = normalizedQuery.split(/[^a-z0-9]/i).filter(w => w.length >= 2);
-            
-            if (queryWords.length === 0) return `Je n'ai pas compris "${msg}".`;
-
-            const matches = [];
-            for (const para of paragraphs) {
-                const normalizedPara = normalize(para);
-                const hasAllWords = queryWords.every(word => normalizedPara.includes(word));
-                
-                if (hasAllWords) {
-                    const words = para.trim().split(/\s+/);
-                    const preview = words.slice(0, 15).join(' ') + (words.length > 15 ? '...' : '');
-                    let sourceFile = null;
-                    const fileMatch = para.match(/^\[Fichier: (.*?)\]/);
-                    if (fileMatch) sourceFile = fileMatch[1];
-                    matches.push({ full: para.trim(), preview, sourceFile });
-                }
-            }
-            
-            if (matches.length > 0) {
-                if (matches.length === 1) {
-                    const single = matches[0];
-                    const texte = await traduireENversFR(single.full);
-                    if (single.sourceFile && (single.sourceFile.endsWith('.pdf') || single.sourceFile.endsWith('.docx'))) {
-                        return { __isDocumentMessage: true, text: texte, sourceFile: single.sourceFile };
-                    }
-                    return texte;
-                }
-                return {
-                    message: `J'ai trouvé ${matches.length} résultats pour "${msg}". Choisissez une option ci-dessous :`,
-                    matches: matches
-                };
-            }
-            
-            const randomParagraphs = paragraphs.sort(() => Math.random() - 0.5).slice(0, 3);
-            const randomMatches = randomParagraphs.map(para => {
-                const words = para.trim().split(/\s+/);
-                const preview = words.slice(0, 15).join(' ') + (words.length > 15 ? '...' : '');
-                let sourceFile = null;
-                const fileMatch = para.match(/^\[Fichier: (.*?)\]/);
-                if (fileMatch) sourceFile = fileMatch[1];
-                return { full: para.trim(), preview, sourceFile };
-            });
-            
-            return {
-                message: `Je n'ai pas trouvé d'information pour "${msg}" dans le mode ${mode}. Voici quelques suggestions aléatoires :`,
-                matches: randomMatches
-            };
-        }
-
-        // === AFFICHAGE DES SUGGESTIONS ===
-        function afficherSuggestionsInChat(matches) {
-            const chatArea = document.getElementById('chatArea');
-            
-            matches.forEach((match) => {
-                const btn = document.createElement('button');
-                btn.className = 'suggestion-btn';
-                traduireENversFR(match.preview).then(frPreview => {
-                    btn.textContent = frPreview;
-                });
-                
-                btn.onclick = async function() {
-                    document.querySelectorAll('.suggestion-btn').forEach(b => b.remove());
-                    const fullText = await traduireENversFR(match.full);
-                    
-                    if (match.sourceFile && (match.sourceFile.endsWith('.pdf') || match.sourceFile.endsWith('.docx'))) {
-                        await afficherMessageAvecBoutonDocument(fullText, match.sourceFile);
-                    } else {
-                        await afficherMessage(fullText, 'bot');
-                    }
-                };
-                
-                chatArea.appendChild(btn);
-            });
-            
-            chatArea.scrollTop = chatArea.scrollHeight;
-        }
-
-        async function afficherMessageAvecBoutonDocument(textePartiel, sourceFile) {
-            const c = document.getElementById('chatArea');
-            const b = document.createElement('div');
-            b.className = 'message bot';
-            
-            const span = document.createElement('span');
-            span.className = 'message-text';
-            span.setAttribute('data-full-text', textePartiel);
-            span.innerHTML = lierUrls(textePartiel);
-            
-            const copyBtn = document.createElement('button');
-            copyBtn.className = 'btn-copy';
-            copyBtn.innerHTML = '<i class="ph ph-copy"></i>';
-            copyBtn.onclick = () => copierMessage(copyBtn);
-            
-            b.appendChild(span);
-            b.appendChild(copyBtn);
-            
-            const suiteBtn = document.createElement('button');
-            suiteBtn.className = 'suite-btn';
-            suiteBtn.innerHTML = '<i class="ph ph-book-open"></i> Lire la suite du document';
-            suiteBtn.onclick = async () => {
-                suiteBtn.disabled = true;
-                suiteBtn.innerHTML = '<i class="ph ph-spinner"></i> Chargement...';
-                try {
-                    let fullDocument = fullTextCache.get(sourceFile);
-                    if (!fullDocument) {
-                        fullDocument = await extraireTexteFichierLocal(sourceFile);
-                        if (fullDocument) fullTextCache.set(sourceFile, fullDocument);
-                    }
-                    if (fullDocument) {
-                        const texteComplet = await traduireENversFR(fullDocument);
-                        await afficherMessage(`📄 **Document complet : ${sourceFile}**\n\n${texteComplet}`, 'bot');
-                    } else {
-                        await afficherMessage(`❌ Impossible de charger le document "${sourceFile}".`, 'bot');
-                    }
-                } catch (e) {
-                    await afficherMessage(`❌ Erreur lors du chargement du document.`, 'bot');
-                }
-                suiteBtn.remove();
-                if (!isLoadingHistory) sauvegarderHistorique();
-            };
-            b.appendChild(suiteBtn);
-            
-            c.appendChild(b);
-            if (!isLoadingHistory) sauvegarderHistorique();
-            c.scrollTop = c.scrollHeight;
-        }
-
-        function lierUrls(texte) {
-            return texte.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" rel="noopener">$1</a>');
-        }
-
-        function afficherMessageBot(texte, skipSave = false) {
-            const c = document.getElementById('chatArea');
-            const b = document.createElement('div'); b.className = 'message bot';
-            const span = document.createElement('span'); span.className = 'message-text';
-            span.setAttribute('data-full-text', texte);
-            const copyBtn = document.createElement('button'); copyBtn.className = 'btn-copy';
-            copyBtn.innerHTML = '<i class="ph ph-copy"></i>'; copyBtn.onclick = () => copierMessage(copyBtn);
-            b.appendChild(span); b.appendChild(copyBtn);
-            c.appendChild(b);
-            let i = 0; const speed = 30;
-            const texteAvecLiens = lierUrls(texte);
-            function type() {
-                if (i < texte.length) {
-                    span.textContent += texte.charAt(i);
-                    i++;
-                    c.scrollTop = c.scrollHeight;
-                    setTimeout(type, speed);
-                } else {
-                    span.innerHTML = texteAvecLiens;
-                    if (!isLoadingHistory && !skipSave) sauvegarderHistorique();
-                }
-            }
-            type();            return new Promise(r => setTimeout(r, texte.length * 30 + 50));
-        }
-
-        function afficherMessageUser(texte, skipSave = false) {
-            const c = document.getElementById('chatArea');
-            const b = document.createElement('div'); b.className = 'message user'; b.textContent = texte;
-            c.appendChild(b);
-            if (!isLoadingHistory && !skipSave) sauvegarderHistorique();
-            c.scrollTop = c.scrollHeight;
-            return Promise.resolve();
-        }
-
-        async function afficherMessage(texte, type, skipSave = false) {
-            const texteFR = await traduireENversFR(texte);
-            return type === 'bot' ? afficherMessageBot(texteFR, skipSave) : afficherMessageUser(texteFR, skipSave);
-        }
-
-        function sauvegarderHistorique() {
-            if (isLoadingHistory) return;
-            const msgs = [];
-            document.querySelectorAll('#chatArea .message').forEach(m => {
-                const type = m.classList.contains('user') ? 'user' : 'bot';
-                let texte = type === 'bot' ? (m.querySelector('.message-text')?.getAttribute('data-full-text') || m.textContent) : m.textContent;
-                msgs.push({type, texte});
-            });
-            localStorage.setItem('chatHistory', JSON.stringify(msgs));
-        }
-
-        function chargerHistorique() {
-            isLoadingHistory = true;
-            document.getElementById('chatArea').innerHTML = '';
-            const saved = localStorage.getItem('chatHistory');
-            if (!saved) { afficherMessage('Accès confirmé. Bonjour, comment puis-je vous aider ?', 'bot').then(() => isLoadingHistory = false); return; }
-            try {
-                const msgs = JSON.parse(saved);
-                Promise.all(msgs.map(m => afficherMessage(m.texte, m.type, true))).then(() => { isLoadingHistory = false; sauvegarderHistorique(); });
-            } catch(e) { afficherMessage('Accès confirmé. Bonjour, comment puis-je vous aider ?', 'bot').then(() => isLoadingHistory = false); }
-        }
-
-        function mettreAJourNomBot() {
-            document.getElementById('typingName').textContent = nomBot;
-            document.getElementById('currentBotName').textContent = nomBot;
-            document.title = `Petio - ${nomBot}`;
-        }
-
-        function deconnexionComplete() {
-            localStorage.removeItem('pierre_bot_access');
-            localStorage.removeItem('chatHistory');
-            localStorage.removeItem('petio_procedure_unlocked');
-            window.location.reload();        }
-
-        const UNLOCK_STORAGE_KEY = 'petio_procedure_unlocked';
-        let unlockModal = document.getElementById('unlock-modal');
-        let stepCode = document.getElementById('unlock-step-code');
-        let stepPayment = document.getElementById('unlock-step-payment');
-
-        function isProcedureUnlocked() { return localStorage.getItem(UNLOCK_STORAGE_KEY) === 'true'; }
-        function setProcedureUnlocked() { localStorage.setItem(UNLOCK_STORAGE_KEY, 'true'); }
-        function showUnlockModal() {
-            stepCode.classList.add('active'); stepPayment.classList.remove('active');
-            document.getElementById('unlock-code-input').value = '';
-            unlockModal.classList.add('show');
-        }
-        window.closeUnlockModal = function() { unlockModal.classList.remove('show'); };
-
-        window.contacterAdmin = function(context) {
-            const phoneNumber = "12496806826";
-            let message = "Bonjour, je contacte l'administrateur de Petio.";
-            
-            switch(context) {
-                case 'vip': message = "Bonjour, je souhaite obtenir un accès VIP pour Petio."; break;
-                case 'payment': message = "Bonjour, le code saisi est invalide. Je souhaite obtenir un accès au mode Procédure."; break;
-                case 'code': message = "Bonjour, j'ai un problème avec le code d'accès Procédure."; break;
-            }
-            
-            const encodedMessage = encodeURIComponent(message);
-            const url = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
-            window.open(url, '_blank', 'noopener,noreferrer');
-        };
-
-        async function verifierCodeAcces() {
-            const code = document.getElementById('unlock-code-input').value.trim();
-            const email = localStorage.getItem('userEmail') || '';
-            if (!code) { afficherErreur("Veuillez saisir un code."); return; }
-            if (!email) { afficherErreur("Email utilisateur introuvable. Reconnectez-vous."); return; }
-            try {
-                const res = await fetch(`${URL_GAS}?action=checkProcedureCode&email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}`);
-                const result = await res.text();
-                if (result.trim() === "VALIDE") {
-                    setProcedureUnlocked(); closeUnlockModal(); await activerModeProcedure();
-                } else {
-                    stepCode.classList.remove('active'); stepPayment.classList.add('active');
-                }
-            } catch (e) { afficherErreur("Erreur réseau. Veuillez réessayer."); }
-        }
-
-        async function activerModeProcedure() {
-            modeActuel = 'Procedure';
-            document.getElementById('modeText').textContent = `🤖 MODE: PROCEDURE`;            closeMenu(); afficherMessage(`✅ Mode changé : Procedure`, 'bot');
-        }
-
-        const changerModeOriginal = async function(n) {
-            if (n === 'Gallery') {
-                enterGalleryMode();
-                return;
-            }
-            if (galleryModeActive) {
-                exitGalleryMode();
-            }
-            if (n !== 'Global') {
-                if (!await chargerFichiersMode(n)) { 
-                    afficherErreur(`Mode ${n} sans fichier`); 
-                    return; 
-                }
-            }
-            modeActuel = n;
-            document.getElementById('modeText').textContent = `🤖 MODE: ${n.toUpperCase()}`;
-            localStorage.setItem('petio_current_mode', n);
-            closeMenu(); 
-            afficherMessage(`✅ Mode changé : ${n}`, 'bot');
-        };
-
-        window.changerMode = async function(n) {
-            if (n === 'Procedure') {
-                if (isProcedureUnlocked()) await changerModeOriginal(n);
-                else showUnlockModal();
-            } else {
-                await changerModeOriginal(n);
-            }
-        };
-        window.verifierCodeAcces = verifierCodeAcces;
-
-        window.addEventListener('DOMContentLoaded', async () => {
-            loadStatus.style.display = 'block';
-            const contenu = await chargerFichiersMode('Cerveau');
-            loadStatus.className = contenu ? 'success' : 'error';
-            loadStatus.textContent = contenu ? '✅ Prêt.' : '⚠️ Fichier cerveau.txt manquant';
-            setTimeout(() => loadStatus.style.display = 'none', 2000);
-            initTranslationButton();
-            loadUserPhoto();
-            initApp();
-        });
-
-        function initApp() {
-            mettreAJourNomBot();
-            if (localStorage.getItem('pierre_bot_access') === 'true') { showPage('robot'); chargerHistorique(); }
-            if (localStorage.getItem('theme') === 'dark') { document.body.classList.add('dark-theme'); document.getElementById('themeIcon').className = 'ph ph-sun'; }
-        }
-
-        function showPage(n) { 
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); 
-            document.getElementById(`page-${n}`).classList.add('active'); 
-            if (n==='robot') setTimeout(() => textarea.focus(), 100); 
-        }
-        
-        function handleInput(el) { 
-            el.style.height = 'auto'; 
-            el.style.height = (el.scrollHeight > 40 ? el.scrollHeight : 'auto') + 'px'; 
-            const v = !!el.value.trim(); 
-            btnSend.classList.toggle('show', v); 
-            btnPlus.classList.toggle('hidden', v); 
-        }        
-        function resetInputBar() { 
-            textarea.value = ''; 
-            handleInput(textarea); 
-            textarea.focus(); 
-        }
-        
-        function toggleMenu(e) { e.stopPropagation(); menu.classList.toggle('show'); }
-        function closeMenu() { menu.classList.remove('show'); suggestionsContainer.classList.remove('show'); }
-        function openSettings() { document.getElementById('settingsPage').classList.add('open'); }
-        function closeSettings() { document.getElementById('settingsPage').classList.remove('open'); }
-        async function resetMode() { await changerMode('Cerveau'); }
-        
-        async function verifierAcces() {
-            const email = document.getElementById('userEmail').value.trim(), 
-                  code = document.getElementById('userCode').value.trim(), 
-                  btn = document.getElementById('btnValid');
-            if (!email || !code) { afficherErreur("Champs obligatoires."); return; }
-            btn.disabled = true; btn.innerText = "Vérification...";
-            try {
-                const r = await fetch(`${URL_GAS}?action=verif&email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}`);
-                if (!r.ok) throw new Error(`Erreur ${r.status}`);
-                const result = await r.text();
-                if (result.trim() === "VALIDE") { 
-                    localStorage.setItem('pierre_bot_access', 'true');
-                    localStorage.setItem('userEmail', email);
-                    
-                    var adminUsers = JSON.parse(localStorage.getItem('petio_admin_users') || '[]');
-                    var existeDeja = adminUsers.some(function(u) { return u.email === email; });
-                    if (!existeDeja) {
-                        adminUsers.push({ email: email, date: new Date().toISOString() });
-                        localStorage.setItem('petio_admin_users', JSON.stringify(adminUsers));
-                    }
-                    
-                    showPage('robot'); 
-                    chargerHistorique();
-                } else { 
-                    openPay(); 
-                }
-            } catch(e) { afficherErreur("Erreur réseau."); }
-            finally { btn.disabled = false; btn.innerText = "Valider"; }
-        }
-
-        function openPay() { 
-            document.getElementById('pay-sheet').classList.add('show'); 
-            document.getElementById('overlay').classList.add('show'); 
-        }
-        function closePay() { 
-            document.getElementById('pay-sheet').classList.remove('show'); 
-            document.getElementById('overlay').classList.remove('show');         }
-        function afficherErreur(msg) { 
-            const p = document.getElementById('error-popup'); 
-            document.getElementById('error-msg').innerText = msg; 
-            p.classList.add('show'); 
-            setTimeout(() => p.classList.remove('show'), 4000); 
-        }
-        function toggleTheme() { 
-            document.body.classList.toggle('dark-theme'); 
-            const i = document.getElementById('themeIcon'); 
-            i.className = document.body.classList.contains('dark-theme') ? 'ph ph-sun' : 'ph ph-moon'; 
-            localStorage.setItem('theme', document.body.classList.contains('dark-theme') ? 'dark' : 'light'); 
-        }
-        function copierMessage(btn) {
-            const txt = btn.closest('.message').querySelector('.message-text').textContent.trim();
-            navigator.clipboard.writeText(txt).then(() => {
-                btn.innerHTML = '<i class="ph-fill ph-check"></i>'; 
-                btn.classList.add('copied');
-                setTimeout(() => { 
-                    btn.innerHTML = '<i class="ph ph-copy"></i>'; 
-                    btn.classList.remove('copied'); 
-                }, 2000);
-            }).catch(() => {});
-        }
-
-        async function envoyerMessage() {
-            const msg = textarea.value.trim(); if (!msg) return;
-            if (modeActuel === 'Gallery') { afficherErreur('Ce mode affiche une galerie, pas de chat.'); return; }
-            document.querySelectorAll('.suggestion-btn').forEach(b => b.remove());
-            
-            afficherMessage(msg, 'user'); resetInputBar();
-            document.getElementById('typing').classList.add('show');
-            try {
-                const rep = await rechercherDansFichiers(modeActuel, msg);
-                document.getElementById('typing').classList.remove('show');
-                
-                if (rep && rep.__isDocumentMessage) {
-                    await afficherMessageAvecBoutonDocument(rep.text, rep.sourceFile);
-                } else if (rep && rep.matches) {
-                    await afficherMessage(rep.message, 'bot');
-                    afficherSuggestionsInChat(rep.matches);
-                } else if (rep) {
-                    afficherMessage(rep, 'bot');
-                }
-            } catch(e) {
-                document.getElementById('typing').classList.remove('show');
-                afficherMessage("Erreur lors de la recherche.", 'bot');
-            }
-        }
-        textarea.addEventListener('keypress', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); envoyerMessage(); } });
-        window.verifierAcces = verifierAcces; 
-        window.openPay = openPay; 
-        window.closePay = closePay;
-        window.toggleTheme = toggleTheme; 
-        window.handleInput = handleInput; 
-        window.toggleMenu = toggleMenu;
-        window.closeMenu = closeMenu; 
-        window.openSettings = openSettings; 
-        window.closeSettings = closeSettings;
-        window.resetMode = resetMode; 
-        window.envoyerMessage = envoyerMessage; 
-        window.copierMessage = copierMessage;
-        window.contacterAdmin = contacterAdmin; 
-        window.verifierCodeAcces = verifierCodeAcces;
-        window.deconnexionComplete = deconnexionComplete;
-        window.toggleSettingDesc = toggleSettingDesc;
-        window.toggleTranslation = toggleTranslation;
-    })();
+    // Expositions globales
+    window.verifierAcces=verifierAcces; window.openPay=openPay; window.closePay=closePay;
+    window.toggleTheme=toggleTheme; window.handleInput=handleInput; window.toggleMenu=toggleMenu;
+    window.closeMenu=closeMenu; window.openSettings=openSettings; window.closeSettings=closeSettings;
+    window.resetMode=resetMode; window.envoyerMessage=envoyerMessage; window.copierMessage=copierMessage;
+    window.contacterAdmin=contacterAdmin; window.verifierCodeAcces=verifierCodeAcces;
+    window.deconnexionComplete=deconnexionComplete; window.toggleTranslation=toggleTranslation;
+    window.afficherBanniereInstallation=function(){ closeSettings(); document.getElementById('pwa-install-sheet').classList.add('show'); };
+    window.confirmChangeName=function(){ const n=document.getElementById('newBotNameInput').value.trim(); if(n){ nomBot=n; localStorage.setItem('botName',nomBot); mettreAJourNomBot(); afficherMessage(`✨ Assistant renommé en "${nomBot}".`,'bot'); } closeNameModal(); };
+    window.openNameModal=function(){ closeSettings(); document.getElementById('newBotNameInput').value=nomBot; document.getElementById('nameModal').classList.add('show'); };
+    window.closeNameModal=function(){ document.getElementById('nameModal').classList.remove('show'); };
+    function toggleSettingDesc(id){ ['faq','cgu','confidentialite','apropos'].forEach(k=>{ if(k!==id){ const d=document.getElementById(k+'-desc'); if(d&&d.parentElement.classList.contains('active')) d.parentElement.classList.remove('active'); } }); const c=document.getElementById(id+'-desc'); if(c) c.parentElement.classList.toggle('active'); }
+    window.toggleSettingDesc=toggleSettingDesc;
+})();
 </script>
 </body>
 </html>
