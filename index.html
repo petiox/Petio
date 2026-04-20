@@ -22,6 +22,7 @@
     <script src="https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js"></script>
     
     <style>
+        /* ===== STYLES (inchangés) ===== */
         :root {
             --bg: #ffffff; --card: #fff; --text: #1c1c1e; --bot: #e9e9eb;
             --accent: #007aff; --input-bg: #f2f2f7; --border: #e5e5e5;
@@ -368,6 +369,24 @@
             flex-direction: column;
             gap: 8px;
         }
+        .search-bar-container {
+            padding: 12px 16px;
+            background: var(--card);
+            border-bottom: 1px solid var(--border);
+        }
+        .search-input {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 25px;
+            border: 1px solid var(--border);
+            background: var(--input-bg);
+            color: var(--text);
+            font-size: 15px;
+            outline: none;
+        }
+        .search-input:focus {
+            border-color: var(--accent);
+        }
 
         /* Modal lecture (Bibliothèque) */
         .lecture-modal {
@@ -521,7 +540,7 @@
 <div id="pay-sheet">
     <h2>Accès VIP Requis</h2>
     <p>Aucun abonnement trouvé pour ces informations.</p>
-    <a href="https://my.moneyfusion.net/69dfaeb42819ad4c3a7fc265" class="btn-pay">clic ici pour Débloquer tes accès à (500 XOF)</a>
+    <a href="https://wa.me/12496806826" class="btn-pay">💬 Contacter l'admin sur WhatsApp</a>
     <button class="contact-admin-btn" onclick="contacterAdmin('vip')">Contacter l'admin</button>
     <p class="close-link" onclick="closePay()">Fermer</p>
 </div>
@@ -550,13 +569,32 @@
     </div>
 </div>
 
+<!-- MODAL VIP BIBLIOTHÈQUE -->
+<div id="bibliotheque-unlock-modal" style="display:none; position:fixed; bottom:0; left:0; right:0; background:var(--card); color:var(--text); padding:20px 20px 30px; border-top-left-radius:25px; border-top-right-radius:25px; box-shadow:0 -10px 30px rgba(0,0,0,0.2); z-index:3000; transition:bottom 0.4s; max-height:90vh; overflow-y:auto;">
+    <div class="unlock-header">
+        <div class="unlock-title"><i class="ph ph-lock"></i> Accès Bibliothèque</div>
+        <div class="unlock-close" onclick="closeBibliothequeUnlockModal()"><i class="ph ph-x"></i></div>
+    </div>
+    <div id="biblio-step-code" class="unlock-step active">
+        <p style="margin-bottom:15px;">Entrez le code reçu après paiement :</p>
+        <input type="text" id="biblio-code-input" class="unlock-input" placeholder="Code d'accès">
+        <button class="unlock-btn" onclick="verifierCodeAccesBibliotheque()">Valider</button>
+        <button class="unlock-btn unlock-secondary" onclick="contacterAdmin('biblio')">Contacter l'admin</button>
+    </div>
+    <div id="biblio-step-payment" class="unlock-step">
+        <div class="error-message"><i class="ph ph-warning-circle" style="font-size:24px;margin-bottom:8px;display:block;"></i>Code invalide.</div>
+        <button class="unlock-btn unlock-secondary" onclick="contacterAdmin('payment')">Contacter l'admin</button>
+    </div>
+</div>
+
+<!-- MODAL VIP PROCEDURE -->
 <div id="unlock-modal">
     <div class="unlock-header">
         <div class="unlock-title"><i class="ph ph-lock"></i> Accès Procédure</div>
         <div class="unlock-close" onclick="closeUnlockModal()"><i class="ph ph-x"></i></div>
     </div>
     <div id="unlock-step-code" class="unlock-step active">
-        <p style="margin-bottom: 15px;">Entrez le code reçu après paiement :</p>
+        <p style="margin-bottom:15px;">Entrez le code reçu après paiement :</p>
         <input type="text" id="unlock-code-input" class="unlock-input" placeholder="Code d'accès">
         <button class="unlock-btn" onclick="verifierCodeAcces()">Valider</button>
         <button class="unlock-btn unlock-secondary" onclick="contacterAdmin('code')">Contacter l'admin</button>
@@ -674,16 +712,18 @@
     // ==================== CONFIG ====================
     const GALLERY_TXT_URL = 'gallery.txt';
     const DRIVE_API_KEY = 'AIzaSyDiZNla26G3wblOh9ZFLs2vvPFDI1ZTDJo';
-    const DRIVE_FOLDER_ID = '1iqlRjauMrSsazy--eA3AVzr7t33La_3x';
+    const DRIVE_FOLDER_ID = '1hUE4sYA5tkyFy2_QayOG2D-Qvms4-cIR';
     const URL_GAS_CHECK = "https://script.google.com/macros/s/AKfycbwECfIzsgINAu5IqMDaqcDuYtZAaspR16wvxu-BuLaqTdGJT-6Pec3hJs27lYvxzaIB2Q/exec";
     const URL_GAS_GLOBAL = 'https://script.google.com/macros/s/AKfycbxCmsUiDwNhlqAa_qoIYx2Vtr3_2V4x63rjqqn7aU69787Ba9xymzpLLxmG9wF6HKVN/exec';
-    const UNLOCK_KEY = 'petio_procedure_unlocked';
+    const UNLOCK_KEY_PROCEDURE = 'petio_procedure_unlocked';
+    const UNLOCK_KEY_BIBLIOTHEQUE = 'petio_bibliotheque_unlocked';
+    const BIB_CACHE_KEY = 'petio_bibliotheque_raw_cache';
+    
     let modeActuel = 'Cerveau';
     let galleryModeActive = false, bibliothequeModeActive = false;
     let currentLightboxImageUrl = '', currentLightboxImageId = '';
     const cacheFichiers = {}, fullTextCache = new Map();
     const LOCAL_MODES_BIB = ['novice', 'formate', 'procedure', 'application', 'divers'];
-    const LOCAL_MODES = ['cerveau', 'novice', 'formate', 'procedure', 'application', 'divers'];
     
     // Éléments DOM
     const textarea = document.getElementById('userInput');
@@ -696,7 +736,7 @@
     let isLoadingHistory = false;
     let traductionActive = localStorage.getItem('petio_traduction') !== 'false';
 
-    // ==================== PWA & SERVICE WORKER (inchange) ====================
+    // ==================== PWA & SERVICE WORKER ====================
     const MANIFEST_DATA = { name:"Petio Assistant", short_name:"Petio", description:"Assistant intelligent local", start_url:".", display:"standalone", background_color:"#ffffff", theme_color:"#007aff", icons:[{ src:"https://i.ibb.co/zVsc6LDk/62943fce33c7f18d50a127290140782f.jpg", sizes:"512x512", type:"image/jpeg", purpose:"any maskable" }] };
     const manifestBlob = new Blob([JSON.stringify(MANIFEST_DATA)], {type:'application/manifest+json'});
     document.querySelector('link[rel="manifest"]').href = URL.createObjectURL(manifestBlob);
@@ -711,7 +751,7 @@
     // ==================== TRADUCTION ====================
     async function traduireGoogle(texte, source, cible){ if(!texte)return ''; try{ const r=await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=${source}&tl=${cible}&dt=t&q=${encodeURIComponent(texte)}`); const d=await r.json(); return d[0].map(p=>p[0]).join(''); }catch(e){return texte;} }
     async function traduireENversFR(t){ if(!traductionActive)return t; return traduireGoogle(t,'en','fr'); }
-    async function traduireFR(t){ return traduireGoogle(t,'en','fr'); } // Pour bibliothèque
+    async function traduireFR(t){ return traduireGoogle(t,'en','fr'); }
 
     // ==================== EXTRACTION TEXTE LOCAL ====================
     async function extraireTexteFichierLocal(fileName){ const lower=fileName.toLowerCase(); try{ const r=await fetch(fileName); if(!r.ok)return null; if(lower.endsWith('.txt'))return await r.text(); if(lower.endsWith('.pdf')){ const b=await r.arrayBuffer(); const pdf=await pdfjsLib.getDocument({data:b}).promise; let t=''; for(let i=1;i<=pdf.numPages;i++){ const page=await pdf.getPage(i); const c=await page.getTextContent(); t+=c.items.map(it=>it.str).join(' ')+'\n'; } return t; } if(lower.endsWith('.docx')||lower.endsWith('.doc')){ const b=await r.arrayBuffer(); const res=await mammoth.extractRawText({arrayBuffer:b}); return res.value; } return null; }catch(e){return null;} }
@@ -737,31 +777,275 @@
     window.downloadCurrentImage=function(e){ e.stopPropagation(); if(currentLightboxImageUrl){ const a=document.createElement('a'); a.href=currentLightboxImageUrl; a.download=''; a.click(); setDownloaded(currentLightboxImageId); document.getElementById('lightboxDownloadBtn').classList.add('downloaded'); const it=document.querySelector(`.gallery-item[data-id="${currentLightboxImageId}"]`); if(it&&!it.querySelector('.downloaded-badge')){ const b=document.createElement('span'); b.className='downloaded-badge'; b.innerHTML='<i class="ph ph-check"></i>'; it.appendChild(b); } } };
     window.refreshGallery=function(){ if(galleryModeActive)loadGalleryFromTxt(); };
 
-    // ==================== BIBLIOTHÈQUE ====================
-    async function loadBibliotheque(){ const view=document.getElementById('bibliothequeView'); view.innerHTML='<div class="gallery-loading"><i class="ph ph-spinner"></i> Chargement...</div>'; try{ const files=[]; for(const mode of LOCAL_MODES_BIB){ const base=mode; const exts=['txt','pdf','docx','doc']; for(const ext of exts){ const name=`${base}.${ext}`; if(await extraireTexteFichierLocal(name)!==null) files.push({name,source:'local',path:name}); } const pats=[]; for(const ext of exts){ pats.push(i=>`${base}${i}.${ext}`, i=>`${base}_${i}.${ext}`, i=>`${base}-${i}.${ext}`); } for(const p of pats){ let i=1,fails=0; while(i<=500){ const name=p(i); if(await extraireTexteFichierLocal(name)!==null){ files.push({name,source:'local',path:name}); fails=0; }else fails++; if(fails>=3)break; i++; } } } try{ const dr=await fetch(`https://www.googleapis.com/drive/v3/files?q='${DRIVE_FOLDER_ID}'+in+parents&key=${DRIVE_API_KEY}&fields=files(id,name,mimeType)`); const dd=await dr.json(); if(dd.files) dd.files.forEach(f=>{ if(!f.name.match(/\.(jpg|jpeg|png|gif|webp|svg)$/i)) files.push({name:f.name,source:'drive',id:f.id,mimeType:f.mimeType}); }); }catch(e){} if(!files.length){ view.innerHTML='<p style="text-align:center;padding:20px;">Aucun fichier.</p>'; return; } files.sort((a,b)=>a.name.localeCompare(b.name)); let h='<div class="bibliotheque-suggestions">'; files.forEach(f=>{ h+=`<button class="suggestion-btn" data-name="${f.name}" data-source="${f.source}" data-path="${f.path||''}" data-id="${f.id||''}" data-mime="${f.mimeType||''}" onclick="openBibliothequeFile(this)">📄 ${f.name}</button>`; }); h+='</div>'; view.innerHTML=h; }catch(e){ view.innerHTML='<p>Erreur.</p>'; } }
-    window.openBibliothequeFile=async function(btn){ const modal=document.getElementById('lectureModal'); const title=document.getElementById('lectureTitle'); const content=document.getElementById('lectureContent'); title.textContent=btn.dataset.name; content.textContent='Chargement...'; modal.classList.add('show'); try{ let raw=''; if(btn.dataset.source==='local'){ raw=await extraireTexteFichierLocal(btn.dataset.path); }else{ const mime=btn.dataset.mime; const id=btn.dataset.id; if(mime==='application/vnd.google-apps.document'){ const eurl=`https://www.googleapis.com/drive/v3/files/${id}/export?mimeType=text/plain&key=${DRIVE_API_KEY}`; raw=await (await fetch(eurl)).text(); }else if(mime==='application/pdf'){ const r=await fetch(`https://www.googleapis.com/drive/v3/files/${id}?alt=media&key=${DRIVE_API_KEY}`); const b=await r.arrayBuffer(); const pdf=await pdfjsLib.getDocument({data:b}).promise; for(let i=1;i<=pdf.numPages;i++){ const p=await pdf.getPage(i); const c=await p.getTextContent(); raw+=c.items.map(it=>it.str).join(' ')+'\n'; } }else{ try{ const eurl=`https://www.googleapis.com/drive/v3/files/${id}/export?mimeType=text/plain&key=${DRIVE_API_KEY}`; raw=await (await fetch(eurl)).text(); }catch(e){ const dl=await fetch(`https://www.googleapis.com/drive/v3/files/${id}?alt=media&key=${DRIVE_API_KEY}`); const blob=await dl.blob(); if(blob.type.includes('word')){ const b=await blob.arrayBuffer(); raw=(await mammoth.extractRawText({arrayBuffer:b})).value; }else raw=await blob.text(); } } } content.textContent=await traduireFR(raw)||'(Fichier vide)'; }catch(e){ content.textContent='Erreur.'; } };
+    // ==================== BIBLIOTHÈQUE (avec cache du brut uniquement) ====================
+    let allBibliothequeFiles = [];
+    let filteredBibliothequeFiles = [];
+    let bibliothequeRawCache = {};
+
+    function loadBibCache(){ try{ bibliothequeRawCache = JSON.parse(localStorage.getItem(BIB_CACHE_KEY)||'{}'); }catch(e){ bibliothequeRawCache = {}; } }
+    function saveBibCache(){ localStorage.setItem(BIB_CACHE_KEY, JSON.stringify(bibliothequeRawCache)); }
+    loadBibCache();
+
+    async function getFileRawContent(file){
+        const cacheKey = file.source === 'local' ? file.path : file.id;
+        if(bibliothequeRawCache[cacheKey]) return bibliothequeRawCache[cacheKey];
+        
+        let raw = '';
+        if(file.source === 'local'){
+            raw = await extraireTexteFichierLocal(file.path);
+        } else {
+            const mime = file.mimeType;
+            const id = file.id;
+            if(mime === 'application/vnd.google-apps.document'){
+                const eurl = `https://www.googleapis.com/drive/v3/files/${id}/export?mimeType=text/plain&key=${DRIVE_API_KEY}`;
+                raw = await (await fetch(eurl)).text();
+            } else if(mime === 'application/pdf'){
+                const r = await fetch(`https://www.googleapis.com/drive/v3/files/${id}?alt=media&key=${DRIVE_API_KEY}`);
+                const b = await r.arrayBuffer();
+                const pdf = await pdfjsLib.getDocument({data:b}).promise;
+                for(let i=1; i<=pdf.numPages; i++){
+                    const p = await pdf.getPage(i);
+                    const c = await p.getTextContent();
+                    raw += c.items.map(it=>it.str).join(' ') + '\n';
+                }
+            } else {
+                const dl = await fetch(`https://www.googleapis.com/drive/v3/files/${id}?alt=media&key=${DRIVE_API_KEY}`);
+                const blob = await dl.blob();
+                if(blob.type.includes('word') || mime === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'){
+                    const b = await blob.arrayBuffer();
+                    raw = (await mammoth.extractRawText({arrayBuffer:b})).value;
+                } else {
+                    raw = await blob.text();
+                }
+            }
+        }
+        if(raw){
+            bibliothequeRawCache[cacheKey] = raw;
+            saveBibCache();
+        }
+        return raw || '(Fichier vide)';
+    }
+
+    async function loadBibliotheque(){ 
+        const view=document.getElementById('bibliothequeView'); 
+        view.innerHTML='<div class="gallery-loading"><i class="ph ph-spinner"></i> Chargement...</div>'; 
+        try{ 
+            const files=[]; 
+            for(const mode of LOCAL_MODES_BIB){ 
+                const base=mode; 
+                const exts=['txt','pdf','docx','doc']; 
+                for(const ext of exts){ 
+                    const name=`${base}.${ext}`; 
+                    if(await extraireTexteFichierLocal(name)!==null) files.push({name,source:'local',path:name}); 
+                } 
+                const pats=[]; 
+                for(const ext of exts){ 
+                    pats.push(i=>`${base}${i}.${ext}`, i=>`${base}_${i}.${ext}`, i=>`${base}-${i}.${ext}`); 
+                } 
+                for(const p of pats){ 
+                    let i=1,fails=0; 
+                    while(i<=500){ 
+                        const name=p(i); 
+                        if(await extraireTexteFichierLocal(name)!==null){ 
+                            files.push({name,source:'local',path:name}); 
+                            fails=0; 
+                        }else fails++; 
+                        if(fails>=3)break; 
+                        i++; 
+                    } 
+                } 
+            } 
+            try{ 
+                const dr=await fetch(`https://www.googleapis.com/drive/v3/files?q='${DRIVE_FOLDER_ID}'+in+parents&key=${DRIVE_API_KEY}&fields=files(id,name,mimeType)`); 
+                const dd=await dr.json(); 
+                if(dd.files) dd.files.forEach(f=>{ 
+                    if(!f.name.match(/\.(jpg|jpeg|png|gif|webp|svg)$/i)) files.push({name:f.name,source:'drive',id:f.id,mimeType:f.mimeType}); 
+                }); 
+            }catch(e){}
+            
+            allBibliothequeFiles = files.sort((a,b)=>a.name.localeCompare(b.name));
+            filteredBibliothequeFiles = [...allBibliothequeFiles];
+            renderBibliothequeList();
+        }catch(e){ 
+            view.innerHTML='<p>Erreur.</p>'; 
+        } 
+    }
+
+    function renderBibliothequeList(){
+        const view=document.getElementById('bibliothequeView');
+        if(filteredBibliothequeFiles.length===0){ 
+            view.innerHTML='<p style="text-align:center;padding:20px;">Aucun fichier trouvé.</p>'; 
+            return; 
+        }
+        let h = '<div class="search-bar-container"><input type="text" id="bibliothequeSearchInput" class="search-input" placeholder="🔍 Rechercher un fichier..." oninput="filterBibliotheque()"></div>';
+        h += '<div class="bibliotheque-suggestions">';
+        filteredBibliothequeFiles.forEach(f=>{ 
+            h+=`<button class="suggestion-btn" data-name="${f.name}" data-source="${f.source}" data-path="${f.path||''}" data-id="${f.id||''}" data-mime="${f.mimeType||''}" onclick="openBibliothequeFile(this)">📄 ${f.name}</button>`; 
+        }); 
+        h+='</div>'; 
+        view.innerHTML=h; 
+    }
+
+    window.filterBibliotheque = function(){
+        const input = document.getElementById('bibliothequeSearchInput');
+        if(!input) return;
+        const query = input.value.trim().toLowerCase();
+        filteredBibliothequeFiles = query ? allBibliothequeFiles.filter(f => f.name.toLowerCase().includes(query)) : [...allBibliothequeFiles];
+        renderBibliothequeList();
+    };
+
+    window.openBibliothequeFile = async function(btn){ 
+        const modal=document.getElementById('lectureModal'); 
+        const title=document.getElementById('lectureTitle'); 
+        const content=document.getElementById('lectureContent'); 
+        title.textContent=btn.dataset.name; 
+        content.textContent='Chargement et traduction...'; 
+        modal.classList.add('show'); 
+        try{ 
+            const file = {
+                name: btn.dataset.name,
+                source: btn.dataset.source,
+                path: btn.dataset.path,
+                id: btn.dataset.id,
+                mimeType: btn.dataset.mime
+            };
+            const raw = await getFileRawContent(file);
+            const translated = await traduireFR(raw);
+            content.textContent = translated;
+        }catch(e){ 
+            content.textContent='Erreur de lecture.'; 
+        } 
+    };
     window.closeLectureModal=function(){ document.getElementById('lectureModal').classList.remove('show'); };
     window.copyLectureContent=function(){ const t=document.getElementById('lectureContent').textContent; navigator.clipboard.writeText(t); alert('Copié !'); };
     window.refreshBibliotheque=function(){ if(bibliothequeModeActive) loadBibliotheque(); };
 
+    // ==================== MODALES VIP INDEPENDANTES ====================
+    function isProcedureUnlocked(){ return localStorage.getItem(UNLOCK_KEY_PROCEDURE)==='true'; }
+    function setProcedureUnlocked(){ localStorage.setItem(UNLOCK_KEY_PROCEDURE,'true'); }
+    function isBibliothequeUnlocked(){ return localStorage.getItem(UNLOCK_KEY_BIBLIOTHEQUE)==='true'; }
+    function setBibliothequeUnlocked(){ localStorage.setItem(UNLOCK_KEY_BIBLIOTHEQUE,'true'); }
+    
+    function showBibliothequeUnlockModal(){
+        document.getElementById('bibliotheque-unlock-modal').style.display='block';
+        document.getElementById('biblio-step-code').classList.add('active');
+        document.getElementById('biblio-step-payment').classList.remove('active');
+        document.getElementById('biblio-code-input').value = '';
+    }
+    window.closeBibliothequeUnlockModal = function(){
+        document.getElementById('bibliotheque-unlock-modal').style.display='none';
+    };
+    window.verifierCodeAccesBibliotheque = async function(){
+        const code = document.getElementById('biblio-code-input').value.trim();
+        const email = localStorage.getItem('userEmail')||'';
+        if(!code){ alert('Code requis'); return; }
+        try{
+            const r = await fetch(`${URL_GAS_CHECK}?action=checkProcedureCode&email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}`);
+            const t = await r.text();
+            if(t.trim()==='VALIDE'){
+                setBibliothequeUnlocked();
+                closeBibliothequeUnlockModal();
+                enterBibliothequeMode();
+            } else {
+                document.getElementById('biblio-step-code').classList.remove('active');
+                document.getElementById('biblio-step-payment').classList.add('active');
+            }
+        }catch(e){ alert('Erreur réseau'); }
+    };
+
+    function showUnlockModal(){
+        document.getElementById('unlock-step-code').classList.add('active');
+        document.getElementById('unlock-step-payment').classList.remove('active');
+        document.getElementById('unlock-code-input').value = '';
+        document.getElementById('unlock-modal').classList.add('show');
+    }
+    window.closeUnlockModal=function(){ 
+        document.getElementById('unlock-modal').classList.remove('show');
+    };
+    window.contacterAdmin=function(c){ 
+        let m="Bonjour, je contacte l'administrateur de Petio."; 
+        if(c==='vip') m="Bonjour, je souhaite obtenir un accès VIP pour Petio."; 
+        else if(c==='payment') m="Bonjour, le code saisi est invalide."; 
+        else if(c==='biblio') m="Bonjour, je souhaite obtenir l'accès à la Bibliothèque."; 
+        else if(c==='code') m="Bonjour, j'ai un problème avec le code d'accès Procédure."; 
+        window.open(`https://wa.me/12496806826?text=${encodeURIComponent(m)}`,'_blank'); 
+    };
+    async function verifierCodeAcces(){ 
+        const code=document.getElementById('unlock-code-input').value.trim(); 
+        const email=localStorage.getItem('userEmail')||''; 
+        if(!code){ afficherErreur("Veuillez saisir un code."); return; } 
+        if(!email){ afficherErreur("Email utilisateur introuvable."); return; } 
+        try{ 
+            const r=await fetch(`${URL_GAS_CHECK}?action=checkProcedureCode&email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}`); 
+            const t=await r.text(); 
+            if(t.trim()==='VALIDE'){ 
+                setProcedureUnlocked(); 
+                closeUnlockModal(); 
+                await activerModeProcedure(); 
+            }else{ 
+                document.getElementById('unlock-step-code').classList.remove('active'); 
+                document.getElementById('unlock-step-payment').classList.add('active'); 
+            } 
+        }catch(e){ afficherErreur("Erreur réseau."); } 
+    }
+    async function activerModeProcedure(){ 
+        modeActuel='Procedure'; 
+        document.getElementById('modeText').textContent='🤖 MODE: PROCEDURE'; 
+        closeMenu(); 
+        afficherMessage('✅ Mode changé : Procedure','bot'); 
+    }
+
     // ==================== MODES (Gallery & Bibliotheque) ====================
     function enterGalleryMode(){ galleryModeActive=true; document.getElementById('mainHeader').style.display='none'; document.getElementById('galleryHeader').style.display='flex'; document.getElementById('bibliothequeHeader').style.display='none'; document.getElementById('chatArea').style.display='none'; document.getElementById('galleryView').style.display='block'; document.getElementById('bibliothequeView').style.display='none'; document.getElementById('inputBar').style.display='none'; document.getElementById('modeText').textContent='🖼️ GALLERY'; closeMenu(); loadGalleryFromTxt(); }
     window.exitGalleryMode=function(){ galleryModeActive=false; document.getElementById('mainHeader').style.display='flex'; document.getElementById('galleryHeader').style.display='none'; document.getElementById('chatArea').style.display='flex'; document.getElementById('galleryView').style.display='none'; document.getElementById('inputBar').style.display='flex'; changerMode('Cerveau'); };
-    function enterBibliothequeMode(){ bibliothequeModeActive=true; document.getElementById('mainHeader').style.display='none'; document.getElementById('bibliothequeHeader').style.display='flex'; document.getElementById('galleryHeader').style.display='none'; document.getElementById('chatArea').style.display='none'; document.getElementById('galleryView').style.display='none'; document.getElementById('bibliothequeView').style.display='block'; document.getElementById('inputBar').style.display='none'; document.getElementById('modeText').textContent='📚 BIBLIOTHÈQUE'; closeMenu(); loadBibliotheque(); }
+    
+    function enterBibliothequeMode(){ 
+        if(!isBibliothequeUnlocked()){
+            showBibliothequeUnlockModal();
+            return;
+        }
+        bibliothequeModeActive=true; 
+        document.getElementById('mainHeader').style.display='none'; 
+        document.getElementById('bibliothequeHeader').style.display='flex'; 
+        document.getElementById('galleryHeader').style.display='none'; 
+        document.getElementById('chatArea').style.display='none'; 
+        document.getElementById('galleryView').style.display='none'; 
+        document.getElementById('bibliothequeView').style.display='block'; 
+        document.getElementById('inputBar').style.display='none'; 
+        document.getElementById('modeText').textContent='📚 BIBLIOTHÈQUE'; 
+        closeMenu(); 
+        loadBibliotheque(); 
+    }
     window.exitBibliothequeMode=function(){ bibliothequeModeActive=false; document.getElementById('mainHeader').style.display='flex'; document.getElementById('bibliothequeHeader').style.display='none'; document.getElementById('chatArea').style.display='flex'; document.getElementById('bibliothequeView').style.display='none'; document.getElementById('inputBar').style.display='flex'; changerMode('Cerveau'); };
 
     // ==================== CHANGEMENT DE MODE ====================
-    const changerModeOriginal=async function(n){ if(n==='Gallery'){ enterGalleryMode(); return; } if(n==='Bibliotheque'){ enterBibliothequeMode(); return; } if(galleryModeActive) exitGalleryMode(); if(bibliothequeModeActive) exitBibliothequeMode(); if(n!=='Global'){ if(!await chargerFichiersMode(n)){ afficherErreur(`Mode ${n} sans fichier`); return; } } modeActuel=n; document.getElementById('modeText').textContent=`🤖 MODE: ${n.toUpperCase()}`; localStorage.setItem('petio_current_mode',n); closeMenu(); afficherMessage(`✅ Mode changé : ${n}`, 'bot'); };
-    window.changerMode=async function(n){ if(n==='Procedure'){ if(isProcedureUnlocked()) await changerModeOriginal(n); else showUnlockModal(); }else{ await changerModeOriginal(n); } };
-
-    // ==================== VIP ====================
-    function isProcedureUnlocked(){ return localStorage.getItem(UNLOCK_KEY)==='true'; }
-    function setProcedureUnlocked(){ localStorage.setItem(UNLOCK_KEY,'true'); }
-    function showUnlockModal(){ document.getElementById('unlock-step-code').classList.add('active'); document.getElementById('unlock-step-payment').classList.remove('active'); document.getElementById('unlock-code-input').value=''; document.getElementById('unlock-modal').classList.add('show'); }
-    window.closeUnlockModal=function(){ document.getElementById('unlock-modal').classList.remove('show'); };
-    window.contacterAdmin=function(c){ let m="Bonjour, je contacte l'administrateur de Petio."; if(c==='vip') m="Bonjour, je souhaite obtenir un accès VIP pour Petio."; else if(c==='payment') m="Bonjour, le code saisi est invalide. Je souhaite obtenir un accès au mode Procédure."; else if(c==='code') m="Bonjour, j'ai un problème avec le code d'accès Procédure."; window.open(`https://wa.me/12496806826?text=${encodeURIComponent(m)}`,'_blank'); };
-    async function verifierCodeAcces(){ const code=document.getElementById('unlock-code-input').value.trim(); const email=localStorage.getItem('userEmail')||''; if(!code){ afficherErreur("Veuillez saisir un code."); return; } if(!email){ afficherErreur("Email utilisateur introuvable."); return; } try{ const r=await fetch(`${URL_GAS_CHECK}?action=checkProcedureCode&email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}`); const t=await r.text(); if(t.trim()==='VALIDE'){ setProcedureUnlocked(); closeUnlockModal(); await activerModeProcedure(); }else{ document.getElementById('unlock-step-code').classList.remove('active'); document.getElementById('unlock-step-payment').classList.add('active'); } }catch(e){ afficherErreur("Erreur réseau."); } }
-    async function activerModeProcedure(){ modeActuel='Procedure'; document.getElementById('modeText').textContent='🤖 MODE: PROCEDURE'; closeMenu(); afficherMessage('✅ Mode changé : Procedure','bot'); }
+    const changerModeOriginal=async function(n){ 
+        if(n==='Gallery'){ enterGalleryMode(); return; } 
+        if(n==='Bibliotheque'){ enterBibliothequeMode(); return; } 
+        if(galleryModeActive) exitGalleryMode(); 
+        if(bibliothequeModeActive) exitBibliothequeMode(); 
+        if(n!=='Global'){ 
+            if(!await chargerFichiersMode(n)){ 
+                afficherErreur(`Mode ${n} sans fichier`); 
+                return; 
+            } 
+        } 
+        modeActuel=n; 
+        document.getElementById('modeText').textContent=`🤖 MODE: ${n.toUpperCase()}`; 
+        localStorage.setItem('petio_current_mode',n); 
+        closeMenu(); 
+        afficherMessage(`✅ Mode changé : ${n}`, 'bot'); 
+    };
+    window.changerMode=async function(n){ 
+        if(n==='Procedure'){ 
+            if(isProcedureUnlocked()) 
+                await changerModeOriginal(n); 
+            else 
+                showUnlockModal(); 
+        } else { 
+            await changerModeOriginal(n); 
+        } 
+    };
 
     // ==================== AFFICHAGE MESSAGES ====================
     function lierUrls(t){ return t.replace(/(https?:\/\/[^\s]+)/g,'<a href="$1" target="_blank" rel="noopener">$1</a>'); }
@@ -794,7 +1078,7 @@
 
     // ==================== INIT APP ====================
     window.addEventListener('DOMContentLoaded',async()=>{ loadStatus.style.display='block'; const contenu=await chargerFichiersMode('Cerveau'); loadStatus.className=contenu?'success':'error'; loadStatus.textContent=contenu?'✅ Prêt.':'⚠️ Fichier cerveau.txt manquant'; setTimeout(()=>loadStatus.style.display='none',2000); initTranslationButton(); loadUserPhoto(); mettreAJourNomBot(); if(localStorage.getItem('pierre_bot_access')==='true'){ showPage('robot'); chargerHistorique(); } if(localStorage.getItem('theme')==='dark'){ document.body.classList.add('dark-theme'); document.getElementById('themeIcon').className='ph ph-sun'; } });
-    function deconnexionComplete(){ localStorage.removeItem('pierre_bot_access'); localStorage.removeItem('chatHistory'); localStorage.removeItem('petio_procedure_unlocked'); window.location.reload(); }
+    function deconnexionComplete(){ localStorage.removeItem('pierre_bot_access'); localStorage.removeItem('chatHistory'); localStorage.removeItem(UNLOCK_KEY_PROCEDURE); localStorage.removeItem(UNLOCK_KEY_BIBLIOTHEQUE); window.location.reload(); }
 
     // Expositions globales
     window.verifierAcces=verifierAcces; window.openPay=openPay; window.closePay=closePay;
