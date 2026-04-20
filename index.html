@@ -61,6 +61,11 @@
         .btn-reset-mode:active { background: rgba(255,255,255,0.4); transform: rotate(-180deg); }
         
         .header-btn { font-size: 22px; cursor: pointer; flex-shrink: 0; }
+        .user-avatar {
+            width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,0.3); color: white;
+            display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px;
+            background-size: cover; background-position: center; cursor: pointer; margin-left: 6px;
+        }
 
         .chat-content { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
         .message { 
@@ -258,14 +263,29 @@
             text-transform: uppercase;
         }
 
-        /* Galerie styles */
+        /* Galerie */
+        .gallery-header {
+            background: var(--header-grad);
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: white;
+            border-bottom-left-radius: 15px;
+            border-bottom-right-radius: 15px;
+        }
+        .gallery-header .title {
+            font-size: 18px;
+            font-weight: 900;
+            flex: 1;
+        }
         .gallery-container {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 8px;
             padding: 12px;
             overflow-y: auto;
-            max-height: calc(100vh - 150px);
+            max-height: calc(100vh - 120px);
         }
         .gallery-item {
             aspect-ratio: 1;
@@ -281,26 +301,28 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
+            display: block;
         }
         .gallery-item:active { transform: scale(0.95); }
         .downloaded-badge {
             position: absolute;
-            top: 5px;
-            right: 5px;
-            background: var(--success);
+            top: 6px;
+            right: 6px;
+            background: #34c759;
             color: white;
             border-radius: 50%;
-            width: 24px;
-            height: 24px;
+            width: 26px;
+            height: 26px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 14px;
+            font-size: 16px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
         }
         .gallery-lightbox {
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.9);
+            background: rgba(0,0,0,0.95);
             z-index: 5000;
             display: none;
             flex-direction: column;
@@ -313,6 +335,7 @@
             max-width: 95%;
             max-height: 80vh;
             border-radius: 16px;
+            object-fit: contain;
         }
         .lightbox-close {
             position: absolute;
@@ -321,20 +344,28 @@
             color: white;
             font-size: 32px;
             cursor: pointer;
+            z-index: 10;
         }
-        .lightbox-download {
-            margin-top: 20px;
-            padding: 12px 24px;
+        .lightbox-download-btn {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
             background: var(--accent);
             color: white;
             border: none;
-            border-radius: 30px;
-            font-size: 16px;
-            font-weight: 700;
-            cursor: pointer;
+            border-radius: 50%;
+            width: 56px;
+            height: 56px;
+            font-size: 28px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            transition: background 0.2s;
+        }
+        .lightbox-download-btn.downloaded {
+            background: #34c759;
         }
         .gallery-loading {
             text-align: center;
@@ -520,18 +551,26 @@
 </div>
 <div id="page-robot" class="page">
     <div class="chat-container">
-        <div class="header">
+        <div class="header" id="mainHeader">
             <div class="header-btn" onclick="openSettings()"><i class="ph ph-gear"></i></div>
             <div id="modeContainer">
                 <span id="modeText">🤖 MODE: CERVEAU</span>
                 <button class="btn-reset-mode" onclick="resetMode()"><i class="ph ph-arrow-counter-clockwise"></i></button>
             </div>
             <div class="header-actions" style="display:flex;gap:8px;">
+                <div class="user-avatar" id="userAvatar" onclick="changeUserPhoto()" title="Changer la photo de profil"></div>
                 <div class="header-btn" onclick="toggleTheme()"><i id="themeIcon" class="ph ph-moon"></i></div>
             </div>
         </div>
 
+        <div class="gallery-header" id="galleryHeader" style="display:none;">
+            <div class="header-btn" onclick="exitGalleryMode()"><i class="ph ph-arrow-left"></i></div>
+            <span class="title">🖼️ Gallery</span>
+            <div class="header-btn" onclick="refreshGallery()"><i class="ph ph-arrows-clockwise"></i></div>
+        </div>
+
         <div class="chat-content" id="chatArea" onclick="closeMenu()"></div>
+        <div id="galleryView" style="display:none; flex:1; overflow-y:auto;"></div>
         <div class="typing" id="typing"><span id="typingName">Petio</span> écrit...</div>
 
         <div class="suggestions-container" id="suggestionsContainer">
@@ -543,8 +582,8 @@
         <div class="gallery-lightbox" id="galleryLightbox" onclick="closeLightbox()">
             <span class="lightbox-close" onclick="closeLightbox()">&times;</span>
             <img class="lightbox-img" id="lightboxImg" src="" alt="">
-            <button class="lightbox-download" id="lightboxDownloadBtn" onclick="downloadCurrentImage(event)">
-                <i class="ph ph-download-simple"></i> Télécharger
+            <button class="lightbox-download-btn" id="lightboxDownloadBtn" onclick="downloadCurrentImage(event)">
+                <i class="ph ph-download-simple"></i>
             </button>
         </div>
 
@@ -557,6 +596,10 @@
                 <div class="setting-item" onclick="openNameModal()">
                     <div class="setting-main"><i class="setting-icon ph ph-user-circle"></i><span>Nom de l'assistant</span></div>
                     <div class="setting-desc">Actuellement : <span id="currentBotName">Petio</span></div>
+                </div>
+                <div class="setting-item" onclick="changeUserPhoto()">
+                    <div class="setting-main"><i class="setting-icon ph ph-camera"></i><span>Photo de profil</span></div>
+                    <div class="setting-desc">Choisir une photo pour votre avatar</div>
                 </div>
                 <div class="setting-item" onclick="afficherBanniereInstallation()">
                     <div class="setting-main"><i class="setting-icon ph ph-device-mobile"></i><span>Installer l'application</span></div>
@@ -599,7 +642,6 @@
             </div>
         </div>
 
-        <!-- Menu "+" réorganisé -->
         <div class="extra-menu" id="plusMenu">
             <div class="menu-grid">
                 <div class="menu-row" onclick="changerMode('Global')">
@@ -633,7 +675,7 @@
             </div>
         </div>
 
-        <div class="input-bar">
+        <div class="input-bar" id="inputBar">
             <div class="btn-plus" id="btnPlus" onclick="toggleMenu(event)"><i class="ph ph-plus-circle"></i></div>
             <div class="input-container"><textarea id="userInput" placeholder="Message..." rows="1" oninput="handleInput(this)"></textarea></div>
             <div class="btn-send" id="btnSend" onclick="envoyerMessage()"><i class="ph-fill ph-paper-plane-right"></i></div>
@@ -644,10 +686,108 @@
 <script>
     (function(){
         // ==================== CONFIG GALLERY ====================
-        const DRIVE_API_KEY = 'AIzaSyDiZNla26G3wblOh9ZFLs2vvPFDI1ZTDJo';
-        const DRIVE_FOLDER_ID = '1iqlRjauMrSsazy--eA3AVzr7t33La_3x';
+        const GALLERY_TXT_URL = 'gallery.txt';
         let currentLightboxImageUrl = '';
         let currentLightboxImageId = '';
+        let galleryModeActive = false;
+
+        const downloadedKey = 'petio_gallery_downloaded';
+        function getDownloadedMap(){ try{ return JSON.parse(localStorage.getItem(downloadedKey)||'{}'); }catch(e){ return {}; } }
+        function setDownloaded(id){ const map = getDownloadedMap(); map[id] = true; localStorage.setItem(downloadedKey, JSON.stringify(map)); }
+        function isDownloaded(id){ return !!getDownloadedMap()[id]; }
+
+        async function loadGalleryFromTxt(){
+            const view = document.getElementById('galleryView');
+            view.innerHTML = '<div class="gallery-loading"><i class="ph ph-spinner"></i> Chargement de la galerie...</div>';
+            try {
+                const res = await fetch(GALLERY_TXT_URL);
+                if(!res.ok) throw new Error('Fichier introuvable');
+                const text = await res.text();
+                const lines = text.split('\n').filter(l=>l.trim()!=='');
+                const items = lines.map(line=>{
+                    const url = line.split('|')[0].trim();
+                    return { url, id: btoa(url).substring(0,20) };
+                }).filter(item=>item.url.startsWith('http'));
+                if(items.length===0){ view.innerHTML = '<div class="gallery-loading">Aucune image dans gallery.txt</div>'; return; }
+                let html = '<div class="gallery-container">';
+                items.forEach(item=>{
+                    const downloaded = isDownloaded(item.id);
+                    html += `<div class="gallery-item" data-id="${item.id}" data-url="${item.url}" onclick="openLightbox(this)">
+                        <img src="${item.url}" loading="lazy" onerror="this.style.display='none'">
+                        ${downloaded?'<span class="downloaded-badge"><i class="ph ph-check"></i></span>':''}
+                    </div>`;
+                });
+                html += '</div>';
+                view.innerHTML = html;
+            } catch(e){ view.innerHTML = '<div class="gallery-loading">Erreur de chargement.</div>'; console.error(e); }
+        }
+
+        window.openLightbox = function(el){
+            const url = el.dataset.url;
+            const id = el.dataset.id;
+            currentLightboxImageUrl = url;
+            currentLightboxImageId = id;
+            document.getElementById('lightboxImg').src = url;
+            const btn = document.getElementById('lightboxDownloadBtn');
+            if(isDownloaded(id)){ btn.classList.add('downloaded'); } else { btn.classList.remove('downloaded'); }
+            document.getElementById('galleryLightbox').classList.add('show');
+        };
+        window.closeLightbox = function(){ document.getElementById('galleryLightbox').classList.remove('show'); };
+        window.downloadCurrentImage = function(event){
+            event.stopPropagation();
+            if(currentLightboxImageUrl){
+                const a = document.createElement('a'); a.href = currentLightboxImageUrl; a.download = ''; document.body.appendChild(a); a.click(); document.body.removeChild(a);
+                setDownloaded(currentLightboxImageId);
+                document.getElementById('lightboxDownloadBtn').classList.add('downloaded');
+                const item = document.querySelector(`.gallery-item[data-id="${currentLightboxImageId}"]`);
+                if(item && !item.querySelector('.downloaded-badge')){
+                    const badge = document.createElement('span'); badge.className = 'downloaded-badge'; badge.innerHTML = '<i class="ph ph-check"></i>'; item.appendChild(badge);
+                }
+            }
+        };
+        window.refreshGallery = function(){ if(galleryModeActive) loadGalleryFromTxt(); };
+        function enterGalleryMode(){
+            galleryModeActive = true;
+            document.getElementById('mainHeader').style.display = 'none';
+            document.getElementById('galleryHeader').style.display = 'flex';
+            document.getElementById('chatArea').style.display = 'none';
+            document.getElementById('galleryView').style.display = 'block';
+            document.getElementById('inputBar').style.display = 'none';
+            document.getElementById('modeText').textContent = '🖼️ MODE: GALLERY';
+            document.getElementById('plusMenu').classList.remove('show'); // Fermer le menu s'il était ouvert
+            loadGalleryFromTxt();
+        }
+        window.exitGalleryMode = function(){
+            galleryModeActive = false;
+            document.getElementById('mainHeader').style.display = 'flex';
+            document.getElementById('galleryHeader').style.display = 'none';
+            document.getElementById('chatArea').style.display = 'flex';
+            document.getElementById('galleryView').style.display = 'none';
+            document.getElementById('inputBar').style.display = 'flex';
+            changerMode('Cerveau');
+        };
+
+        // ==================== PHOTO DE PROFIL UTILISATEUR ====================
+        function loadUserPhoto(){
+            const avatar = document.getElementById('userAvatar');
+            const photo = localStorage.getItem('petio_user_photo');
+            if(photo){ avatar.style.backgroundImage = `url(${photo})`; avatar.style.color = 'transparent'; avatar.textContent = ''; }
+            else { avatar.style.backgroundImage = ''; avatar.style.color = 'white'; avatar.textContent = 'U'; }
+        }
+        window.changeUserPhoto = function(){
+            const input = document.createElement('input'); input.type = 'file'; input.accept = 'image/*';
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                if(!file) return;
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    localStorage.setItem('petio_user_photo', ev.target.result);
+                    loadUserPhoto();
+                };
+                reader.readAsDataURL(file);
+            };
+            input.click();
+        };
 
         // ==================== PWA MANIFEST ====================
         const MANIFEST_DATA = {
@@ -981,91 +1121,12 @@
             }
         }
 
-        // === MODE GALLERY ===
-        async function loadGallery() {
-            const chatArea = document.getElementById('chatArea');
-            chatArea.innerHTML = '<div class="gallery-loading"><i class="ph ph-spinner"></i> Chargement de la galerie...</div>';
-            
-            try {
-                const url = `https://www.googleapis.com/drive/v3/files?q='${DRIVE_FOLDER_ID}'+in+parents+and+mimeType+contains+'image/'&key=${DRIVE_API_KEY}&fields=files(id,name,mimeType,thumbnailLink,webContentLink,size)`;
-                const response = await fetch(url);
-                const data = await response.json();
-                
-                if (!data.files || data.files.length === 0) {
-                    chatArea.innerHTML = '<div class="gallery-loading">Aucune image trouvée dans le dossier.</div>';
-                    return;
-                }
-                
-                const downloadedKey = 'petio_gallery_downloaded';
-                const downloaded = JSON.parse(localStorage.getItem(downloadedKey) || '{}');
-                
-                let html = '<div class="gallery-container">';
-                for (const file of data.files) {
-                    const imageUrl = `https://drive.google.com/uc?export=view&id=${file.id}`;
-                    const downloadUrl = `https://drive.google.com/uc?export=download&id=${file.id}`;
-                    const isDownloaded = downloaded[file.id] || false;
-                    
-                    html += `
-                        <div class="gallery-item" data-id="${file.id}" data-url="${imageUrl}" data-download="${downloadUrl}" onclick="openLightbox(this)">
-                            <img src="${imageUrl}" loading="lazy" alt="${file.name}">
-                            ${isDownloaded ? '<span class="downloaded-badge"><i class="ph ph-check"></i></span>' : ''}
-                        </div>
-                    `;
-                }
-                html += '</div>';
-                chatArea.innerHTML = html;
-            } catch (e) {
-                chatArea.innerHTML = '<div class="gallery-loading">Erreur de chargement de la galerie.</div>';
-                console.error('Gallery error:', e);
-            }
-        }
-
-        window.openLightbox = function(el) {
-            const url = el.dataset.url;
-            const downloadUrl = el.dataset.download;
-            const id = el.dataset.id;
-            currentLightboxImageUrl = downloadUrl;
-            currentLightboxImageId = id;
-            document.getElementById('lightboxImg').src = url;
-            document.getElementById('galleryLightbox').classList.add('show');
-        };
-
-        window.closeLightbox = function() {
-            document.getElementById('galleryLightbox').classList.remove('show');
-        };
-
-        window.downloadCurrentImage = function(event) {
-            event.stopPropagation();
-            if (currentLightboxImageUrl) {
-                const link = document.createElement('a');
-                link.href = currentLightboxImageUrl;
-                link.download = '';
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                
-                const downloadedKey = 'petio_gallery_downloaded';
-                const downloaded = JSON.parse(localStorage.getItem(downloadedKey) || '{}');
-                downloaded[currentLightboxImageId] = true;
-                localStorage.setItem(downloadedKey, JSON.stringify(downloaded));
-                
-                const item = document.querySelector(`.gallery-item[data-id="${currentLightboxImageId}"]`);
-                if (item && !item.querySelector('.downloaded-badge')) {
-                    const badge = document.createElement('span');
-                    badge.className = 'downloaded-badge';
-                    badge.innerHTML = '<i class="ph ph-check"></i>';
-                    item.appendChild(badge);
-                }
-            }
-        };
-
         // === MOTEUR DE RECHERCHE ===
         async function rechercherDansFichiers(mode, msg) {
             if (mode === 'Global') {
                 return await rechercherModeGlobal(msg);
             }
             if (mode === 'Gallery') {
-                await loadGallery();
                 return null;
             }
             
@@ -1329,22 +1390,24 @@
         }
 
         const changerModeOriginal = async function(n) {
-            if (n !== 'Global' && n !== 'Gallery') {
+            if (n === 'Gallery') {
+                enterGalleryMode();
+                return;
+            }
+            if (galleryModeActive) {
+                exitGalleryMode();
+            }
+            if (n !== 'Global') {
                 if (!await chargerFichiersMode(n)) { 
                     afficherErreur(`Mode ${n} sans fichier`); 
                     return; 
                 }
             }
             modeActuel = n;
-            document.getElementById('modeText').textContent = n === 'Gallery' ? `🖼️ MODE: GALLERY` : `🤖 MODE: ${n.toUpperCase()}`;
+            document.getElementById('modeText').textContent = `🤖 MODE: ${n.toUpperCase()}`;
             localStorage.setItem('petio_current_mode', n);
-            closeMenu();
-            if (n === 'Gallery') {
-                document.getElementById('chatArea').innerHTML = '';
-                await loadGallery();
-            } else {
-                afficherMessage(`✅ Mode changé : ${n}`, 'bot');
-            }
+            closeMenu(); 
+            afficherMessage(`✅ Mode changé : ${n}`, 'bot');
         };
 
         window.changerMode = async function(n) {
@@ -1364,6 +1427,7 @@
             loadStatus.textContent = contenu ? '✅ Prêt.' : '⚠️ Fichier cerveau.txt manquant';
             setTimeout(() => loadStatus.style.display = 'none', 2000);
             initTranslationButton();
+            loadUserPhoto();
             initApp();
         });
 
