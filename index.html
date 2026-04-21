@@ -22,7 +22,7 @@
     <script src="https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js"></script>
     
     <style>
-        /* ===== STYLES (inchangés) ===== */
+        /* ===== STYLES ===== */
         :root {
             --bg: #ffffff; --card: #fff; --text: #1c1c1e; --bot: #e9e9eb;
             --accent: #007aff; --input-bg: #f2f2f7; --border: #e5e5e5;
@@ -47,11 +47,11 @@
         .auth-container { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; }
         .auth-content { width: 100%; max-width: 320px; text-align: center; }
         .icon-main { font-size: 50px; color: var(--accent); margin-bottom: 10px; }
-        h2 { font-size: 20px; font-weight: 700; margin: 10px 0 5px; }
-        p { font-size: 14px; color: #8e8e93; margin-bottom: 25px; font-weight: 700; }
+        h2 { font-size: 20px; font-weight: 700; margin: 10px 0 5px; }        p { font-size: 14px; color: #8e8e93; margin-bottom: 25px; font-weight: 700; }
         .input-field { width: 100%; padding: 16px; margin-bottom: 12px; border-radius: 12px; border: none; background: var(--input-bg); font-size: 16px; color: var(--text); font-weight: 700; }
         .btn-valid { width: 100%; padding: 16px; background: var(--accent); color: white; border: none; border-radius: 12px; font-weight: 700; font-size: 16px; cursor: pointer; margin-top: 10px; }
         .btn-valid:active { transform: scale(0.98); opacity: 0.9; }
+        .btn-valid:disabled { opacity: 0.6; cursor: not-allowed; transform: none !important; }
         .footer-icons { margin-top: 40px; display: flex; justify-content: center; gap: 20px; color: #d1d1d6; font-size: 24px; }
         .chat-container { width: 100%; max-width: 600px; margin: 0 auto; height: 100vh; background: var(--card); display: flex; flex-direction: column; position: relative; }
         .header { background: var(--header-grad); padding: 8px 12px; display: flex; align-items: center; justify-content: space-between; color: white; border-bottom-left-radius: 15px; border-bottom-right-radius: 15px; z-index: 20; gap: 8px; }
@@ -96,8 +96,7 @@
             height: 32px;
             background: rgba(0,0,0,0.15);
             border: none;
-            border-radius: 6px;
-            display: flex;
+            border-radius: 6px;            display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
@@ -146,8 +145,7 @@
         }
         .suggestions-container.show { display: block; animation: slideUp 0.3s ease; }
         @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .suggestions-label { font-size: 11px; color: #8e8e93; margin-bottom: 8px; padding-left: 5px; font-weight: 700; }
-        .suggestions-scroll {
+        .suggestions-label { font-size: 11px; color: #8e8e93; margin-bottom: 8px; padding-left: 5px; font-weight: 700; }        .suggestions-scroll {
             display: flex; gap: 8px; overflow-x: auto; overflow-y: hidden;
             scrollbar-width: none; -ms-overflow-style: none;
             padding: 5px 2px 10px; scroll-behavior: smooth;
@@ -196,8 +194,7 @@
             -webkit-backdrop-filter: blur(12px);
             padding: 18px 16px;
             border-radius: 28px;
-            border: 1px solid rgba(255,255,255,0.15);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            border: 1px solid rgba(255,255,255,0.15);            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
             max-width: 360px;
         }
         .extra-menu.show {
@@ -246,8 +243,7 @@
         .menu-label {
             background: transparent;
             padding: 4px 4px;
-            border-radius: 12px;
-            font-size: 12px;
+            border-radius: 12px;            font-size: 12px;
             color: white;
             font-weight: 700;
             text-align: center;
@@ -271,21 +267,24 @@
             font-weight: 900;
             flex: 1;
         }
+        /* FIX 1: Gallery en 3 colonnes */
         .gallery-container {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 8px;
-            padding: 12px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 4px;
+            padding: 4px;
             overflow-y: auto;
             max-height: calc(100vh - 120px);
         }
         .gallery-item {
-            aspect-ratio: 1;
+            width: 100%;
+            /* FIX 1: Hauteur fixe à 3cm (115px) */
+            height: 115px;
             background: var(--input-bg);
             border-radius: 12px;
             overflow: hidden;
             cursor: pointer;
-            border: 2px solid var(--border);
+            border: 1px solid var(--border);
             transition: transform 0.2s;
             position: relative;
         }
@@ -293,8 +292,7 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            display: block;
-        }
+            display: block;        }
         .gallery-item:active { transform: scale(0.95); }
         .downloaded-badge {
             position: absolute;
@@ -343,8 +341,7 @@
             bottom: 30px;
             right: 30px;
             background: var(--accent);
-            color: white;
-            border: none;
+            color: white;            border: none;
             border-radius: 50%;
             width: 56px;
             height: 56px;
@@ -368,24 +365,6 @@
             display: flex;
             flex-direction: column;
             gap: 8px;
-        }
-        .search-bar-container {
-            padding: 12px 16px;
-            background: var(--card);
-            border-bottom: 1px solid var(--border);
-        }
-        .search-input {
-            width: 100%;
-            padding: 12px 16px;
-            border-radius: 25px;
-            border: 1px solid var(--border);
-            background: var(--input-bg);
-            color: var(--text);
-            font-size: 15px;
-            outline: none;
-        }
-        .search-input:focus {
-            border-color: var(--accent);
         }
 
         /* Modal lecture (Bibliothèque) */
@@ -411,8 +390,7 @@
         .lecture-header {
             padding: 18px 20px;
             border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
+            display: flex;            align-items: center;
             justify-content: space-between;
         }
         .lecture-title { font-size: 18px; font-weight: 800; }
@@ -461,8 +439,7 @@
 
         #overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: none !important; z-index: 1500; backdrop-filter: blur(4px); }
         #overlay.show { display: block !important; }
-        
-        #pay-sheet {
+                #pay-sheet {
             position: fixed; bottom: -100% !important; left: 0; width: 100%; background: var(--pay-bg); color: var(--pay-text);
             padding: 30px 20px 50px 20px; border-top-left-radius: 25px; border-top-right-radius: 25px;
             transition: bottom 0.5s cubic-bezier(0.32, 1, 0.23, 1); z-index: 2000; text-align: center;
@@ -511,8 +488,7 @@
         .install-btn-top:active { transform: scale(0.95); opacity: 0.9; }
         .pwa-steps { margin: 20px 0; }
         .pwa-step { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; font-weight: 700; }
-        .pwa-close-btn { background: transparent; border: 1px solid var(--border); color: var(--text); padding: 12px; border-radius: 14px; width: 100%; cursor: pointer; font-weight: 700; }
-        #install-banner { display: none; }
+        .pwa-close-btn { background: transparent; border: 1px solid var(--border); color: var(--text); padding: 12px; border-radius: 14px; width: 100%; cursor: pointer; font-weight: 700; }        #install-banner { display: none; }
 
         #unlock-modal { position: fixed; bottom: -100%; left: 0; right: 0; background: var(--card); color: var(--text); padding: 20px 20px 30px; border-top-left-radius: 25px; border-top-right-radius: 25px; box-shadow: 0 -10px 30px rgba(0,0,0,0.2); z-index: 3000; transition: bottom 0.4s cubic-bezier(0.32, 1, 0.23, 1); max-height: 90vh; overflow-y: auto; }
         #unlock-modal.show { bottom: 0; }
@@ -529,8 +505,39 @@
 
         .suite-btn { display: block; margin-top: 12px; padding: 8px 16px; background: var(--accent); color: white; border: none; border-radius: 20px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; width: fit-content; }
         .suite-btn:active { transform: scale(0.96); opacity: 0.9; }
-    </style>
-</head>
+
+        /* Styles pour la page des boutons A-Z (VERTICAUX) */
+        .az-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding: 20px;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        /* FIX 2: Réduction taille boutons A-Z */
+        .az-btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            padding: 12px 0;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            transition: transform 0.1s, opacity 0.2s;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+        .az-btn:active {
+            transform: scale(0.98);
+            opacity: 0.9;
+        }
+    </style></head>
 <body>
 
 <div id="load-status">Chargement des connaissances...</div>
@@ -578,9 +585,8 @@
     <div id="biblio-step-code" class="unlock-step active">
         <p style="margin-bottom:15px;">Entrez le code reçu après paiement :</p>
         <input type="text" id="biblio-code-input" class="unlock-input" placeholder="Code d'accès">
-        <button class="unlock-btn" onclick="verifierCodeAccesBibliotheque()">Valider</button>
-        <button class="unlock-btn unlock-secondary" onclick="contacterAdmin('biblio')">Contacter l'admin</button>
-    </div>
+        <button class="unlock-btn" id="btnValiderBiblio" onclick="verifierCodeAccesBibliotheque()">Valider</button>
+        <button class="unlock-btn unlock-secondary" onclick="contacterAdmin('biblio')">Contacter l'admin</button>    </div>
     <div id="biblio-step-payment" class="unlock-step">
         <div class="error-message"><i class="ph ph-warning-circle" style="font-size:24px;margin-bottom:8px;display:block;"></i>Code invalide.</div>
         <button class="unlock-btn unlock-secondary" onclick="contacterAdmin('payment')">Contacter l'admin</button>
@@ -596,7 +602,7 @@
     <div id="unlock-step-code" class="unlock-step active">
         <p style="margin-bottom:15px;">Entrez le code reçu après paiement :</p>
         <input type="text" id="unlock-code-input" class="unlock-input" placeholder="Code d'accès">
-        <button class="unlock-btn" onclick="verifierCodeAcces()">Valider</button>
+        <button class="unlock-btn" id="btnValiderProcedure" onclick="verifierCodeAcces()">Valider</button>
         <button class="unlock-btn unlock-secondary" onclick="contacterAdmin('code')">Contacter l'admin</button>
     </div>
     <div id="unlock-step-payment" class="unlock-step">
@@ -604,6 +610,32 @@
         <button class="unlock-btn unlock-secondary" onclick="contacterAdmin('payment')">Contacter l'admin</button>
     </div>
 </div>
+
+<!-- MODAL SERVICE -->
+<div id="service-unlock-modal" style="display:none; position:fixed; bottom:0; left:0; right:0; background:var(--card); color:var(--text); padding:20px 20px 30px; border-top-left-radius:25px; border-top-right-radius:25px; box-shadow:0 -10px 30px rgba(0,0,0,0.2); z-index:3500; transition:bottom 0.4s; max-height:90vh; overflow-y:auto;">
+    <div class="unlock-header">
+        <div class="unlock-title"><i class="ph ph-android-logo"></i> Service</div>
+        <div class="unlock-close" onclick="closeServiceUnlockModal()"><i class="ph ph-x"></i></div>
+    </div>
+    <div id="service-step-code" class="unlock-step active">
+        <p style="margin-bottom:15px;">Entrez le code d'accès :</p>
+        <input type="text" id="service-code-input" class="unlock-input" placeholder="Code VIP">
+        <button class="unlock-btn" id="btnValiderService" onclick="verifierCodeAccesService()">Valider</button>
+        <button class="unlock-btn unlock-secondary" onclick="contacterAdmin('service')">Contacter l'admin</button>
+    </div>
+    <div id="service-step-payment" class="unlock-step">
+        <div class="error-message"><i class="ph ph-warning-circle" style="font-size:24px;margin-bottom:8px;display:block;"></i>Code invalide.</div>
+        <button class="unlock-btn unlock-secondary" onclick="contacterAdmin('service_payment')">Contacter l'admin</button>
+    </div>
+</div>
+
+<!-- Overlay A-Z -->
+<div id="az-overlay" style="position:fixed; inset:0; background:var(--bg); z-index:4000; display:none; overflow-y:auto; padding:20px;">
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;">
+        <h2 style="margin:0; color:var(--text);">Sélectionner une lettre</h2>
+        <button onclick="closeAZOverlay()" style="background:var(--accent); border:none; color:white; font-size:24px; width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer;"><i class="ph ph-x"></i></button>
+    </div>
+    <div class="az-grid" id="az-buttons-container"></div></div>
 
 <div id="page-auth" class="page active">
     <div class="auth-container">
@@ -652,8 +684,7 @@
         <div class="gallery-lightbox" id="galleryLightbox" onclick="closeLightbox()">
             <span class="lightbox-close" onclick="closeLightbox()">&times;</span>
             <img class="lightbox-img" id="lightboxImg" src="" alt="">
-            <button class="lightbox-download-btn" id="lightboxDownloadBtn" onclick="downloadCurrentImage(event)"><i class="ph ph-download-simple"></i></button>
-        </div>
+            <button class="lightbox-download-btn" id="lightboxDownloadBtn" onclick="downloadCurrentImage(event)"><i class="ph ph-download-simple"></i></button>        </div>
 
         <!-- Modal lecture Bibliothèque -->
         <div class="lecture-modal" id="lectureModal" onclick="closeLectureModal()">
@@ -674,6 +705,11 @@
                 <div class="setting-item" onclick="changeUserPhoto()"><div class="setting-main"><i class="setting-icon ph ph-camera"></i><span>Photo de profil</span></div><div class="setting-desc">Choisir une photo pour votre avatar</div></div>
                 <div class="setting-item" onclick="afficherBanniereInstallation()"><div class="setting-main"><i class="setting-icon ph ph-device-mobile"></i><span>Installer l'application</span></div><div class="setting-desc">Ajouter Petio à l'écran d'accueil.</div></div>
                 <div class="setting-item" onclick="window.open('https://wa.me/12496806826','_blank')"><div class="setting-main"><i class="setting-icon ph ph-whatsapp-logo"></i><span>Contact</span></div><div class="setting-desc">Besoin d'aide ? Écrivez-nous sur WhatsApp.</div></div>
+                <!-- BOUTON SERVICE -->
+                <div class="setting-item" onclick="openServiceModal()">
+                    <div class="setting-main"><i class="setting-icon ph ph-android-logo" style="font-size:28px;"></i><span>Service</span></div>
+                    <div class="setting-desc">Accès aux services (nécessite code VIP).</div>
+                </div>
                 <div class="setting-item" onclick="toggleSettingDesc('faq')"><div class="setting-main"><i class="setting-icon ph ph-question"></i><span>FAQ</span></div><div class="setting-desc" id="faq-desc"><p><strong>Comment utiliser Petio ?</strong><br>Tapez votre question dans la zone de saisie. Petio analysera les fichiers du mode actif et vous répondra instantanément. Utilisez le menu <code>+</code> pour changer de mode.</p><p><strong>Que sont les "Modes" ?</strong><br>Chaque mode charge une base de connaissances différente. Par exemple, le mode <em>Novice</em> propose des explications simples, tandis que le mode <em>Formate</em> contient des procédures techniques avancées. Les réponses sont strictement limitées au mode sélectionné.</p><p><strong>Petio fonctionne-t-il hors ligne ?</strong><br>Oui. Une fois l'application installée en tant que PWA et les fichiers chargés, Petio fonctionne entièrement hors ligne.</p><p><strong>Comment obtenir un accès VIP ?</strong><br>Cliquez sur "Avoir mes accès" sur l'écran de vérification ou contactez l'administrateur via WhatsApp.</p></div></div>
                 <div class="setting-item" onclick="toggleSettingDesc('cgu')"><div class="setting-main"><i class="setting-icon ph ph-scales"></i><span>CGU</span></div><div class="setting-desc" id="cgu-desc"><p><strong>1. Objet</strong><br>Les présentes Conditions Générales d'Utilisation (CGU) régissent l'accès et l'utilisation de l'application Petio.</p><p><strong>2. Nature du service</strong><br>Petio est un assistant numérique fonctionnant entièrement en local sur votre appareil. Il fournit des informations à partir de bases de connaissances textuelles chargées localement.</p><p><strong>3. 🛡️ CLAUSE DE NON-RESPONSABILITÉ</strong><br><strong>L'Administrateur et le créateur de Petio déclinent toute responsabilité, en aucun cas, concernant les décisions prises, les actions entreprises ou les conséquences subies par l'Utilisateur suite à l'utilisation de Petio.</strong> L'Utilisateur utilise l'application sous sa seule responsabilité.</p><p><strong>4. Accès et Modes</strong><br>Petio propose plusieurs modes de fonctionnement. Certains contenus peuvent être réservés aux utilisateurs disposant d'un accès VIP vérifié.</p><p><strong>5. Propriété intellectuelle</strong><br>L'interface, le code source et la structure de Petio sont la propriété exclusive de son créateur.</p></div></div>
                 <div class="setting-item" onclick="toggleSettingDesc('confidentialite')"><div class="setting-main"><i class="setting-icon ph ph-lock"></i><span>Confidentialité</span></div><div class="setting-desc" id="confidentialite-desc"><p><strong>1. Collecte des données</strong><br>Petio <strong>ne collecte aucune donnée personnelle</strong> sur des serveurs externes. Votre adresse email et votre code de transaction sont uniquement utilisés localement pour vérifier votre statut d'accès.</p><p><strong>2. Stockage local</strong><br>- L'historique de vos conversations est sauvegardé exclusivement dans le <code>localStorage</code> de votre appareil.<br>- Les fichiers de connaissances sont mis en cache localement pour un fonctionnement hors ligne.<br>- Vous pouvez effacer toutes vos données via le bouton "Déconnexion".</p><p><strong>3. Sécurité</strong><br>- Petio fonctionne en environnement sandbox (navigateur).<br>- Les liens externes s'ouvrent dans un nouvel onglet sécurisé.<br>- Aucune publicité, tracker ou script d'analyse n'est intégré.</p><p><strong>4. Responsabilité</strong><br>Comme indiqué dans les CGU, <strong>l'Administrateur n'est responsable en aucun cas</strong> de l'usage que vous faites des informations fournies.</p></div></div>
@@ -698,7 +734,6 @@
                 <div class="menu-row" onclick="window.location.href='virtnum.html'"><div class="menu-item"><i class="ph-fill ph-phone"></i></div><span class="menu-label">Virt‑Num</span></div>
             </div>
         </div>
-
         <div class="input-bar" id="inputBar">
             <div class="btn-plus" id="btnPlus" onclick="toggleMenu(event)"><i class="ph ph-plus-circle"></i></div>
             <div class="input-container"><textarea id="userInput" placeholder="Message..." rows="1" oninput="handleInput(this)"></textarea></div>
@@ -717,8 +752,12 @@
     const URL_GAS_GLOBAL = 'https://script.google.com/macros/s/AKfycbxCmsUiDwNhlqAa_qoIYx2Vtr3_2V4x63rjqqn7aU69787Ba9xymzpLLxmG9wF6HKVN/exec';
     const UNLOCK_KEY_PROCEDURE = 'petio_procedure_unlocked';
     const UNLOCK_KEY_BIBLIOTHEQUE = 'petio_bibliotheque_unlocked';
+    const UNLOCK_KEY_SERVICE = 'petio_service_unlocked';
     const BIB_CACHE_KEY = 'petio_bibliotheque_raw_cache';
     
+    // ⚠️ GROQ API KEY - CORRIGÉE ET SUR UNE SEULE LIGNE
+    const GROQ_API_KEY = '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'; 
+
     let modeActuel = 'Cerveau';
     let galleryModeActive = false, bibliothequeModeActive = false;
     let currentLightboxImageUrl = '', currentLightboxImageId = '';
@@ -743,8 +782,7 @@
     if('serviceWorker' in navigator){ window.addEventListener('load',()=>{ const swCode = `const CACHE_NAME='petio-v1';const ASSETS=['.','https://unpkg.com/@phosphor-icons/web@2.1.1','https://i.ibb.co/zVsc6LDk/62943fce33c7f18d50a127290140782f.jpg'];self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE_NAME).then(cache=>cache.addAll(ASSETS)));self.skipWaiting();});self.addEventListener('activate',e=>{e.waitUntil(clients.claim());});self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(res=>res||fetch(e.request).catch(()=>caches.match('.'))));});`; const swBlob = new Blob([swCode],{type:'application/javascript'}); navigator.serviceWorker.register(URL.createObjectURL(swBlob)); }); }
 
     // ==================== THEME & PHOTO ====================
-    function toggleTheme(){ document.body.classList.toggle('dark-theme'); document.getElementById('themeIcon').className = document.body.classList.contains('dark-theme')?'ph ph-sun':'ph ph-moon'; localStorage.setItem('theme', document.body.classList.contains('dark-theme')?'dark':'light'); }
-    if(localStorage.getItem('theme')==='dark'){ document.body.classList.add('dark-theme'); document.getElementById('themeIcon').className='ph ph-sun'; }
+    function toggleTheme(){ document.body.classList.toggle('dark-theme'); document.getElementById('themeIcon').className = document.body.classList.contains('dark-theme')?'ph ph-sun':'ph ph-moon'; localStorage.setItem('theme', document.body.classList.contains('dark-theme')?'dark':'light'); }    if(localStorage.getItem('theme')==='dark'){ document.body.classList.add('dark-theme'); document.getElementById('themeIcon').className='ph ph-sun'; }
     function loadUserPhoto(){ const a=document.getElementById('userAvatar'); const p=localStorage.getItem('petio_user_photo'); if(p){ a.style.backgroundImage=`url(${p})`; a.style.color='transparent'; a.textContent=''; } else { a.style.backgroundImage=''; a.style.color='white'; a.textContent='U'; } }
     window.changeUserPhoto=function(){ const i=document.createElement('input'); i.type='file'; i.accept='image/*'; i.onchange=e=>{ const f=e.target.files[0]; if(!f)return; const r=new FileReader(); r.onload=ev=>{ localStorage.setItem('petio_user_photo',ev.target.result); loadUserPhoto(); }; r.readAsDataURL(f); }; i.click(); };
 
@@ -754,32 +792,150 @@
     async function traduireFR(t){ return traduireGoogle(t,'en','fr'); }
 
     // ==================== EXTRACTION TEXTE LOCAL ====================
-    async function extraireTexteFichierLocal(fileName){ const lower=fileName.toLowerCase(); try{ const r=await fetch(fileName); if(!r.ok)return null; if(lower.endsWith('.txt'))return await r.text(); if(lower.endsWith('.pdf')){ const b=await r.arrayBuffer(); const pdf=await pdfjsLib.getDocument({data:b}).promise; let t=''; for(let i=1;i<=pdf.numPages;i++){ const page=await pdf.getPage(i); const c=await page.getTextContent(); t+=c.items.map(it=>it.str).join(' ')+'\n'; } return t; } if(lower.endsWith('.docx')||lower.endsWith('.doc')){ const b=await r.arrayBuffer(); const res=await mammoth.extractRawText({arrayBuffer:b}); return res.value; } return null; }catch(e){return null;} }
+    async function extraireTexteFichierLocal(fileName){ const lower=fileName.toLowerCase(); try{ const r=await fetch(fileName); if(!r.ok)return null; if(lower.endsWith('.txt'))return await r.text(); if(lower.endsWith('.pdf')){ const b=await r.arrayBuffer(); const pdf=await pdfjsLib.getDocument({b}).promise; let t=''; for(let i=1;i<=pdf.numPages;i++){ const page=await pdf.getPage(i); const c=await page.getTextContent(); t+=c.items.map(it=>it.str).join(' ')+'\n'; } return t; } if(lower.endsWith('.docx')||lower.endsWith('.doc')){ const b=await r.arrayBuffer(); const res=await mammoth.extractRawText({arrayBuffer:b}); return res.value; } return null; }catch(e){return null;} }
 
     // ==================== CHARGEMENT FICHIERS MODES ====================
     async function chargerFichiersMode(mode){ if(cacheFichiers[mode])return cacheFichiers[mode]; let contenu=''; const base=mode.toLowerCase(); try{ const r=await fetch(`${base}.txt`); if(r.ok)contenu+=await r.text()+'\n'; }catch(e){} const motifs=[ i=>`${base}${i}.txt`, i=>`${base}_${i}.txt`, i=>`${base}-${i}.txt` ]; for(let motif of motifs){ let i=1,fails=0; while(i<=500){ const url=motif(i); try{ const r=await fetch(url); if(r.ok){ contenu+=await r.text()+'\n'; fails=0; }else fails++; }catch(e){ fails++; } if(fails>=3)break; i++; } } if(mode==='Procedure'){ const prefixes=['procedure','proc','doc']; const exts=['.pdf','.docx']; for(let p of prefixes){ for(let e of exts){ let i=1,fails=0; while(i<=500){ const fn=`${p}${i}${e}`; try{ const t=await extraireTexteFichierLocal(fn); if(t){ contenu+=`[Fichier: ${fn}]\n${t}\n\n`; fullTextCache.set(fn,t); fails=0; }else fails++; }catch(e){ fails++; } if(fails>=3)break; i++; } } } } if(mode==='Divers'){ const seps=['','_','-','.']; for(let num=1;num<=9;num++){ for(let s of seps){ const fn=`divers${s}${num}.txt`; try{ const r=await fetch(fn); if(r.ok)contenu+=`[Fichier: ${fn}]\n${await r.text()}\n\n`; }catch(e){} const fn2=`divers${num}${s}.txt`; try{ const r=await fetch(fn2); if(r.ok)contenu+=`[Fichier: ${fn2}]\n${await r.text()}\n\n`; }catch(e){} } } try{ const r=await fetch('divers.txt'); if(r.ok)contenu+=await r.text()+'\n'; }catch(e){} } if(!contenu.trim())return null; cacheFichiers[mode]=contenu; return contenu; }
-    function normalize(s){ return s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,''); }
 
     // ==================== RECHERCHE MODE GLOBAL ====================
     async function rechercherModeGlobal(query){ try{ const url=`${URL_GAS_GLOBAL}?action=search&q=${encodeURIComponent(query)}`; const r=await fetch(url); const d=await r.json(); if(d.success&&d.results.length>0){ if(d.results.length===1&&!d.fallback) return await traduireENversFR(d.results[0].fullText); const matches=d.results.map(r=>({full:r.fullText, preview:r.excerpt.replace(/<[^>]*>/g,'')})); const msg=d.fallback?(d.message||`ℹ️ Aucun résultat exact. Suggestions aléatoires :`):`✅ Trouvé ${d.count} résultat(s) dans Petio_global. Choisissez une option ci-dessous :`; return {message:msg, matches}; } return d.success?`ℹ️ Aucun résultat pour "${query}" dans Petio_global.`:`⚠️ Erreur de connexion au mode Global.`; }catch(e){ return `⚠️ Impossible de contacter le mode Global.`; } }
 
-    // ==================== MOTEUR DE RECHERCHE ====================
-    async function rechercherDansFichiers(mode,msg){ if(mode==='Global')return await rechercherModeGlobal(msg); if(mode==='Gallery'||mode==='Bibliotheque')return null; const contenu=await chargerFichiersMode(mode); if(!contenu)return `Désolé, la base du mode ${mode} est vide.`; const paras=contenu.split(/\n\s*\n/).filter(p=>p.trim().length>20); const q=normalize(msg); const words=q.split(/[^a-z0-9]/i).filter(w=>w.length>=2); if(words.length===0)return `Je n'ai pas compris "${msg}".`; const matches=[]; for(let p of paras){ const np=normalize(p); if(words.every(w=>np.includes(w))){ const ww=p.trim().split(/\s+/); const preview=ww.slice(0,15).join(' ')+(ww.length>15?'...':''); let src=null; const fm=p.match(/^\[Fichier: (.*?)\]/); if(fm)src=fm[1]; matches.push({full:p.trim(),preview,sourceFile:src}); } } if(matches.length>0){ if(matches.length===1){ const s=matches[0]; const t=await traduireENversFR(s.full); if(s.sourceFile&&(s.sourceFile.endsWith('.pdf')||s.sourceFile.endsWith('.docx'))) return {__isDocumentMessage:true, text:t, sourceFile:s.sourceFile}; return t; } return { message:`J'ai trouvé ${matches.length} résultats pour "${msg}". Choisissez une option ci-dessous :`, matches }; } const rnd=paras.sort(()=>Math.random()-0.5).slice(0,3).map(p=>{ const ww=p.trim().split(/\s+/); const preview=ww.slice(0,15).join(' ')+(ww.length>15?'...':''); let src=null; const fm=p.match(/^\[Fichier: (.*?)\]/); if(fm)src=fm[1]; return {full:p.trim(),preview,sourceFile:src}; }); return { message:`Je n'ai pas trouvé d'information pour "${msg}" dans le mode ${mode}. Voici quelques suggestions aléatoires :`, matches:rnd }; }
+    // ==================== MOTEUR DE RECHERCHE (CERVEAU = GROQ) ====================
+    async function rechercherDansFichiers(mode,msg){
+        if(mode==='Global') return await rechercherModeGlobal(msg);
+        if(mode==='Gallery'||mode==='Bibliotheque') return null;
+        
+        // ===== MODE CERVEAU : GROQ API =====
+        if(mode === 'Cerveau'){
+            try {
+                document.getElementById('typing').classList.add('show');
+                
+                // ✅ URL GROQ
+                const url = 'https://api.groq.com/openai/v1/chat/completions';
+                
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${GROQ_API_KEY}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        model: "llama-3.1-8b-instant", // Modèle rapide et gratuit
+                        messages: [
+                            { role: "system", content: "Tu es Petio, un assistant intelligent, serviable et poli. Tu réponds toujours en français." },
+                            { role: "user", content: msg }
+                        ],
+                        temperature: 0.7,
+                        max_tokens: 500
+                    })
+                });
+                
+                if (!response.ok) {
+                    const err = await response.json().catch(() => ({}));                    console.error('❌ Erreur Groq:', err);
+                    if(response.status === 401) throw new Error("Clé API Groq invalide.");
+                    if(response.status === 429) throw new Error("Trop de requêtes.");
+                    throw new Error(`Erreur HTTP ${response.status}`);
+                }
+                
+                const data = await response.json();
+                const text = data.choices[0]?.message?.content;
+                
+                if (text) return text.trim();
+                return "Désolé, je n'ai pas de réponse pour l'instant.";
+                
+            } catch (e) {
+                console.error('💥 Exception Groq:', e);
+                return `❌ Erreur IA: ${e.message}`;
+            } finally {
+                document.getElementById('typing').classList.remove('show');
+            }
+        }
+        
+        // Logique existante pour les autres modes
+        const contenu=await chargerFichiersMode(mode);
+        if(!contenu) return `Désolé, la base du mode ${mode} est vide.`;
+        const paras=contenu.split(/\n\s*\n/).filter(p=>p.trim().length>20);
+        const q=normalize(msg);
+        const words=q.split(/[^a-z0-9]/i).filter(w=>w.length>=2);
+        if(words.length===0) return `Je n'ai pas compris "${msg}".`;
+        const matches=[];
+        for(let p of paras){
+            const np=normalize(p);
+            if(words.every(w=>np.includes(w))){
+                const ww=p.trim().split(/\s+/);
+                const preview=ww.slice(0,15).join(' ')+(ww.length>15?'...':'');
+                let src=null;
+                const fm=p.match(/^\[Fichier: (.*?)\]/);
+                if(fm)src=fm[1];
+                matches.push({full:p.trim(),preview,sourceFile:src});
+            }
+        }
+        if(matches.length>0){
+            if(matches.length===1){
+                const s=matches[0];
+                const t=await traduireENversFR(s.full);
+                if(s.sourceFile&&(s.sourceFile.endsWith('.pdf')||s.sourceFile.endsWith('.docx'))) return {__isDocumentMessage:true, text:t, sourceFile:s.sourceFile};
+                return t;
+            }
+            return { message:`J'ai trouvé ${matches.length} résultats pour "${msg}". Choisissez une option ci-dessous :`, matches };
+        }
+        const rnd=paras.sort(()=>Math.random()-0.5).slice(0,3).map(p=>{
+            const ww=p.trim().split(/\s+/);            const preview=ww.slice(0,15).join(' ')+(ww.length>15?'...':'');
+            let src=null;
+            const fm=p.match(/^\[Fichier: (.*?)\]/);
+            if(fm)src=fm[1];
+            return {full:p.trim(),preview,sourceFile:src};
+        });
+        return { message:`Je n'ai pas trouvé d'information pour "${msg}" dans le mode ${mode}. Voici quelques suggestions aléatoires :`, matches:rnd };
+    }
+
+    function normalize(s){ return s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,''); }
 
     // ==================== GALLERY ====================
     const downloadedKey='petio_gallery_downloaded';
     function getDownloadedMap(){ try{ return JSON.parse(localStorage.getItem(downloadedKey)||'{}'); }catch(e){return{};} }
     function isDownloaded(id){ return !!getDownloadedMap()[id]; }
     function setDownloaded(id){ const m=getDownloadedMap(); m[id]=true; localStorage.setItem(downloadedKey,JSON.stringify(m)); }
-    async function loadGalleryFromTxt(){ const v=document.getElementById('galleryView'); v.innerHTML='<div class="gallery-loading"><i class="ph ph-spinner"></i> Chargement...</div>'; try{ const r=await fetch(GALLERY_TXT_URL); if(!r.ok)throw new Error(); const t=await r.text(); const lines=t.split('\n').filter(l=>l.trim()); const items=lines.map(l=>{ const u=l.split('|')[0].trim(); return {url:u, id:btoa(u).substring(0,20)}; }).filter(it=>it.url.startsWith('http')); if(!items.length){ v.innerHTML='<div class="gallery-loading">Aucune image.</div>'; return; } let h='<div class="gallery-container">'; items.forEach(it=>{ const dl=isDownloaded(it.id); h+=`<div class="gallery-item" data-id="${it.id}" data-url="${it.url}" onclick="openLightbox(this)"><img src="${it.url}" loading="lazy" onerror="this.style.display='none'">${dl?'<span class="downloaded-badge"><i class="ph ph-check"></i></span>':''}</div>`; }); h+='</div>'; v.innerHTML=h; }catch(e){ v.innerHTML='<div class="gallery-loading">Erreur.</div>'; } }
+    
+    async function loadGalleryFromTxt(){ 
+        const v=document.getElementById('galleryView'); 
+        v.innerHTML='<div class="gallery-loading"><i class="ph ph-spinner"></i> Chargement...</div>'; 
+        try{ 
+            const r=await fetch(GALLERY_TXT_URL); 
+            if(!r.ok) throw new Error('Fichier gallery.txt introuvable'); 
+            const t=await r.text(); 
+            const urlRegex = /https?:\/\/[^\s"'<>]+/gi;
+            const urls = t.match(urlRegex) || [];
+            const uniqueUrls = [...new Set(urls)];
+            
+            if(!uniqueUrls.length){ 
+                v.innerHTML='<div class="gallery-loading">Aucune image trouvée.</div>'; 
+                return; 
+            }
+            
+            const items = uniqueUrls.map(url => ({
+                url: url,
+                id: btoa(url).substring(0,20)
+            }));
+            
+            let h='<div class="gallery-container">'; 
+            items.forEach(it=>{ 
+                const dl=isDownloaded(it.id); 
+                h+=`<div class="gallery-item" data-id="${it.id}" data-url="${it.url}" onclick="openLightbox(this)"><img src="${it.url}" loading="lazy" onerror="this.style.display='none'">${dl?'<span class="downloaded-badge"><i class="ph ph-check"></i></span>':''}</div>`; 
+            }); 
+            h+='</div>'; 
+            v.innerHTML=h; 
+        }catch(e){ 
+            v.innerHTML='<div class="gallery-loading">Erreur.</div>'; 
+        } 
+    }
     window.openLightbox=function(el){ currentLightboxImageUrl=el.dataset.url; currentLightboxImageId=el.dataset.id; document.getElementById('lightboxImg').src=currentLightboxImageUrl; const b=document.getElementById('lightboxDownloadBtn'); b.classList.toggle('downloaded',isDownloaded(currentLightboxImageId)); document.getElementById('galleryLightbox').classList.add('show'); };
     window.closeLightbox=function(){ document.getElementById('galleryLightbox').classList.remove('show'); };
     window.downloadCurrentImage=function(e){ e.stopPropagation(); if(currentLightboxImageUrl){ const a=document.createElement('a'); a.href=currentLightboxImageUrl; a.download=''; a.click(); setDownloaded(currentLightboxImageId); document.getElementById('lightboxDownloadBtn').classList.add('downloaded'); const it=document.querySelector(`.gallery-item[data-id="${currentLightboxImageId}"]`); if(it&&!it.querySelector('.downloaded-badge')){ const b=document.createElement('span'); b.className='downloaded-badge'; b.innerHTML='<i class="ph ph-check"></i>'; it.appendChild(b); } } };
     window.refreshGallery=function(){ if(galleryModeActive)loadGalleryFromTxt(); };
 
-    // ==================== BIBLIOTHÈQUE (avec cache du brut uniquement) ====================
+    // ==================== BIBLIOTHÈQUE ====================
     let allBibliothequeFiles = [];
-    let filteredBibliothequeFiles = [];
     let bibliothequeRawCache = {};
 
     function loadBibCache(){ try{ bibliothequeRawCache = JSON.parse(localStorage.getItem(BIB_CACHE_KEY)||'{}'); }catch(e){ bibliothequeRawCache = {}; } }
@@ -802,7 +958,7 @@
             } else if(mime === 'application/pdf'){
                 const r = await fetch(`https://www.googleapis.com/drive/v3/files/${id}?alt=media&key=${DRIVE_API_KEY}`);
                 const b = await r.arrayBuffer();
-                const pdf = await pdfjsLib.getDocument({data:b}).promise;
+                const pdf = await pdfjsLib.getDocument({b}).promise;
                 for(let i=1; i<=pdf.numPages; i++){
                     const p = await pdf.getPage(i);
                     const c = await p.getTextContent();
@@ -822,8 +978,7 @@
         if(raw){
             bibliothequeRawCache[cacheKey] = raw;
             saveBibCache();
-        }
-        return raw || '(Fichier vide)';
+        }        return raw || '(Fichier vide)';
     }
 
     async function loadBibliotheque(){ 
@@ -864,7 +1019,6 @@
             }catch(e){}
             
             allBibliothequeFiles = files.sort((a,b)=>a.name.localeCompare(b.name));
-            filteredBibliothequeFiles = [...allBibliothequeFiles];
             renderBibliothequeList();
         }catch(e){ 
             view.innerHTML='<p>Erreur.</p>'; 
@@ -873,26 +1027,16 @@
 
     function renderBibliothequeList(){
         const view=document.getElementById('bibliothequeView');
-        if(filteredBibliothequeFiles.length===0){ 
-            view.innerHTML='<p style="text-align:center;padding:20px;">Aucun fichier trouvé.</p>'; 
+        if(allBibliothequeFiles.length===0){             view.innerHTML='<p style="text-align:center;padding:20px;">Aucun fichier trouvé.</p>'; 
             return; 
         }
-        let h = '<div class="search-bar-container"><input type="text" id="bibliothequeSearchInput" class="search-input" placeholder="🔍 Rechercher un fichier..." oninput="filterBibliotheque()"></div>';
-        h += '<div class="bibliotheque-suggestions">';
-        filteredBibliothequeFiles.forEach(f=>{ 
+        let h = '<div class="bibliotheque-suggestions">';
+        allBibliothequeFiles.forEach(f=>{ 
             h+=`<button class="suggestion-btn" data-name="${f.name}" data-source="${f.source}" data-path="${f.path||''}" data-id="${f.id||''}" data-mime="${f.mimeType||''}" onclick="openBibliothequeFile(this)">📄 ${f.name}</button>`; 
         }); 
         h+='</div>'; 
         view.innerHTML=h; 
     }
-
-    window.filterBibliotheque = function(){
-        const input = document.getElementById('bibliothequeSearchInput');
-        if(!input) return;
-        const query = input.value.trim().toLowerCase();
-        filteredBibliothequeFiles = query ? allBibliothequeFiles.filter(f => f.name.toLowerCase().includes(query)) : [...allBibliothequeFiles];
-        renderBibliothequeList();
-    };
 
     window.openBibliothequeFile = async function(btn){ 
         const modal=document.getElementById('lectureModal'); 
@@ -925,20 +1069,23 @@
     function setProcedureUnlocked(){ localStorage.setItem(UNLOCK_KEY_PROCEDURE,'true'); }
     function isBibliothequeUnlocked(){ return localStorage.getItem(UNLOCK_KEY_BIBLIOTHEQUE)==='true'; }
     function setBibliothequeUnlocked(){ localStorage.setItem(UNLOCK_KEY_BIBLIOTHEQUE,'true'); }
+    function isServiceUnlocked(){ return localStorage.getItem(UNLOCK_KEY_SERVICE)==='true'; }
+    function setServiceUnlocked(){ localStorage.setItem(UNLOCK_KEY_SERVICE,'true'); }
     
     function showBibliothequeUnlockModal(){
         document.getElementById('bibliotheque-unlock-modal').style.display='block';
         document.getElementById('biblio-step-code').classList.add('active');
         document.getElementById('biblio-step-payment').classList.remove('active');
-        document.getElementById('biblio-code-input').value = '';
-    }
+        document.getElementById('biblio-code-input').value = '';    }
     window.closeBibliothequeUnlockModal = function(){
         document.getElementById('bibliotheque-unlock-modal').style.display='none';
     };
     window.verifierCodeAccesBibliotheque = async function(){
+        const btn = document.getElementById('btnValiderBiblio');
         const code = document.getElementById('biblio-code-input').value.trim();
         const email = localStorage.getItem('userEmail')||'';
         if(!code){ alert('Code requis'); return; }
+        btn.disabled = true; btn.textContent = 'Vérification...';
         try{
             const r = await fetch(`${URL_GAS_CHECK}?action=checkProcedureCode&email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}`);
             const t = await r.text();
@@ -951,6 +1098,7 @@
                 document.getElementById('biblio-step-payment').classList.add('active');
             }
         }catch(e){ alert('Erreur réseau'); }
+        btn.disabled = false; btn.textContent = 'Valider';
     };
 
     function showUnlockModal(){
@@ -968,14 +1116,16 @@
         else if(c==='payment') m="Bonjour, le code saisi est invalide."; 
         else if(c==='biblio') m="Bonjour, je souhaite obtenir l'accès à la Bibliothèque."; 
         else if(c==='code') m="Bonjour, j'ai un problème avec le code d'accès Procédure."; 
+        else if(c==='service' || c==='service_payment') m="Bonjour, je souhaite obtenir l'accès au Service."; 
         window.open(`https://wa.me/12496806826?text=${encodeURIComponent(m)}`,'_blank'); 
     };
     async function verifierCodeAcces(){ 
+        const btn = document.getElementById('btnValiderProcedure');
         const code=document.getElementById('unlock-code-input').value.trim(); 
         const email=localStorage.getItem('userEmail')||''; 
         if(!code){ afficherErreur("Veuillez saisir un code."); return; } 
         if(!email){ afficherErreur("Email utilisateur introuvable."); return; } 
-        try{ 
+        btn.disabled = true; btn.textContent = 'Vérification...';        try{ 
             const r=await fetch(`${URL_GAS_CHECK}?action=checkProcedureCode&email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}`); 
             const t=await r.text(); 
             if(t.trim()==='VALIDE'){ 
@@ -986,8 +1136,64 @@
                 document.getElementById('unlock-step-code').classList.remove('active'); 
                 document.getElementById('unlock-step-payment').classList.add('active'); 
             } 
-        }catch(e){ afficherErreur("Erreur réseau."); } 
+        }catch(e){ afficherErreur("Erreur réseau."); }
+        btn.disabled = false; btn.textContent = 'Valider';
     }
+
+    // ==================== MODAL SERVICE (avec mémoire) ====================
+    window.openServiceModal = function(){
+        if(isServiceUnlocked()){
+            closeSettings();
+            afficherAZOverlay();
+            return;
+        }
+        closeSettings();
+        document.getElementById('service-unlock-modal').style.display='block';
+        document.getElementById('service-step-code').classList.add('active');
+        document.getElementById('service-step-payment').classList.remove('active');
+        document.getElementById('service-code-input').value = '';
+    };
+    window.closeServiceUnlockModal = function(){
+        document.getElementById('service-unlock-modal').style.display='none';
+    };
+    window.verifierCodeAccesService = async function(){
+        const btn = document.getElementById('btnValiderService');
+        const code = document.getElementById('service-code-input').value.trim();
+        const email = localStorage.getItem('userEmail')||'';
+        if(!code){ alert('Code requis'); return; }
+        btn.disabled = true; btn.textContent = 'Vérification...';
+        try{
+            const r = await fetch(`${URL_GAS_CHECK}?action=checkProcedureCode&email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}`);
+            const t = await r.text();
+            if(t.trim()==='VALIDE'){
+                setServiceUnlocked();
+                closeServiceUnlockModal();
+                afficherAZOverlay();
+            } else {
+                document.getElementById('service-step-code').classList.remove('active');
+                document.getElementById('service-step-payment').classList.add('active');
+            }
+        }catch(e){ alert('Erreur réseau'); }
+        btn.disabled = false; btn.textContent = 'Valider';    };
+
+    function afficherAZOverlay(){
+        const overlay = document.getElementById('az-overlay');
+        const container = document.getElementById('az-buttons-container');
+        container.innerHTML = '';
+        for(let i=65; i<=90; i++){
+            const lettre = String.fromCharCode(i);
+            const btn = document.createElement('a');
+            btn.className = 'az-btn';
+            btn.href = `${lettre.toLowerCase()}.html`;
+            btn.textContent = lettre;
+            container.appendChild(btn);
+        }
+        overlay.style.display = 'block';
+    }
+    window.closeAZOverlay = function(){
+        document.getElementById('az-overlay').style.display = 'none';
+    };
+
     async function activerModeProcedure(){ 
         modeActuel='Procedure'; 
         document.getElementById('modeText').textContent='🤖 MODE: PROCEDURE'; 
@@ -1017,7 +1223,6 @@
         loadBibliotheque(); 
     }
     window.exitBibliothequeMode=function(){ bibliothequeModeActive=false; document.getElementById('mainHeader').style.display='flex'; document.getElementById('bibliothequeHeader').style.display='none'; document.getElementById('chatArea').style.display='flex'; document.getElementById('bibliothequeView').style.display='none'; document.getElementById('inputBar').style.display='flex'; changerMode('Cerveau'); };
-
     // ==================== CHANGEMENT DE MODE ====================
     const changerModeOriginal=async function(n){ 
         if(n==='Gallery'){ enterGalleryMode(); return; } 
@@ -1065,7 +1270,31 @@
     function closeSettings(){ document.getElementById('settingsPage').classList.remove('open'); }
     function afficherErreur(m){ const p=document.getElementById('error-popup'); document.getElementById('error-msg').innerText=m; p.classList.add('show'); setTimeout(()=>p.classList.remove('show'),4000); }
     function resetMode(){ changerMode('Cerveau'); }
-    async function verifierAcces(){ const email=document.getElementById('userEmail').value.trim(), code=document.getElementById('userCode').value.trim(), btn=document.getElementById('btnValid'); if(!email||!code){ afficherErreur("Champs obligatoires."); return; } btn.disabled=true; btn.innerText="Vérification..."; try{ const r=await fetch(`https://script.google.com/macros/s/AKfycbwECfIzsgINAu5IqMDaqcDuYtZAaspR16wvxu-BuLaqTdGJT-6Pec3hJs27lYvxzaIB2Q/exec?action=verif&email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}`); const t=await r.text(); if(t.trim()==='VALIDE'){ localStorage.setItem('pierre_bot_access','true'); localStorage.setItem('userEmail',email); let adminUsers=JSON.parse(localStorage.getItem('petio_admin_users')||'[]'); if(!adminUsers.some(u=>u.email===email)){ adminUsers.push({email,date:new Date().toISOString()}); localStorage.setItem('petio_admin_users',JSON.stringify(adminUsers)); } showPage('robot'); chargerHistorique(); }else{ openPay(); } }catch(e){ afficherErreur("Erreur réseau."); } finally{ btn.disabled=false; btn.innerText="Valider"; } }
+    async function verifierAcces(){ 
+        const email=document.getElementById('userEmail').value.trim(), code=document.getElementById('userCode').value.trim(), btn=document.getElementById('btnValid'); 
+        if(!email||!code){ afficherErreur("Champs obligatoires."); return; }         btn.disabled=true; btn.innerText="Vérification...";
+        try{ 
+            const r=await fetch(`https://script.google.com/macros/s/AKfycbwECfIzsgINAu5IqMDaqcDuYtZAaspR16wvxu-BuLaqTdGJT-6Pec3hJs27lYvxzaIB2Q/exec?action=verif&email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}`); 
+            const t=await r.text(); 
+            if(t.trim()==='VALIDE'){ 
+                localStorage.setItem('pierre_bot_access','true'); 
+                localStorage.setItem('userEmail',email); 
+                let adminUsers=JSON.parse(localStorage.getItem('petio_admin_users')||'[]'); 
+                if(!adminUsers.some(u=>u.email===email)){ 
+                    adminUsers.push({email,date:new Date().toISOString()}); 
+                    localStorage.setItem('petio_admin_users',JSON.stringify(adminUsers)); 
+                } 
+                showPage('robot'); 
+                chargerHistorique(); 
+            }else{ 
+                openPay(); 
+            } 
+        }catch(e){ 
+            afficherErreur("Erreur réseau."); 
+        } finally{ 
+            btn.disabled=false; btn.innerText="Valider"; 
+        } 
+    }
     function openPay(){ document.getElementById('pay-sheet').classList.add('show'); document.getElementById('overlay').classList.add('show'); }
     function closePay(){ document.getElementById('pay-sheet').classList.remove('show'); document.getElementById('overlay').classList.remove('show'); }
     function showPage(n){ document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.getElementById(`page-${n}`).classList.add('active'); if(n==='robot')setTimeout(()=>textarea.focus(),100); }
@@ -1078,7 +1307,7 @@
 
     // ==================== INIT APP ====================
     window.addEventListener('DOMContentLoaded',async()=>{ loadStatus.style.display='block'; const contenu=await chargerFichiersMode('Cerveau'); loadStatus.className=contenu?'success':'error'; loadStatus.textContent=contenu?'✅ Prêt.':'⚠️ Fichier cerveau.txt manquant'; setTimeout(()=>loadStatus.style.display='none',2000); initTranslationButton(); loadUserPhoto(); mettreAJourNomBot(); if(localStorage.getItem('pierre_bot_access')==='true'){ showPage('robot'); chargerHistorique(); } if(localStorage.getItem('theme')==='dark'){ document.body.classList.add('dark-theme'); document.getElementById('themeIcon').className='ph ph-sun'; } });
-    function deconnexionComplete(){ localStorage.removeItem('pierre_bot_access'); localStorage.removeItem('chatHistory'); localStorage.removeItem(UNLOCK_KEY_PROCEDURE); localStorage.removeItem(UNLOCK_KEY_BIBLIOTHEQUE); window.location.reload(); }
+    function deconnexionComplete(){ localStorage.removeItem('pierre_bot_access'); localStorage.removeItem('chatHistory'); localStorage.removeItem(UNLOCK_KEY_PROCEDURE); localStorage.removeItem(UNLOCK_KEY_BIBLIOTHEQUE); localStorage.removeItem(UNLOCK_KEY_SERVICE); window.location.reload(); }
 
     // Expositions globales
     window.verifierAcces=verifierAcces; window.openPay=openPay; window.closePay=closePay;
@@ -1092,8 +1321,7 @@
     window.openNameModal=function(){ closeSettings(); document.getElementById('newBotNameInput').value=nomBot; document.getElementById('nameModal').classList.add('show'); };
     window.closeNameModal=function(){ document.getElementById('nameModal').classList.remove('show'); };
     function toggleSettingDesc(id){ ['faq','cgu','confidentialite','apropos'].forEach(k=>{ if(k!==id){ const d=document.getElementById(k+'-desc'); if(d&&d.parentElement.classList.contains('active')) d.parentElement.classList.remove('active'); } }); const c=document.getElementById(id+'-desc'); if(c) c.parentElement.classList.toggle('active'); }
-    window.toggleSettingDesc=toggleSettingDesc;
-})();
+    window.toggleSettingDesc=toggleSettingDesc;})();
 </script>
 </body>
-</html>
+    </html>
