@@ -7,247 +7,149 @@
     <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
-        body { 
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-        .container {
-            background: white;
-            border-radius: 24px;
-            padding: 40px;
-            max-width: 500px;
-            width: 100%;
-            text-align: center;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-        }
-        .success-icon {
-            width: 80px;
-            height: 80px;
-            background: #34c759;
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 24px;
-            font-size: 40px;
-            animation: bounce 0.6s ease;
-        }
-        @keyframes bounce {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
+        body { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .container { background: white; border-radius: 24px; padding: 40px; max-width: 500px; width: 100%; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+        .success-icon { width: 80px; height: 80px; background: #34c759; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; font-size: 40px; animation: bounce 0.6s ease; }
+        @keyframes bounce { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
         h1 { color: #1c1c1e; font-size: 28px; margin-bottom: 12px; font-weight: 700; }
         .subtitle { color: #8e8e93; font-size: 16px; margin-bottom: 32px; font-weight: 500; }
-        
-        .code-box {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 24px;            border-radius: 16px;
-            margin: 24px 0;
-        }
+        .code-box { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 24px; border-radius: 16px; margin: 24px 0; }
         .code-label { font-size: 14px; opacity: 0.9; margin-bottom: 8px; font-weight: 600; }
-        .code-value { 
-            font-size: 32px; 
-            font-family: 'Courier New', monospace; 
-            font-weight: 700;
-            letter-spacing: 2px;
-        }
-        
-        .info-box {
-            background: #f2f2f7;
-            border-radius: 12px;
-            padding: 20px;
-            margin: 24px 0;
-            text-align: left;
-        }
-        .info-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 12px 0;
-            border-bottom: 1px solid #e5e5e5;
-        }
+        .code-value { font-size: 32px; font-family: 'Courier New', monospace; font-weight: 700; letter-spacing: 2px; }
+        .info-box { background: #f2f2f7; border-radius: 12px; padding: 20px; margin: 24px 0; text-align: left; }
+        .info-item { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #e5e5e5; }
         .info-item:last-child { border-bottom: none; }
         .info-label { color: #8e8e93; font-weight: 500; }
         .info-value { color: #1c1c1e; font-weight: 600; }
-        
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: #007aff;
-            color: white;
-            text-decoration: none;
-            padding: 16px 32px;
-            border-radius: 12px;
-            font-weight: 600;
-            font-size: 16px;
-            margin-top: 16px;
-            transition: transform 0.2s;
-            border: none;
-            cursor: pointer;
-            width: 100%;
-            justify-content: center;
-        }
+        .btn { display: inline-flex; align-items: center; gap: 8px; background: #007aff; color: white; text-decoration: none; padding: 16px 32px; border-radius: 12px; font-weight: 600; font-size: 16px; margin-top: 16px; transition: transform 0.2s; border: none; cursor: pointer; width: 100%; justify-content: center; }
         .btn:active { transform: scale(0.98); }
         .btn-secondary { background: #8e8e93; }
-        
-        .alert {            background: #fff3cd;
-            border-left: 4px solid #ffc107;
-            padding: 16px;
-            border-radius: 8px;
-            margin: 20px 0;
-            text-align: left;
-            display: flex;
-            gap: 12px;
-            align-items: flex-start;
-        }
+        .alert { background: #fff3cd; border-left: 4px solid #ffc107; padding: 16px; border-radius: 8px; margin: 20px 0; text-align: left; display: flex; gap: 12px; align-items: flex-start; }
         .alert i { font-size: 20px; color: #856404; flex-shrink: 0; margin-top: 2px; }
         .alert p { color: #856404; font-size: 14px; font-weight: 500; }
-        
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,0.3);
-            border-radius: 50%;
-            border-top-color: white;
-            animation: spin 1s ease-in-out infinite;
-        }
+        .loading { display: inline-block; width: 40px; height: 40px; border: 4px solid rgba(0,0,0,0.1); border-radius: 50%; border-top-color: #667eea; animation: spin 1s ease-in-out infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
-        
         .error { background: #ff3b30; color: white; padding: 16px; border-radius: 12px; margin: 20px 0; }
-        .success { background: #34c759; color: white; padding: 16px; border-radius: 12px; margin: 20px 0; }
-        
-        @media (max-width: 480px) {
-            .container { padding: 24px; }
-            h1 { font-size: 24px; }
-            .code-value { font-size: 24px; }
-        }
+        .status-message { padding: 16px; border-radius: 12px; margin: 20px 0; font-weight: 500; }
+        .status-success { background: #34c759; color: white; }
+        .status-pending { background: #007aff; color: white; }
+        @media (max-width: 480px) { .container { padding: 24px; } h1 { font-size: 24px; } .code-value { font-size: 24px; } }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="success-icon">
-            <i class="ph-fill ph-check"></i>
-        </div>
-        
+        <div class="success-icon"><i class="ph-fill ph-check"></i></div>
         <h1>Paiement Confirmé ! 🎉</h1>
         <p class="subtitle">Votre accès VIP à Petio est activé</p>
-        
         <div id="content">
-            <div class="loading" style="width: 40px; height: 40px; border-color: rgba(0,0,0,0.1); border-top-color: #667eea; margin: 20px auto;"></div>
+            <div class="loading"></div>
             <p style="color: #8e8e93; margin-top: 16px;">Génération de votre code d'accès...</p>
         </div>
     </div>
 
-    <script>        // Configuration
-        const GAS_URL = 'https://script.google.com/macros/s/AKfycbwECfIzsgINAu5IqMDaqcDuYtZAaspR16wvxu-BuLaqTdGJT-6Pec3hJs27lYvxzaIB2Q/exec?action=achat';
+    <script>        // ⚠️ REMPLACE PAR TON URL GAS EXACTE
+        const GAS_URL = 'https://script.google.com/macros/s/AKfycbwECfIzsgINAu5IqMDaqcDuYtZAaspR16wvxu-BuLaqTdGJT-6Pec3hJs27lYvxzaIB2Q/exec';
         
-        // Récupérer les paramètres URL
         const urlParams = new URLSearchParams(window.location.search);
         const email = urlParams.get('email') || urlParams.get('customerEmail');
         const paymentRef = urlParams.get('paymentReference') || urlParams.get('ref');
-        const invoiceNumber = urlParams.get('invoiceNumber') || urlParams.get('invoice');
         
-        // Générer un code unique
         function generateUniqueCode() {
             const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
             let code = 'VIP-';
-            for (let i = 0; i < 5; i++) {
-                code += chars[Math.floor(Math.random() * chars.length)];
-            }
+            for (let i = 0; i < 5; i++) code += chars[Math.floor(Math.random() * chars.length)];
             return code;
         }
         
-        // Envoyer les données à GAS
+        // ✅ MÉTHODE D'ENVOI CORRIGÉE - Utilise beacon + fetch fallback
         async function sendToGAS(email, code, transactionId) {
+            console.log('📤 [GAS] Début envoi...');
+            console.log('📧 Email:', email);
+            console.log('🔑 Code:', code);
+            console.log('🆔 Transaction:', transactionId);
+            
             try {
-                // Utiliser no-cors pour éviter les erreurs CORS avec GAS
-                const formData = new FormData();
-                formData.append('email', email);
-                formData.append('code', code);
-                formData.append('transactionId', transactionId || paymentRef || '');
-                formData.append('timestamp', new Date().toISOString());
-                
-                // Envoi en mode no-cors (fire and forget)
-                await fetch(GAS_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    body: formData
+                // Construire l'URL avec paramètres GET (plus fiable avec GAS)
+                const params = new URLSearchParams({
+                    action: 'achat',
+                    email: email,
+                    code: code,
+                    transactionId: transactionId || '',
+                    timestamp: new Date().toISOString()
                 });
                 
+                const fullUrl = `${GAS_URL}?${params.toString()}`;
+                console.log('🔗 URL complète:', fullUrl);
+                
+                // Méthode 1: sendBeacon (fire-and-forget, très fiable)
+                const beaconSent = navigator.sendBeacon(fullUrl);
+                console.log('📡 Beacon envoyé:', beaconSent);
+                
+                // Méthode 2: fetch en fallback (avec no-cors)
+                await fetch(fullUrl, { method: 'GET', mode: 'no-cors' });
+                console.log('✅ Fetch complété');
+                
                 return true;
-            } catch (error) {
-                console.error('Erreur envoi GAS:', error);
+            } catch (err) {
+                console.error('❌ Erreur GAS:', err);
                 return false;
             }
         }
         
-        // Fonction principale
-        async function init() {
-            const contentDiv = document.getElementById('content');
+        async function init() {            const contentDiv = document.getElementById('content');
             
-            // Vérifier si on a l'email
+            console.log('=== 🚀 DÉMARRAGE PAGE SUCCÈS ===');
+            console.log('URL:', window.location.href);
+            console.log('Email détecté:', email);
+            
             if (!email) {
-                contentDiv.innerHTML = `                    <div class="error">
-                        <i class="ph-fill ph-x-circle" style="font-size: 48px; margin-bottom: 12px;"></i>
+                contentDiv.innerHTML = `
+                    <div class="error">
+                        <i class="ph-fill ph-x-circle" style="font-size:48px;margin-bottom:12px;display:block"></i>
                         <h3>Email non trouvé</h3>
-                        <p style="margin-top: 8px;">Veuillez contacter le support avec votre numéro de transaction.</p>
-                        <a href="https://wa.me/12496806826" class="btn" style="margin-top: 16px;">
-                            <i class="ph-fill ph-whatsapp-logo"></i>
-                            Contacter le support
+                        <p style="margin-top:8px">Contactez le support avec votre référence de transaction.</p>
+                        <a href="https://wa.me/12496806826" class="btn" style="margin-top:16px">
+                            <i class="ph-fill ph-whatsapp-logo"></i> Contacter le support
                         </a>
-                    </div>
-                `;
+                    </div>`;
                 return;
             }
             
-            // Générer le code
             const uniqueCode = generateUniqueCode();
+            console.log('🎫 Code généré:', uniqueCode);
             
-            // Envoyer à GAS
+            contentDiv.innerHTML = `
+                <div class="status-message status-pending">
+                    <i class="ph-fill ph-spinner" style="display:inline-block;animation:spin 1s linear infinite;margin-right:8px"></i>
+                    Enregistrement de votre code...
+                </div>`;
+            
             const success = await sendToGAS(email, uniqueCode, paymentRef);
             
-            if (success || true) { // On affiche quand même le code même si no-cors empêche de vérifier
-                // Sauvegarder dans localStorage pour backup
-                localStorage.setItem('petio_access_code', uniqueCode);
-                localStorage.setItem('petio_access_email', email);
-                
+            // Backup local
+            localStorage.setItem('petio_access_code', uniqueCode);
+            localStorage.setItem('petio_access_email', email);
+            
+            if (success) {
                 contentDiv.innerHTML = `
+                    <div class="status-message status-success">
+                        <i class="ph-fill ph-check-circle" style="margin-right:8px"></i> Code enregistré !
+                    </div>
                     <div class="alert">
                         <i class="ph-fill ph-info"></i>
-                        <p><strong>Important :</strong> Conservez précieusement ce code. Vous en aurez besoin pour activer votre accès VIP dans Petio.</p>
+                        <p><strong>Important :</strong> Conservez ce code pour activer votre accès VIP dans Petio.</p>
                     </div>
-                    
                     <div class="code-box">
                         <div class="code-label">Votre Code d'Accès VIP</div>
                         <div class="code-value">${uniqueCode}</div>
                     </div>
-                    
                     <div class="info-box">
-                        <div class="info-item">
-                            <span class="info-label">Email</span>
-                            <span class="info-value">${email}</span>
-                        </div>
-                        ${paymentRef ? `
-                        <div class="info-item">
-                            <span class="info-label">Transaction</span>
-                            <span class="info-value">${paymentRef.substring(0, 8)}...</span>
-                        </div>
-                        ` : ''}
-                        <div class="info-item">
-                            <span class="info-label">Date</span>
-                            <span class="info-value">${new Date().toLocaleString('fr-FR')}</span>
-                        </div>                    </div>
-                    
-                    <div style="background: #f2f2f7; padding: 20px; border-radius: 12px; margin: 20px 0; text-align: left;">
-                        <h3 style="margin-bottom: 12px; color: #1c1c1e;"><i class="ph-fill ph-list-dashes" style="margin-right: 8px;"></i>Comment utiliser votre code :</h3>
-                        <ol style="padding-left: 20px; color: #3a3a3c; line-height: 1.8;">
+                        <div class="info-item"><span class="info-label">Email</span><span class="info-value">${email}</span></div>
+                        ${paymentRef ? `<div class="info-item"><span class="info-label">Transaction</span><span class="info-value">${paymentRef.substring(0,8)}...</span></div>` : ''}                        <div class="info-item"><span class="info-label">Date</span><span class="info-value">${new Date().toLocaleString('fr-FR')}</span></div>
+                    </div>
+                    <div style="background:#f2f2f7;padding:20px;border-radius:12px;margin:20px 0;text-align:left">
+                        <h3 style="margin-bottom:12px;color:#1c1c1e"><i class="ph-fill ph-list-dashes" style="margin-right:8px"></i>Comment utiliser votre code :</h3>
+                        <ol style="padding-left:20px;color:#3a3a3c;line-height:1.8">
                             <li>Ouvrez l'application Petio</li>
                             <li>Allez dans <strong>Paramètres</strong></li>
                             <li>Cliquez sur <strong>"Activer VIP"</strong></li>
@@ -255,37 +157,25 @@
                             <li>Profitez de vos avantages VIP ! 🎉</li>
                         </ol>
                     </div>
-                    
-                    <a href="index.html" class="btn">
-                        <i class="ph-fill ph-rocket-launch"></i>
-                        Ouvrir Petio
-                    </a>
-                    
-                    <a href="https://wa.me/12496806826?text=Bonjour, j'ai reçu mon code VIP: ${uniqueCode}" class="btn btn-secondary" style="margin-top: 12px;">
-                        <i class="ph-fill ph-whatsapp-logo"></i>
-                        Sauvegarder sur WhatsApp
-                    </a>
+                    <a href="index.html" class="btn"><i class="ph-fill ph-rocket-launch"></i> Ouvrir Petio</a>
+                    <a href="https://wa.me/12496806826?text=Code VIP: ${uniqueCode}" class="btn btn-secondary" style="margin-top:12px"><i class="ph-fill ph-whatsapp-logo"></i> Sauvegarder sur WhatsApp</a>
                 `;
-                
-                // Envoyer un email de confirmation (optionnel - à implémenter côté GAS si besoin)
-                console.log('Code généré:', uniqueCode, 'pour', email);
             } else {
                 contentDiv.innerHTML = `
-                    <div class="error">
-                        <i class="ph-fill ph-warning" style="font-size: 48px; margin-bottom: 12px;"></i>
-                        <h3>Erreur de traitement</h3>
-                        <p style="margin-top: 8px;">Un problème est survenu. Veuillez contacter le support avec ces informations :</p>
-                        <p style="margin-top: 12px; font-family: monospace; font-size: 12px;">Email: ${email}<br>Ref: ${paymentRef || 'N/A'}</p>
-                        <a href="https://wa.me/12496806826" class="btn" style="margin-top: 16px;">
-                            <i class="ph-fill ph-whatsapp-logo"></i>
-                            Contacter le support
-                        </a>
+                    <div class="status-message" style="background:#ff9500;color:white">
+                        <i class="ph-fill ph-warning" style="margin-right:8px"></i> Enregistrement en cours...
                     </div>
+                    <div class="code-box" style="margin-top:20px">
+                        <div class="code-label">Votre Code (à sauvegarder)</div>
+                        <div class="code-value">${uniqueCode}</div>
+                    </div>
+                    <p style="margin-top:16px;color:#8e8e93;font-size:14px">Si le code n'apparaît pas dans Petio, contactez le support avec ce code.</p>
+                    <a href="https://wa.me/12496806826?text=Code VIP: ${uniqueCode} - Email: ${email}" class="btn btn-secondary" style="margin-top:12px"><i class="ph-fill ph-whatsapp-logo"></i> Contacter le support</a>
+                    <a href="index.html" class="btn" style="margin-top:12px"><i class="ph-fill ph-rocket-launch"></i> Ouvrir Petio</a>
                 `;
             }
         }
         
-        // Lancer au chargement
         window.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
