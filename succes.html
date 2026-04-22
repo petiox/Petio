@@ -1,182 +1,588 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" data-theme="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Paiement Confirmé - Petio</title>
-    <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
-        body { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .container { background: white; border-radius: 24px; padding: 40px; max-width: 500px; width: 100%; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
-        .success-icon { width: 80px; height: 80px; background: #34c759; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; font-size: 40px; animation: bounce 0.6s ease; }
-        @keyframes bounce { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
-        h1 { color: #1c1c1e; font-size: 28px; margin-bottom: 12px; font-weight: 700; }
-        .subtitle { color: #8e8e93; font-size: 16px; margin-bottom: 32px; font-weight: 500; }
-        .code-box { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 24px; border-radius: 16px; margin: 24px 0; }
-        .code-label { font-size: 14px; opacity: 0.9; margin-bottom: 8px; font-weight: 600; }
-        .code-value { font-size: 32px; font-family: 'Courier New', monospace; font-weight: 700; letter-spacing: 2px; }
-        .info-box { background: #f2f2f7; border-radius: 12px; padding: 20px; margin: 24px 0; text-align: left; }
-        .info-item { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #e5e5e5; }
-        .info-item:last-child { border-bottom: none; }
-        .info-label { color: #8e8e93; font-weight: 500; }
-        .info-value { color: #1c1c1e; font-weight: 600; }
-        .btn { display: inline-flex; align-items: center; gap: 8px; background: #007aff; color: white; text-decoration: none; padding: 16px 32px; border-radius: 12px; font-weight: 600; font-size: 16px; margin-top: 16px; transition: transform 0.2s; border: none; cursor: pointer; width: 100%; justify-content: center; }
-        .btn:active { transform: scale(0.98); }
-        .btn-secondary { background: #8e8e93; }
-        .alert { background: #fff3cd; border-left: 4px solid #ffc107; padding: 16px; border-radius: 8px; margin: 20px 0; text-align: left; display: flex; gap: 12px; align-items: flex-start; }
-        .alert i { font-size: 20px; color: #856404; flex-shrink: 0; margin-top: 2px; }
-        .alert p { color: #856404; font-size: 14px; font-weight: 500; }
-        .loading { display: inline-block; width: 40px; height: 40px; border: 4px solid rgba(0,0,0,0.1); border-radius: 50%; border-top-color: #667eea; animation: spin 1s ease-in-out infinite; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .error { background: #ff3b30; color: white; padding: 16px; border-radius: 12px; margin: 20px 0; }
-        .status-message { padding: 16px; border-radius: 12px; margin: 20px 0; font-weight: 500; }
-        .status-success { background: #34c759; color: white; }
-        .status-pending { background: #007aff; color: white; }
-        @media (max-width: 480px) { .container { padding: 24px; } h1 { font-size: 24px; } .code-value { font-size: 24px; } }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Générateur IBAN Fictif - Complet</title>
+  
+  <!-- Phosphor Icons CDN -->
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  
+  <style>
+    /* === RESET & BASE === */
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    html, body { 
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: #0f0f1a; color: #f0f0f0; font-size: 16px; line-height: 1.6;
+      font-weight: 700; /* TOUT EN GRAS */
+    }
+    body { padding: 12px; }
+    
+    /* === CONTAINER === */
+    .container { max-width: 680px; margin: 0 auto; }
+    
+    /* === HEADER === */
+    header { text-align: center; padding: 20px 0 15px; }
+    header h1 { 
+      font-size: 1.9rem; color: #fff; margin-bottom: 8px; 
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+    }
+    header p { color: #aaa; font-size: 0.95rem; }
+    
+    /* === FORMULAIRE === */
+    .form-grid { 
+      display: grid; grid-template-columns: 1fr; gap: 14px; 
+      background: #1a1a2e; padding: 16px; border-radius: 12px; margin: 15px 0;
+    }
+    @media(min-width: 600px) { .form-grid { grid-template-columns: repeat(3, 1fr); } }
+    
+    .form-group label { 
+      display: block; margin-bottom: 8px; color: #ccc; font-size: 0.9rem;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .form-group i { font-size: 1.1rem; }
+    
+    select { 
+      width: 100%; padding: 14px 12px; border-radius: 10px; border: 2px solid #3a3a5a;
+      background: #16213e; color: #fff; font-size: 1rem; font-weight: 700;
+      appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%23ccc' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 12px center; background-size: 18px;
+    }    select:focus { outline: none; border-color: #e94560; }
+    
+    /* === TEXTAREA === */
+    textarea { 
+      width: 100%; min-height: 160px; padding: 14px; border-radius: 10px;
+      border: 2px solid #3a3a5a; background: #16213e; color: #fff;
+      font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.95rem; font-weight: 700;
+      resize: vertical;
+    }
+    textarea:focus { outline: none; border-color: #e94560; }
+    
+    /* === BOUTONS === */
+    .btn-row { display: flex; gap: 12px; margin: 18px 0; }
+    button { 
+      flex: 1; padding: 14px 16px; border: none; border-radius: 10px;
+      background: linear-gradient(135deg, #e94560, #c23a51); color: #fff;
+      font-size: 1rem; font-weight: 800; cursor: pointer; display: flex;
+      align-items: center; justify-content: center; gap: 8px; transition: transform 0.1s;
+    }
+    button:active { transform: scale(0.98); }
+    button.secondary { 
+      background: linear-gradient(135deg, #0f3460, #1a4a7a); 
+    }
+    button i { font-size: 1.2rem; }
+    
+    /* === SECTION INFO === */
+    .info-section { 
+      background: #1a1a2e; padding: 16px; border-radius: 12px; margin: 20px 0;
+      border-left: 4px solid #e94560;
+    }
+    .info-section h3 { 
+      color: #fff; margin: 12px 0 8px; font-size: 1.1rem;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .info-section p, .info-section li { 
+      color: #bbb; font-size: 0.92rem; margin-bottom: 6px; 
+    }
+    .info-section ul { padding-left: 20px; }
+    .info-section a { color: #64b5f6; text-decoration: none; font-weight: 800; }
+    
+    /* === DISCLAIMER === */
+    .disclaimer { 
+      font-size: 0.85rem; color: #ff6b6b; background: #2a1a1a; 
+      padding: 14px; border-radius: 10px; margin-top: 25px;
+      border: 1px solid #ff4757;
+    }
+    
+    /* === TOAST NOTIFICATION === */
+    .toast { 
+      position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(100px);      background: #2ecc71; color: #fff; padding: 12px 24px; border-radius: 50px;
+      font-weight: 800; box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      transition: transform 0.3s ease; z-index: 1000; display: flex; align-items: center; gap: 8px;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+    
+    /* === FOOTER === */
+    footer { 
+      text-align: center; padding: 25px 0 15px; color: #666; font-size: 0.85rem;
+    }
+    footer a { color: #888; text-decoration: none; font-weight: 700; }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <div class="success-icon"><i class="ph-fill ph-check"></i></div>
-        <h1>Paiement Confirmé ! 🎉</h1>
-        <p class="subtitle">Votre accès VIP à Petio est activé</p>
-        <div id="content">
-            <div class="loading"></div>
-            <p style="color: #8e8e93; margin-top: 16px;">Génération de votre code d'accès...</p>
-        </div>
+  <div class="container">
+    
+    <!-- HEADER -->
+    <header>
+      <h1><i class="ph ph-bank"></i> GÉNÉRATEUR IBAN FICTIF</h1>
+      <p><i class="ph ph-info"></i> IBAN aléatoires pour tests & éducation uniquement</p>
+    </header>
+    
+    <!-- FORMULAIRE -->
+    <div class="form-grid">
+      <div class="form-group">
+        <label><i class="ph ph-globe"></i> PAYS</label>
+        <select id="country">
+          <option value="AL">Albanie (AL)</option>
+          <option value="AD">Andorre (AD)</option>
+          <option value="AT">Autriche (AT)</option>
+          <option value="BE">Belgique (BE)</option>
+          <option value="BA">Bosnie-Herzégovine (BA)</option>
+          <option value="BR">Brésil (BR)</option>
+          <option value="BG">Bulgarie (BG)</option>
+          <option value="CR">Costa Rica (CR)</option>
+          <option value="HR">Croatie (HR)</option>
+          <option value="CY">Chypre (CY)</option>
+          <option value="CZ">Tchéquie (CZ)</option>
+          <option value="DK">Danemark (DK)</option>
+          <option value="EE">Estonie (EE)</option>
+          <option value="FO">Îles Féroé (FO)</option>
+          <option value="FI">Finlande (FI)</option>
+          <option value="FR" selected>France (FR)</option>
+          <option value="GE">Géorgie (GE)</option>
+          <option value="DE">Allemagne (DE)</option>
+          <option value="GI">Gibraltar (GI)</option>
+          <option value="GR">Grèce (GR)</option>
+          <option value="GL">Groenland (GL)</option>
+          <option value="HU">Hongrie (HU)</option>
+          <option value="IS">Islande (IS)</option>          <option value="IE">Irlande (IE)</option>
+          <option value="IL">Israël (IL)</option>
+          <option value="IT">Italie (IT)</option>
+          <option value="XK">Kosovo (XK)</option>
+          <option value="KW">Koweït (KW)</option>
+          <option value="LV">Lettonie (LV)</option>
+          <option value="LB">Liban (LB)</option>
+          <option value="LI">Liechtenstein (LI)</option>
+          <option value="LT">Lituanie (LT)</option>
+          <option value="LU">Luxembourg (LU)</option>
+          <option value="MT">Malte (MT)</option>
+          <option value="MR">Mauritanie (MR)</option>
+          <option value="MU">Maurice (MU)</option>
+          <option value="MD">Moldavie (MD)</option>
+          <option value="MC">Monaco (MC)</option>
+          <option value="ME">Monténégro (ME)</option>
+          <option value="NL">Pays-Bas (NL)</option>
+          <option value="MK">Macédoine du Nord (MK)</option>
+          <option value="NO">Norvège (NO)</option>
+          <option value="PK">Pakistan (PK)</option>
+          <option value="PS">Palestine (PS)</option>
+          <option value="PL">Pologne (PL)</option>
+          <option value="PT">Portugal (PT)</option>
+          <option value="QA">Qatar (QA)</option>
+          <option value="RO">Roumanie (RO)</option>
+          <option value="SM">Saint-Marin (SM)</option>
+          <option value="SA">Arabie Saoudite (SA)</option>
+          <option value="RS">Serbie (RS)</option>
+          <option value="SC">Seychelles (SC)</option>
+          <option value="SK">Slovaquie (SK)</option>
+          <option value="SI">Slovénie (SI)</option>
+          <option value="ES">Espagne (ES)</option>
+          <option value="SE">Suède (SE)</option>
+          <option value="CH">Suisse (CH)</option>
+          <option value="TL">Timor-Leste (TL)</option>
+          <option value="TN">Tunisie (TN)</option>
+          <option value="TR">Turquie (TR)</option>
+          <option value="UA">Ukraine (UA)</option>
+          <option value="AE">Émirats Arabes Unis (AE)</option>
+          <option value="GB">Royaume-Uni (GB)</option>
+          <option value="VG">Îles Vierges britanniques (VG)</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label><i class="ph ph-hash"></i> QUANTITÉ</label>
+        <select id="quantity">
+          <option value="1">1</option>
+          <option value="5" selected>5</option>
+          <option value="10">10</option>          <option value="20">20</option>
+          <option value="50">50</option>
+          <option value="100">100</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label><i class="ph ph-file-text"></i> FORMAT</label>
+        <select id="format">
+          <option value="TEXT" selected>TEXT</option>
+          <option value="CSV">CSV</option>
+          <option value="JSON">JSON</option>
+          <option value="XML">XML</option>
+        </select>
+      </div>
     </div>
+    
+    <textarea id="output" placeholder="🔐 Les IBAN générés apparaîtront ici..." readonly></textarea>
+    
+    <div class="btn-row">
+      <button onclick="generate()"><i class="ph ph-sparkle"></i> GÉNÉRER</button>
+      <button class="secondary" onclick="copy()"><i class="ph ph-copy"></i> COPIER</button>
+      <button class="secondary" onclick="download()"><i class="ph ph-download-simple"></i> TÉLÉCHARGER</button>
+    </div>
+    
+    <!-- INFO SECTION -->
+    <div class="info-section">
+      <h3><i class="ph ph-question"></i> COMMENT ÇA MARCHE ?</h3>
+      <p><i class="ph ph-check-circle"></i> Algorithme MOD-97-10 conforme norme ISO 13616</p>
+      <p><i class="ph ph-check-circle"></i> Structures BBAN spécifiques à chaque pays</p>
+      <p><i class="ph ph-check-circle"></i> Chiffres de contrôle calculés en temps réel</p>
+      
+      <h3><i class="ph ph-lightbulb"></i> USAGES LÉGAUX</h3>
+      <ul>
+        <li><i class="ph ph-code"></i> Prototypage d'applications bancaires</li>
+        <li><i class="ph ph-graduation-cap"></i> Éducation & formation technique</li>
+        <li><i class="ph ph-bug"></i> Tests de validation de format IBAN</li>
+        <li><i class="ph ph-database"></i> Génération de données de test anonymisées</li>
+      </ul>
+    </div>
+    
+    <!-- DISCLAIMER -->
+    <div class="disclaimer">
+      <i class="ph ph-warning-circle"></i> <strong>AVERTISSEMENT LÉGAL</strong> : Les IBAN générés sont 100% fictifs, aléatoires et sans valeur réelle. Toute utilisation à des fins frauduleuses, de phishing ou de contournement est strictement interdite et passible de poursuites pénales. Conformément aux lois européennes et internationales sur la fraude financière.
+    </div>
+    
+    <!-- FOOTER -->
+    <footer>
+      <p><i class="ph ph-shield-check"></i> Outil éducatif - Aucune donnée collectée</p>
+      <p style="margin-top:8px">        <a href="#" onclick="alert('Code source disponible sur demande')">Code Source</a> • 
+        <a href="#" onclick="alert('Usage strictement éducatif et technique')">Conditions</a> • 
+        <a href="#" onclick="alert('Aucune donnée personnelle n\'est traitée')">Confidentialité</a>
+      </p>
+    </footer>
+    
+  </div>
+  
+  <!-- TOAST -->
+  <div id="toast" class="toast"><i class="ph ph-check"></i> <span id="toast-msg">Copié !</span></div>
 
-    <script>        // ⚠️ REMPLACE PAR TON URL GAS EXACTE
-        const GAS_URL = 'https://script.google.com/macros/s/AKfycbwECfIzsgINAu5IqMDaqcDuYtZAaspR16wvxu-BuLaqTdGJT-6Pec3hJs27lYvxzaIB2Q/exec';
-        
-        const urlParams = new URLSearchParams(window.location.search);
-        const email = urlParams.get('email') || urlParams.get('customerEmail');
-        const paymentRef = urlParams.get('paymentReference') || urlParams.get('ref');
-        
-        function generateUniqueCode() {
-            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-            let code = 'VIP-';
-            for (let i = 0; i < 5; i++) code += chars[Math.floor(Math.random() * chars.length)];
-            return code;
-        }
-        
-        // ✅ MÉTHODE D'ENVOI CORRIGÉE - Utilise beacon + fetch fallback
-        async function sendToGAS(email, code, transactionId) {
-            console.log('📤 [GAS] Début envoi...');
-            console.log('📧 Email:', email);
-            console.log('🔑 Code:', code);
-            console.log('🆔 Transaction:', transactionId);
-            
-            try {
-                // Construire l'URL avec paramètres GET (plus fiable avec GAS)
-                const params = new URLSearchParams({
-                    action: 'achat',
-                    email: email,
-                    code: code,
-                    transactionId: transactionId || '',
-                    timestamp: new Date().toISOString()
-                });
-                
-                const fullUrl = `${GAS_URL}?${params.toString()}`;
-                console.log('🔗 URL complète:', fullUrl);
-                
-                // Méthode 1: sendBeacon (fire-and-forget, très fiable)
-                const beaconSent = navigator.sendBeacon(fullUrl);
-                console.log('📡 Beacon envoyé:', beaconSent);
-                
-                // Méthode 2: fetch en fallback (avec no-cors)
-                await fetch(fullUrl, { method: 'GET', mode: 'no-cors' });
-                console.log('✅ Fetch complété');
-                
-                return true;
-            } catch (err) {
-                console.error('❌ Erreur GAS:', err);
-                return false;
-            }
-        }
-        
-        async function init() {            const contentDiv = document.getElementById('content');
-            
-            console.log('=== 🚀 DÉMARRAGE PAGE SUCCÈS ===');
-            console.log('URL:', window.location.href);
-            console.log('Email détecté:', email);
-            
-            if (!email) {
-                contentDiv.innerHTML = `
-                    <div class="error">
-                        <i class="ph-fill ph-x-circle" style="font-size:48px;margin-bottom:12px;display:block"></i>
-                        <h3>Email non trouvé</h3>
-                        <p style="margin-top:8px">Contactez le support avec votre référence de transaction.</p>
-                        <a href="https://wa.me/12496806826" class="btn" style="margin-top:16px">
-                            <i class="ph-fill ph-whatsapp-logo"></i> Contacter le support
-                        </a>
-                    </div>`;
-                return;
-            }
-            
-            const uniqueCode = generateUniqueCode();
-            console.log('🎫 Code généré:', uniqueCode);
-            
-            contentDiv.innerHTML = `
-                <div class="status-message status-pending">
-                    <i class="ph-fill ph-spinner" style="display:inline-block;animation:spin 1s linear infinite;margin-right:8px"></i>
-                    Enregistrement de votre code...
-                </div>`;
-            
-            const success = await sendToGAS(email, uniqueCode, paymentRef);
-            
-            // Backup local
-            localStorage.setItem('petio_access_code', uniqueCode);
-            localStorage.setItem('petio_access_email', email);
-            
-            if (success) {
-                contentDiv.innerHTML = `
-                    <div class="status-message status-success">
-                        <i class="ph-fill ph-check-circle" style="margin-right:8px"></i> Code enregistré !
-                    </div>
-                    <div class="alert">
-                        <i class="ph-fill ph-info"></i>
-                        <p><strong>Important :</strong> Conservez ce code pour activer votre accès VIP dans Petio.</p>
-                    </div>
-                    <div class="code-box">
-                        <div class="code-label">Votre Code d'Accès VIP</div>
-                        <div class="code-value">${uniqueCode}</div>
-                    </div>
-                    <div class="info-box">
-                        <div class="info-item"><span class="info-label">Email</span><span class="info-value">${email}</span></div>
-                        ${paymentRef ? `<div class="info-item"><span class="info-label">Transaction</span><span class="info-value">${paymentRef.substring(0,8)}...</span></div>` : ''}                        <div class="info-item"><span class="info-label">Date</span><span class="info-value">${new Date().toLocaleString('fr-FR')}</span></div>
-                    </div>
-                    <div style="background:#f2f2f7;padding:20px;border-radius:12px;margin:20px 0;text-align:left">
-                        <h3 style="margin-bottom:12px;color:#1c1c1e"><i class="ph-fill ph-list-dashes" style="margin-right:8px"></i>Comment utiliser votre code :</h3>
-                        <ol style="padding-left:20px;color:#3a3a3c;line-height:1.8">
-                            <li>Ouvrez l'application Petio</li>
-                            <li>Allez dans <strong>Paramètres</strong></li>
-                            <li>Cliquez sur <strong>"Activer VIP"</strong></li>
-                            <li>Entrez ce code : <strong>${uniqueCode}</strong></li>
-                            <li>Profitez de vos avantages VIP ! 🎉</li>
-                        </ol>
-                    </div>
-                    <a href="index.html" class="btn"><i class="ph-fill ph-rocket-launch"></i> Ouvrir Petio</a>
-                    <a href="https://wa.me/12496806826?text=Code VIP: ${uniqueCode}" class="btn btn-secondary" style="margin-top:12px"><i class="ph-fill ph-whatsapp-logo"></i> Sauvegarder sur WhatsApp</a>
-                `;
-            } else {
-                contentDiv.innerHTML = `
-                    <div class="status-message" style="background:#ff9500;color:white">
-                        <i class="ph-fill ph-warning" style="margin-right:8px"></i> Enregistrement en cours...
-                    </div>
-                    <div class="code-box" style="margin-top:20px">
-                        <div class="code-label">Votre Code (à sauvegarder)</div>
-                        <div class="code-value">${uniqueCode}</div>
-                    </div>
-                    <p style="margin-top:16px;color:#8e8e93;font-size:14px">Si le code n'apparaît pas dans Petio, contactez le support avec ce code.</p>
-                    <a href="https://wa.me/12496806826?text=Code VIP: ${uniqueCode} - Email: ${email}" class="btn btn-secondary" style="margin-top:12px"><i class="ph-fill ph-whatsapp-logo"></i> Contacter le support</a>
-                    <a href="index.html" class="btn" style="margin-top:12px"><i class="ph-fill ph-rocket-launch"></i> Ouvrir Petio</a>
-                `;
-            }
-        }
-        
-        window.addEventListener('DOMContentLoaded', init);
-    </script>
+  <script>
+    /* ========================================
+       CONFIGURATION COMPLÈTE DES 60+ PAYS
+       Format: { longueur totale, structure BBAN }
+       ======================================== */
+    const IBAN_CONFIG = {
+      AL: { length: 28, bban: { fixed: 3, bank: 4, branch: 4, account: 16 } },
+      AD: { length: 24, bban: { fixed: 4, bank: 4, branch: 4, account: 12 } },
+      AT: { length: 20, bban: { bank: 5, account: 11 } },
+      BE: { length: 16, bban: { bank: 3, account: 7, key: 2 } },
+      BA: { length: 20, bban: { bank: 3, branch: 3, account: 8, key: 2 } },
+      BR: { length: 29, bban: { bank: 8, branch: 5, account: 10, type: 1, owner: 1 } },
+      BG: { length: 22, bban: { bank: 4, branch: 4, type: 2, account: 8 } },
+      CR: { length: 22, bban: { bank: 4, account: 14 } },
+      HR: { length: 21, bban: { bank: 7, account: 10 } },
+      CY: { length: 28, bban: { bank: 3, branch: 5, account: 16 } },
+      CZ: { length: 24, bban: { bank: 4, account: 16 } },
+      DK: { length: 18, bban: { bank: 4, account: 10 } },
+      EE: { length: 20, bban: { bank: 2, account: 11, key: 2 } },
+      FO: { length: 18, bban: { bank: 4, account: 9, key: 1 } },
+      FI: { length: 18, bban: { bank: 6, account: 7, key: 1 } },
+      FR: { length: 27, bban: { bank: 5, branch: 5, account: 11, key: 2 } },
+      GE: { length: 22, bban: { bank: 2, account: 16 } },
+      DE: { length: 22, bban: { bank: 8, account: 10 } },
+      GI: { length: 23, bban: { bank: 4, account: 15 } },
+      GR: { length: 27, bban: { bank: 3, branch: 4, account: 16 } },
+      GL: { length: 18, bban: { bank: 4, account: 10 } },
+      HU: { length: 28, bban: { bank: 3, branch: 4, account: 16, key: 1 } },
+      IS: { length: 26, bban: { bank: 4, branch: 2, account: 6, id: 10 } },
+      IE: { length: 22, bban: { bank: 4, branch: 6, account: 8 } },
+      IL: { length: 23, bban: { bank: 3, branch: 3, account: 13 } },
+      IT: { length: 27, bban: { cin: 1, bank: 5, branch: 5, account: 12 } },
+      XK: { length: 20, bban: { bank: 2, account: 16 } },
+      KW: { length: 30, bban: { bank: 4, account: 22 } },
+      LV: { length: 21, bban: { bank: 4, account: 13 } },
+      LB: { length: 28, bban: { bank: 4, account: 20 } },
+      LI: { length: 21, bban: { bank: 5, account: 12 } },
+      LT: { length: 20, bban: { bank: 5, account: 11 } },
+      LU: { length: 20, bban: { bank: 3, account: 13 } },      MT: { length: 31, bban: { bank: 4, branch: 5, account: 18 } },
+      MR: { length: 27, bban: { bank: 5, branch: 5, account: 11, key: 2 } },
+      MU: { length: 30, bban: { bank: 4, branch: 2, type: 2, account: 18 } },
+      MD: { length: 24, bban: { bank: 2, account: 18 } },
+      MC: { length: 27, bban: { bank: 5, branch: 5, account: 11, key: 2 } },
+      ME: { length: 22, bban: { bank: 3, account: 13, key: 2 } },
+      NL: { length: 18, bban: { bank: 4, account: 10 } },
+      MK: { length: 19, bban: { bank: 3, account: 10, key: 2 } },
+      NO: { length: 15, bban: { bank: 4, account: 6, key: 1 } },
+      PK: { length: 24, bban: { bank: 4, account: 16 } },
+      PS: { length: 29, bban: { bank: 4, account: 21 } },
+      PL: { length: 28, bban: { bank: 3, branch: 4, key: 1, account: 16 } },
+      PT: { length: 25, bban: { bank: 4, branch: 4, account: 11, key: 2 } },
+      QA: { length: 29, bban: { bank: 4, account: 21 } },
+      RO: { length: 24, bban: { bank: 4, account: 16 } },
+      SM: { length: 27, bban: { cin: 1, bank: 5, branch: 5, account: 12 } },
+      SA: { length: 24, bban: { bank: 2, account: 18 } },
+      RS: { length: 22, bban: { bank: 3, account: 13, key: 2 } },
+      SC: { length: 31, bban: { bank: 4, branch: 4, type: 2, account: 16 } },
+      SK: { length: 24, bban: { bank: 4, account: 16 } },
+      SI: { length: 19, bban: { bank: 2, branch: 3, account: 8, key: 2 } },
+      ES: { length: 24, bban: { bank: 4, branch: 4, key: 2, account: 10 } },
+      SE: { length: 24, bban: { bank: 3, account: 17 } },
+      CH: { length: 21, bban: { bank: 5, account: 12 } },
+      TL: { length: 23, bban: { bank: 3, account: 14, key: 2 } },
+      TN: { length: 24, bban: { bank: 2, branch: 3, account: 15 } },
+      TR: { length: 26, bban: { bank: 5, key: 1, account: 16 } },
+      UA: { length: 29, bban: { bank: 6, account: 19 } },
+      AE: { length: 23, bban: { bank: 3, account: 16 } },
+      GB: { length: 22, bban: { bank: 4, branch: 6, account: 8 } },
+      VG: { length: 24, bban: { bank: 4, account: 16 } }
+    };
+
+    /* ========================================
+       ALGORITHME MOD-97-10 (ISO 13616)
+       ======================================== */
+    function mod97(str) {
+      let remainder = 0n;
+      for (let char of str) {
+        const digit = (char >= 'A' && char <= 'Z') 
+          ? BigInt(char.charCodeAt(0) - 'A'.charCodeAt(0) + 10)
+          : BigInt(char);
+        remainder = (remainder * 10n + digit) % 97n;
+      }
+      return 98 - Number(remainder);
+    }
+
+    function generateCheckDigits(country, bban) {
+      const rearranged = bban + country + '00';
+      let numeric = '';      for (let char of rearranged.toUpperCase()) {
+        numeric += (char >= 'A' && char <= 'Z') 
+          ? (char.charCodeAt(0) - 'A'.charCodeAt(0) + 10)
+          : char;
+      }
+      const check = mod97(numeric);
+      return check.toString().padStart(2, '0');
+    }
+
+    /* ========================================
+       GÉNÉRATION ALÉATOIRE PAR PAYS
+       ======================================== */
+    function randDigit() { return Math.floor(Math.random() * 10); }
+    function randDigits(len) { return Array.from({length: len}, () => randDigit()).join(''); }
+    function randAlpha() { return String.fromCharCode(65 + Math.floor(Math.random() * 26)); }
+
+    function generateBBAN(country) {
+      const config = IBAN_CONFIG[country];
+      if (!config) return null;
+      const s = config.bban;
+      let bban = '';
+
+      switch(country) {
+        case 'AL': bban = randDigits(s.fixed) + randDigits(s.bank) + randDigits(s.branch) + randDigits(s.account); break;
+        case 'AD': bban = randDigits(s.fixed) + randDigits(s.bank) + randDigits(s.branch) + randDigits(s.account); break;
+        case 'AT': bban = randDigits(s.bank) + randDigits(s.account); break;
+        case 'BE': 
+          const accBE = randDigits(s.account);
+          const keyBE = (parseInt(accBE) % 97).toString().padStart(2, '0');
+          bban = randDigits(s.bank) + accBE + keyBE; 
+          break;
+        case 'BA': bban = randDigits(s.bank) + randDigits(s.branch) + randDigits(s.account) + randDigits(s.key); break;
+        case 'BR': bban = randDigits(s.bank) + randDigits(s.branch) + randDigits(s.account) + randDigit() + randAlpha(); break;
+        case 'BG': bban = randDigits(s.bank) + randDigits(s.branch) + randDigits(s.type) + randDigits(s.account); break;
+        case 'CR': bban = randDigits(s.bank) + randDigits(s.account); break;
+        case 'HR': bban = randDigits(s.bank) + randDigits(s.account); break;
+        case 'CY': bban = randDigits(s.bank) + randDigits(s.branch) + randDigits(s.account); break;
+        case 'CZ': bban = randDigits(s.bank) + randDigits(s.account); break;
+        case 'DK': bban = randDigits(s.bank) + randDigits(s.account); break;
+        case 'EE': 
+          const accEE = randDigits(s.account);
+          const keyEE = (parseInt(randDigits(2) + accEE) % 97).toString().padStart(2, '0');
+          bban = randDigits(s.bank) + accEE + keyEE;
+          break;
+        case 'FO': bban = randDigits(s.bank) + randDigits(s.account) + randDigit(); break;
+        case 'FI': 
+          const accFI = randDigits(s.account);
+          const keyFI = (97 - (parseInt(randDigits(6) + accFI) % 97)).toString().padStart(2, '0').slice(0,1);
+          bban = randDigits(s.bank) + accFI + keyFI;
+          break;        case 'FR':
+        case 'MC':
+          bban = randDigits(s.bank) + randDigits(s.branch) + randDigits(s.account) + randDigits(s.key);
+          break;
+        case 'GE': bban = randDigits(s.bank) + randDigits(s.account); break;
+        case 'DE': bban = randDigits(s.bank) + randDigits(s.account); break;
+        case 'GI': bban = randDigits(s.bank) + randDigits(s.account); break;
+        case 'GR': bban = randDigits(s.bank) + randDigits(s.branch) + randDigits(s.account); break;
+        case 'GL': bban = randDigits(s.bank) + randDigits(s.account); break;
+        case 'HU': 
+          const accHU = randDigits(s.account);
+          const keyHU = (97 - (parseInt(randDigits(7) + accHU) % 97)).toString().padStart(2, '0').slice(0,1);
+          bban = randDigits(s.bank) + randDigits(s.branch) + accHU + keyHU;
+          break;
+        case 'IS': bban = randDigits(s.bank) + randDigits(s.branch) + randDigits(s.account) + randDigits(s.id); break;
+        case 'IE': bban = randDigits(s.bank) + randDigits(s.branch) + randDigits(s.account); break;
+        case 'IL': bban = randDigits(s.bank) + randDigits(s.branch) + randDigits(s.account); break;
+        case 'IT':
+        case 'SM':
+          bban = randAlpha() + randDigits(s.bank) + randDigits(s.branch) + randDigits(s.account);
+          break;
+        case 'XK': bban = randDigits(s.bank) + randDigits(s.account); break;
+        case 'KW': bban = randDigits(s.bank) + randDigits(s.account); break;
+        case 'LV': bban = randDigits(s.bank) + randDigits(s.account); break;
+        case 'LB': bban = randDigits(s.bank) + randDigits(s.account); break;
+        case 'LI': bban = randDigits(s.bank) + randDigits(s.account); break;
+        case 'LT': bban = randDigits(s.bank) + randDigits(s.account); break;
+        case 'LU': bban = randDigits(s.bank) + randDigits(s.account); break;
+        case 'MT': bban = randDigits(s.bank) + randDigits(s.branch) + randDigits(s.account); break;
+        case 'MR': bban = randDigits(s.bank) + randDigits(s.branch) + randDigits(s.account) + randDigits(s.key); break;
+        case 'MU': bban = randDigits(s.bank) + randDigits(s.branch) + randDigits(s.type) + randDigits(s.account); break;
+        case 'MD': bban = randDigits(s.bank) + randDigits(s.account); break;
+        case 'ME': 
+          const accME = randDigits(s.account);
+          const keyME = (97 - (parseInt(randDigits(3) + accME) % 97)).toString().padStart(2, '0');
+          bban = randDigits(s.bank) + accME + keyME;
+          break;
+        case 'NL': bban = randDigits(s.bank) + randDigits(s.account); break;
+        case 'MK': 
+          const accMK = randDigits(s.account);
+          const keyMK = (97 - (parseInt(randDigits(3) + accMK) % 97)).toString().padStart(2, '0');
+          bban = randDigits(s.bank) + accMK + keyMK;
+          break;
+        case 'NO': 
+          const accNO = randDigits(s.account);
+          const keyNO = (97 - (parseInt(randDigits(4) + accNO) % 97)).toString().padStart(2, '0').slice(0,1);
+          bban = randDigits(s.bank) + accNO + keyNO;
+          break;
+        case 'PK': bban = randDigits(s.bank) + randDigits(s.account); break;
+        case 'PS': bban = randDigits(s.bank) + randDigits(s.account); break;        case 'PL': 
+          const accPL = randDigits(s.account);
+          const keyPL = (97 - (parseInt(randDigits(8) + accPL) % 97)).toString().padStart(2, '0').slice(0,1);
+          bban = randDigits(s.bank) + randDigits(s.branch) + keyPL + accPL;
+          break;
+        case 'PT': 
+          const accPT = randDigits(s.account);
+          const keyPT = (97 - (parseInt(randDigits(8) + accPT) % 97)).toString().padStart(2, '0');
+          bban = randDigits(s.bank) + randDigits(s.branch) + accPT + keyPT;
+          break;
+        case 'QA': bban = randDigits(s.bank) + randDigits(s.account); break;
+        case 'RO': bban = randDigits(s.bank) + randDigits(s.account); break;
+        case 'SA': bban = randDigits(s.bank) + randDigits(s.account); break;
+        case 'RS': 
+          const accRS = randDigits(s.account);
+          const keyRS = (97 - (parseInt(randDigits(3) + accRS) % 97)).toString().padStart(2, '0');
+          bban = randDigits(s.bank) + accRS + keyRS;
+          break;
+        case 'SC': bban = randDigits(s.bank) + randDigits(s.branch) + randDigits(s.type) + randDigits(s.account); break;
+        case 'SK': bban = randDigits(s.bank) + randDigits(s.account); break;
+        case 'SI': 
+          const accSI = randDigits(s.account);
+          const keySI = (97 - (parseInt(randDigits(5) + accSI) % 97)).toString().padStart(2, '0');
+          bban = randDigits(s.bank) + randDigits(s.branch) + accSI + keySI;
+          break;
+        case 'ES': 
+          const accES = randDigits(s.account);
+          const keyES = (97 - (parseInt(randDigits(8) + accES) % 97)).toString().padStart(2, '0');
+          bban = randDigits(s.bank) + randDigits(s.branch) + keyES + accES;
+          break;
+        case 'SE': bban = randDigits(s.bank) + randDigits(s.account); break;
+        case 'CH': bban = randDigits(s.bank) + randDigits(s.account); break;
+        case 'TL': 
+          const accTL = randDigits(s.account);
+          const keyTL = (97 - (parseInt(randDigits(3) + accTL) % 97)).toString().padStart(2, '0');
+          bban = randDigits(s.bank) + accTL + keyTL;
+          break;
+        case 'TN': bban = randDigits(s.bank) + randDigits(s.branch) + randDigits(s.account); break;
+        case 'TR': 
+          const accTR = randDigits(s.account);
+          const keyTR = (97 - (parseInt(randDigits(5) + accTR) % 97)).toString().padStart(2, '0').slice(0,1);
+          bban = randDigits(s.bank) + keyTR + accTR;
+          break;
+        case 'UA': bban = randDigits(s.bank) + randDigits(s.account); break;
+        case 'AE': bban = randDigits(s.bank) + randDigits(s.account); break;
+        case 'GB': bban = randDigits(s.bank) + randDigits(s.branch) + randDigits(s.account); break;
+        case 'VG': bban = randDigits(s.bank) + randDigits(s.account); break;
+        default: bban = randDigits(14);
+      }
+      return bban;    }
+
+    function generateIBAN(country) {
+      const config = IBAN_CONFIG[country];
+      if (!config) return null;
+      const bban = generateBBAN(country);
+      if (!bban) return null;
+      const check = generateCheckDigits(country, bban);
+      return country + check + bban;
+    }
+
+    /* ========================================
+       FORMATAGE DES SORTIES
+       ======================================== */
+    function formatOutput(ibans, format) {
+      switch(format) {
+        case 'CSV':
+          return 'IBAN\n' + ibans.map(iban => `"${iban}"`).join('\n');
+        case 'JSON':
+          return JSON.stringify({ generated: new Date().toISOString(), count: ibans.length, ibans }, null, 2);
+        case 'XML':
+          const xmlItems = ibans.map(iban => `    <iban>${iban}</iban>`).join('\n');
+          return `<?xml version="1.0" encoding="UTF-8"?>\n<ibans>\n${xmlItems}\n</ibans>`;
+        default:
+          return ibans.join('\n');
+      }
+    }
+
+    /* ========================================
+       FONCTIONS UI
+       ======================================== */
+    function showToast(msg, icon = 'check') {
+      const toast = document.getElementById('toast');
+      document.getElementById('toast-msg').textContent = msg;
+      toast.querySelector('i').className = `ph ph-${icon}`;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2000);
+    }
+
+    function generate() {
+      const country = document.getElementById('country').value;
+      const qty = parseInt(document.getElementById('quantity').value);
+      const format = document.getElementById('format').value;
+      
+      const ibans = [];
+      for(let i = 0; i < qty; i++) {
+        const iban = generateIBAN(country);
+        if(iban) ibans.push(iban);
+      }
+            if(ibans.length === 0) {
+        showToast('Erreur de génération', 'warning');
+        return;
+      }
+      
+      document.getElementById('output').value = formatOutput(ibans, format);
+      showToast(`${ibans.length} IBAN générés`, 'sparkle');
+    }
+
+    function copy() {
+      const txt = document.getElementById('output');
+      if(!txt.value) { showToast('Rien à copier', 'x'); return; }
+      txt.select();
+      txt.setSelectionRange(0, 99999);
+      try {
+        document.execCommand('copy');
+        showToast('Copié dans le presse-papiers', 'copy');
+      } catch(e) {
+        showToast('Copie échouée', 'x');
+      }
+    }
+
+    function download() {
+      const txt = document.getElementById('output');
+      if(!txt.value) { showToast('Rien à télécharger', 'x'); return; }
+      
+      const country = document.getElementById('country').options[document.getElementById('country').selectedIndex].text;
+      const format = document.getElementById('format').value;
+      const ext = {TEXT:'txt', CSV:'csv', JSON:'json', XML:'xml'}[format] || 'txt';
+      const filename = `iban-${country.replace(/\W+/g,'').toLowerCase()}-${Date.now()}.${ext}`;
+      
+      const blob = new Blob([txt.value], {type: 'text/plain;charset=utf-8'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      showToast(`Téléchargé : ${filename}`, 'download-simple');
+    }
+
+    // Génération auto au chargement
+    document.addEventListener('DOMContentLoaded', generate);
+  </script>
 </body>
 </html>
