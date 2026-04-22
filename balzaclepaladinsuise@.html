@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#ffffff">
+    <title>Paiement Confirmé - Petio</title>
+    <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
+        
+        body { 
+            background: #ffffff; 
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+        
+        /* Header Samsung-style */
+        .header {
+            background: #ffffff;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #e8e8e8;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1c1c1e;
+            flex: 1;
+            text-align: center;
+        }
+        
+        .btn-back {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #f2f2f7;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 20px;
+            color: #007aff;            transition: all 0.2s;
+            text-decoration: none;
+        }
+        
+        .btn-back:active { transform: scale(0.95); background: #e5e5e5; }
+        
+        /* Container */
+        .container { 
+            max-width: 600px; 
+            margin: 0 auto; 
+            padding: 24px 20px;
+        }
+        
+        /* Success Icon */
+        .success-wrapper {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+        
+        .success-icon { 
+            width: 80px; 
+            height: 80px; 
+            background: #34c759; 
+            color: white; 
+            border-radius: 50%; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            margin: 0 auto 20px; 
+            font-size: 40px;
+            animation: scaleIn 0.5s ease;
+        }
+        
+        @keyframes scaleIn { 
+            0% { transform: scale(0); opacity: 0; } 
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; } 
+        }
+        
+        h1 { 
+            color: #1c1c1e; 
+            font-size: 24px; 
+            margin-bottom: 8px; 
+            font-weight: 700; 
+        }
+        
+        .subtitle { 
+            color: #8e8e93; 
+            font-size: 15px; 
+            font-weight: 400;        }
+        
+        /* Alert Box */
+        .alert { 
+            background: #fff9e6; 
+            border-left: 4px solid #ffcc00; 
+            padding: 16px; 
+            border-radius: 12px; 
+            margin: 20px 0; 
+            display: flex; 
+            gap: 12px; 
+            align-items: flex-start;
+        }
+        
+        .alert i { 
+            font-size: 20px; 
+            color: #ff9500; 
+            flex-shrink: 0; 
+            margin-top: 2px;
+        }
+        
+        .alert p { 
+            color: #333; 
+            font-size: 14px; 
+            font-weight: 500;
+            line-height: 1.5;
+        }
+        
+        /* Form */
+        .form-section {
+            margin: 24px 0;
+        }
+        
+        .input-wrapper {
+            position: relative;
+            margin-bottom: 16px;
+        }
+        
+        .input-field { 
+            width: 100%; 
+            padding: 16px; 
+            border: 1.5px solid #e5e5e5; 
+            border-radius: 12px; 
+            font-size: 16px; 
+            transition: all 0.2s;
+            background: #f9f9f9;
+        }
+        
+        .input-field:focus { 
+            outline: none;             border-color: #007aff;
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(0,122,255,0.1);
+        }
+        
+        .input-field.valid { 
+            border-color: #34c759;
+            background: #ffffff;
+        }
+        
+        .input-field.error { 
+            border-color: #ff3b30;
+            background: #fff;
+        }
+        
+        .input-hint {
+            font-size: 13px;
+            color: #8e8e93;
+            margin-top: 6px;
+            padding-left: 4px;
+        }
+        
+        .input-hint.success { color: #34c759; }
+        .input-hint.error { color: #ff3b30; }
+        
+        /* Buttons */
+        .btn { 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 8px; 
+            background: #007aff; 
+            color: white; 
+            padding: 16px 24px; 
+            border-radius: 12px; 
+            font-weight: 600; 
+            font-size: 16px; 
+            border: none; 
+            cursor: pointer; 
+            width: 100%; 
+            justify-content: center;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+        
+        .btn:active { transform: scale(0.98); opacity: 0.9; }
+        .btn:disabled { background: #c7c7cc; cursor: not-allowed; transform: none; }
+        .btn-secondary { background: #8e8e93; }
+        .btn-success { background: #34c759; }
+        
+        /* Loading */        .loading { 
+            display: none; 
+            width: 40px; 
+            height: 40px; 
+            border: 3px solid #e5e5e5; 
+            border-top-color: #007aff; 
+            border-radius: 50%; 
+            animation: spin 1s linear infinite; 
+            margin: 24px auto;
+        }
+        
+        .loading.show { display: block; }
+        
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        /* Result Section */
+        .result-section {
+            display: none; /* Hidden by default */
+            animation: slideUp 0.4s ease;
+        }
+        
+        /* CORRECTION: This class makes it visible */
+        .result-section.is-visible { 
+            display: block; 
+        }
+        
+        @keyframes slideUp { 
+            from { opacity: 0; transform: translateY(20px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+        
+        .status-badge {
+            background: #34c759;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        /* Code Box */
+        .code-card {
+            background: linear-gradient(135deg, #007aff 0%, #5856d6 100%);
+            color: white;
+            padding: 32px 24px;
+            border-radius: 16px;            margin: 24px 0;
+            text-align: center;
+            box-shadow: 0 8px 24px rgba(0,122,255,0.3);
+            position: relative;
+        }
+        
+        .code-label { 
+            font-size: 14px; 
+            opacity: 0.9; 
+            margin-bottom: 12px; 
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .code-value { 
+            font-size: 36px; 
+            font-family: 'Courier New', monospace; 
+            font-weight: 700; 
+            letter-spacing: 3px;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        
+        /* Info Card */
+        .info-card { 
+            background: #f9f9f9; 
+            border-radius: 12px; 
+            padding: 20px; 
+            margin: 20px 0;
+            border: 1px solid #e5e5e5;
+        }
+        
+        .info-row { 
+            display: flex; 
+            justify-content: space-between; 
+            padding: 12px 0; 
+            border-bottom: 1px solid #e5e5e5;
+        }
+        
+        .info-row:last-child { border-bottom: none; }
+        
+        .info-label { 
+            color: #8e8e93; 
+            font-weight: 500;
+            font-size: 14px;
+        }
+        
+        .info-value { 
+            color: #1c1c1e; 
+            font-weight: 600;            font-size: 14px;
+        }
+        
+        /* Guide Section */
+        .guide-section { 
+            background: #ffffff; 
+            border-radius: 16px; 
+            padding: 24px; 
+            margin: 24px 0;
+            border: 1px solid #e5e5e5;
+        }
+        
+        .guide-section h3 { 
+            color: #1c1c1e; 
+            margin-bottom: 16px; 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+            font-size: 18px;
+            font-weight: 700;
+        }
+        
+        .guide-section h3 i { color: #007aff; }
+        
+        .guide-section h4 {
+            margin: 20px 0 12px;
+            color: #1c1c1e;
+            font-size: 15px;
+            font-weight: 600;
+        }
+        
+        .guide-section ul, 
+        .guide-section ol { 
+            padding-left: 20px; 
+            color: #3a3a3a; 
+            line-height: 1.8; 
+            font-weight: 400;
+            font-size: 14px;
+        }
+        
+        .guide-section li { margin-bottom: 6px; }
+        .guide-section strong { color: #1c1c1e; }
+        
+        /* Modes Grid */
+        .modes-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); 
+            gap: 12px; 
+            margin-top: 12px;
+        }        
+        .mode-card { 
+            background: #f9f9f9; 
+            padding: 16px; 
+            border-radius: 12px; 
+            border-left: 3px solid #007aff;
+            transition: all 0.2s;
+        }
+        
+        .mode-card:active { transform: scale(0.98); }
+        
+        .mode-card h4 { 
+            font-size: 14px; 
+            margin-bottom: 6px; 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+            color: #1c1c1e;
+            font-weight: 600;
+        }
+        
+        .mode-card h4 i { color: #007aff; }
+        
+        .mode-card p { 
+            font-size: 12px; 
+            color: #8e8e93; 
+            font-weight: 400;
+            line-height: 1.4;
+        }
+        
+        /* Features */
+        .features-grid { 
+            display: grid; 
+            grid-template-columns: repeat(3, 1fr); 
+            gap: 16px; 
+            margin-top: 12px;
+        }
+        
+        .feature { 
+            text-align: center; 
+            padding: 12px;
+        }
+        
+        .feature i { 
+            font-size: 28px; 
+            color: #007aff; 
+            margin-bottom: 8px;
+        }
+        
+        .feature span {             font-size: 12px; 
+            color: #8e8e93; 
+            font-weight: 500;
+        }
+        
+        /* Action Buttons */
+        .action-buttons {
+            margin-top: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        /* Copy Button - Fixed Position */
+        .btn-copy-fixed {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 56px;
+            height: 56px;
+            background: #007aff;
+            color: white;
+            border: none;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 24px;
+            box-shadow: 0 4px 16px rgba(0,122,255,0.4);
+            transition: all 0.2s;
+            z-index: 1000;
+        }
+        
+        .btn-copy-fixed:active { transform: scale(0.95); }
+        .btn-copy-fixed.copied { background: #34c759; }
+        
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding-top: 24px;
+            border-top: 1px solid #e5e5e5;
+            text-align: center;
+            color: #8e8e93;
+            font-size: 12px;
+        }
+        
+        .footer strong { color: #1c1c1e; }
+        
+        /* Hidden */        .hidden { display: none !important; }
+        
+        @media (max-width: 480px) {
+            .container { padding: 16px 16px; }
+            h1 { font-size: 22px; }
+            .code-value { font-size: 28px; }
+            .features-grid { grid-template-columns: repeat(2, 1fr); }
+            .modes-grid { grid-template-columns: 1fr; }
+            .btn-copy-fixed { bottom: 16px; right: 16px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <a href="index.html" class="btn-back">
+            <i class="ph ph-arrow-left"></i>
+        </a>
+        <div class="header-title">Paiement Confirmé</div>
+        <div style="width: 40px;"></div>
+    </div>
+    
+    <div class="container">
+        <!-- Success Section -->
+        <div class="success-wrapper">
+            <div class="success-icon">
+                <i class="ph-fill ph-check"></i>
+            </div>
+            <h1>Paiement Confirmé</h1>
+            <p class="subtitle">Confirmez votre email pour recevoir votre code d'accès</p>
+        </div>
+        
+        <!-- Email Form -->
+        <div id="emailSection">
+            <div class="alert">
+                <i class="ph-fill ph-info"></i>
+                <p>Entrez l'email utilisé pour le paiement MoneyFusion. Votre code VIP sera généré instantanément.</p>
+            </div>
+            
+            <div class="form-section">
+                <div class="input-wrapper">
+                    <input type="email" id="userEmail" class="input-field" placeholder="votre@email.com" autocomplete="email">
+                    <div id="emailHint" class="input-hint"></div>
+                </div>
+                
+                <button id="validateBtn" class="btn" disabled onclick="generateAndSend()">
+                    <i class="ph-fill ph-key"></i>
+                    Valider
+                </button>
+            </div>        </div>
+        
+        <!-- Loading -->
+        <div id="loading" class="loading"></div>
+        <p id="loadingText" class="hidden" style="text-align:center;color:#8e8e93;margin:16px 0">Génération de votre code...</p>
+        
+        <!-- Result Section -->
+        <div id="resultSection" class="result-section">
+            <div class="status-badge">
+                <i class="ph-fill ph-check-circle"></i>
+                Code généré avec succès !
+            </div>
+            
+            <div class="alert">
+                <i class="ph-fill ph-info"></i>
+                <p><strong>Important :</strong> Conservez ce code. Il vous sera demandé pour activer votre accès VIP dans Petio.</p>
+            </div>
+            
+            <div class="code-card">
+                <div class="code-label">Votre Code d'Accès VIP</div>
+                <div class="code-value" id="codeValue"></div>
+            </div>
+            
+            <div class="info-card">
+                <div class="info-row">
+                    <span class="info-label">Email</span>
+                    <span class="info-value" id="displayEmail"></span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Date</span>
+                    <span class="info-value" id="displayDate"></span>
+                </div>
+            </div>
+            
+            <div class="action-buttons">
+                <a href="index.html" class="btn btn-success">
+                    <i class="ph-fill ph-rocket-launch"></i>
+                    Ouvrir Petio
+                </a>
+                <a id="whatsappLink" href="#" class="btn btn-secondary">
+                    <i class="ph-fill ph-whatsapp-logo"></i>
+                    Sauvegarder sur WhatsApp
+                </a>
+            </div>
+            
+            <!-- Guide Section -->
+            <div class="guide-section">
+                <h3><i class="ph-fill ph-book-open"></i> Guide d'Utilisation Petio</h3>
+                
+                <h4>🔑 Activer votre accès VIP</h4>                <ol>
+                    <li>Ouvrez l'application <strong>Petio</strong></li>
+                    <li>Allez dans <strong>a l'ecran d'acceuil</strong> </li>
+                    <li>Cliquez sur <strong>"Activer VIP"</strong></li>
+                    <li>Entrez votre code : <strong id="guideCode"></strong></li>
+                    <li>Profitez de tous les avantages ! 🎉</li>
+                </ol>
+                
+                <h4>🧭 Les Modes de Petio a retrouver au bouton + tapez un mot et vous auriez plusieurs suggestions au choix en fonction du mode </h4>
+                <div class="modes-grid">
+                    <div class="mode-card">
+                        <h4><i class="ph-fill ph-brain"></i> Cerveau</h4>
+                        <p>IA conversationnelle (15 questions/2h)</p>
+                    </div>
+                    <div class="mode-card">
+                        <h4><i class="ph-fill ph-books"></i> Bibliothèque</h4>
+                        <p>Documents complets (VIP)</p>
+                    </div>
+                    <div class="mode-card">
+                        <h4><i class="ph-fill ph-file-text"></i> Procédure</h4>
+                        <p>Procédures détaillées (VIP)</p>
+                    </div>
+                    <div class="mode-card">
+                        <h4><i class="ph-fill ph-image"></i> Gallery</h4>
+                        <p>Images téléchargeables</p>
+                    </div>
+                    <div class="mode-card">
+                        <h4><i class="ph-fill ph-globe"></i> Global</h4>
+                        <p>Recherche toute la base</p>
+                    </div>
+                    <div class="mode-card">
+                        <h4><i class="ph-fill ph-graduation-cap"></i> Novice</h4>
+                        <p>Explications simples</p>
+                    </div>
+                </div>
+                
+                <h4>✨ Fonctionnalités</h4>
+                <div class="features-grid">
+                    <div class="feature">
+                        <i class="ph-fill ph-microphone"></i>
+                        <span>Commande vocale</span>
+                    </div>
+                    <div class="feature">
+                        <i class="ph-fill ph-speaker-high"></i>
+                        <span>Lecture audio</span>
+                    </div>
+                    <div class="feature">
+                        <i class="ph-fill ph-translate"></i>
+                        <span>Traduction FR</span>
+                    </div>                    <div class="feature">
+                        <i class="ph-fill ph-download-simple"></i>
+                        <span>Téléchargement</span>
+                    </div>
+                    <div class="feature">
+                        <i class="ph-fill ph-moon"></i>
+                        <span>Mode sombre</span>
+                    </div>
+                    <div class="feature">
+                        <i class="ph-fill ph-device-mobile"></i>
+                        <span>Hors ligne</span>
+                    </div>
+                </div>
+                
+                <h4>💬 Utiliser le Chat</h4>
+                <ul>
+                    <li><strong>Changer de mode</strong> : Bouton <code>+</code> en bas à gauche</li>
+                    <li><strong>Poser une question</strong> : Tapez ou utilisez le micro 🎤</li>
+                    <li><strong>Écouter la réponse</strong> : Cliquez sur 🔊 sous le message</li>
+                    <li><strong>Copier un texte</strong> : Cliquez sur 📋 pour copier</li>
+                </ul>
+            </div>
+            
+            <div class="alert" style="margin-top:24px">
+                <i class="ph-fill ph-headset"></i>
+                <p><strong>Besoin d'aide ?</strong> Notre équipe est disponible sur WhatsApp.</p>
+            </div>
+            
+            <a href="https://wa.me/12496806826" class="btn btn-secondary" style="margin-top:12px">
+                <i class="ph-fill ph-whatsapp-logo"></i>
+                Contacter le Support
+            </a>
+            
+            <!-- Debug: Reset Button -->
+            
+        </div>
+        
+        <!-- Footer -->
+        <div class="footer">
+            <p><strong>Petio - Assistant Intelligent Local</strong></p>
+            <p style="margin-top:6px">Développé par Le Balzac © 2024</p>
+            <p style="margin-top:12px"><i class="ph-fill ph-shield-check"></i> Vos données restent 100% privées</p>
+        </div>
+    </div>
+    
+    <!-- Copy Button Fixed -->
+    <button id="copyBtn" class="btn-copy-fixed hidden" onclick="copyCode()" title="Copier le code">
+        <i class="ph ph-copy"></i>    </button>
+
+    <script>
+        const GAS_URL = 'https://script.google.com/macros/s/AKfycbwECfIzsgINAu5IqMDaqcDuYtZAaspR16wvxu-BuLaqTdGJT-6Pec3hJs27lYvxzaIB2Q/exec';
+        
+        const emailInput = document.getElementById('userEmail');
+        const validateBtn = document.getElementById('validateBtn');
+        const emailHint = document.getElementById('emailHint');
+        const loading = document.getElementById('loading');
+        const loadingText = document.getElementById('loadingText');
+        const emailSection = document.getElementById('emailSection');
+        const resultSection = document.getElementById('resultSection');
+        const codeValue = document.getElementById('codeValue');
+        const displayEmail = document.getElementById('displayEmail');
+        const displayDate = document.getElementById('displayDate');
+        const guideCode = document.getElementById('guideCode');
+        const whatsappLink = document.getElementById('whatsappLink');
+        const copyBtn = document.getElementById('copyBtn');
+        
+        let currentCode = '';
+        
+        emailInput.addEventListener('input', function() {
+            const email = this.value.trim();
+            const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+            
+            this.classList.remove('valid', 'error');
+            if (email.length > 0) {
+                this.classList.add(isValid ? 'valid' : 'error');
+            }
+            
+            if (email.length === 0) {
+                emailHint.textContent = '';
+            } else if (isValid) {
+                emailHint.textContent = '✓ Email valide';
+                emailHint.className = 'input-hint success';
+            } else {
+                emailHint.textContent = '✗ Format email invalide';
+                emailHint.className = 'input-hint error';
+            }
+            
+            validateBtn.disabled = !isValid;
+        });
+        
+        function generateUniqueCode() {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            let code = 'VIP-';
+            for (let i = 0; i < 5; i++) code += chars[Math.floor(Math.random() * chars.length)];
+            return code;
+        }
+                async function sendToGAS(email, code) {
+            try {
+                const params = new URLSearchParams({
+                    action: 'achat',
+                    email: email,
+                    code: code,
+                    timestamp: new Date().toISOString()
+                });
+                
+                const fullUrl = `${GAS_URL}?${params.toString()}`;
+                navigator.sendBeacon(fullUrl);
+                await fetch(fullUrl, { method: 'GET', mode: 'no-cors', keepalive: true });
+                return true;
+            } catch (err) {
+                console.error('GAS Error:', err);
+                return false;
+            }
+        }
+        
+        async function generateAndSend() {
+            const email = emailInput.value.trim();
+            
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                alert('Veuillez entrer un email valide');
+                return;
+            }
+            
+            emailSection.classList.add('hidden');
+            loading.classList.add('show');
+            loadingText.classList.remove('hidden');
+            
+            currentCode = generateUniqueCode();
+            const success = await sendToGAS(email, currentCode);
+            
+            localStorage.setItem('petio_access_code', currentCode);
+            localStorage.setItem('petio_access_email', email);
+            localStorage.setItem('petio_access_timestamp', new Date().toISOString());
+            
+            loading.classList.remove('show');
+            loadingText.classList.add('hidden');
+            
+            displayResult(currentCode, email);
+        }
+        
+        function displayResult(code, email) {
+            currentCode = code;
+            codeValue.textContent = code;
+            displayEmail.textContent = email;
+            displayDate.textContent = new Date().toLocaleString('fr-FR');
+            guideCode.textContent = code;            whatsappLink.href = `https://wa.me/12496806826?text=✅ Code VIP Petio: ${code} - Email: ${email}`;
+            
+            resultSection.classList.add('is-visible'); // CORRECTION: Uses the correct class
+            copyBtn.classList.remove('hidden');
+            
+            resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        
+        function copyCode() {
+            if (!currentCode) return;
+            
+            navigator.clipboard.writeText(currentCode).then(() => {
+                copyBtn.classList.add('copied');
+                copyBtn.innerHTML = '<i class="ph-fill ph-check"></i>';
+                
+                setTimeout(() => {
+                    copyBtn.classList.remove('copied');
+                    copyBtn.innerHTML = '<i class="ph ph-copy"></i>';
+                }, 2000);
+            });
+        }
+        
+        function clearTestAndReload() {
+            localStorage.removeItem('petio_access_code');
+            localStorage.removeItem('petio_access_email');
+            localStorage.removeItem('petio_access_timestamp');
+            window.location.reload();
+        }
+        
+        emailInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !validateBtn.disabled) {
+                generateAndSend();
+            }
+        });
+        
+        window.addEventListener('DOMContentLoaded', function() {
+            emailInput.focus();
+            
+            // Vérifier si email déjà en localStorage (au cas où)
+            const savedEmail = localStorage.getItem('petio_access_email');
+            const savedCode = localStorage.getItem('petio_access_code');
+            if (savedEmail && savedCode) {
+                // Afficher directement le code sauvegardé
+                emailSection.classList.add('hidden');
+                displayResult(savedCode, savedEmail);
+            }
+        });
+    </script>
+</body>
+</html>
