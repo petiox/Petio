@@ -3,26 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    
-    <!-- PWA - iOS -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Petio">
     <link rel="apple-touch-icon" sizes="180x180" href="https://i.ibb.co/zVsc6LDk/62943fce33c7f18d50a127290140782f.jpg">
-    
-    <!-- PWA - Manifest -->
     <link rel="manifest" href="application/manifest+json,{{MANIFEST}}">
     <link rel="icon" type="image/jpeg" href="https://i.ibb.co/zVsc6LDk/62943fce33c7f18d50a127290140782f.jpg">
-    
     <title>Petio - Assistant</title>
     <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
-    
-    <!-- Bibliothèques pour PDF et DOCX -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js"></script>
-    
     <style>
-        /* ===== STYLES ===== */
         :root {
             --bg: #ffffff; --card: #fff; --text: #1c1c1e; --bot: #e9e9eb;
             --accent: #007aff; --input-bg: #f2f2f7; --border: #e5e5e5;
@@ -40,14 +31,13 @@
         }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; font-weight: 700; }
         body, html { margin: 0; height: 100%; font-family: -apple-system, sans-serif; background: var(--bg); overflow: hidden; color: var(--text); transition: background 0.3s, color 0.3s; font-weight: 700; }
-
         .page { display: none; height: 100%; width: 100%; flex-direction: column; position: absolute; top: 0; left: 0; background: var(--bg); }
         .page.active { display: flex; }
-
         .auth-container { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; }
         .auth-content { width: 100%; max-width: 320px; text-align: center; }
         .icon-main { font-size: 50px; color: var(--accent); margin-bottom: 10px; }
-        h2 { font-size: 20px; font-weight: 700; margin: 10px 0 5px; }        p { font-size: 14px; color: #8e8e93; margin-bottom: 25px; font-weight: 700; }
+        h2 { font-size: 20px; font-weight: 700; margin: 10px 0 5px; }
+        p { font-size: 14px; color: #8e8e93; margin-bottom: 25px; font-weight: 700; }
         .input-field { width: 100%; padding: 16px; margin-bottom: 12px; border-radius: 12px; border: none; background: var(--input-bg); font-size: 16px; color: var(--text); font-weight: 700; }
         .btn-valid { width: 100%; padding: 16px; background: var(--accent); color: white; border: none; border-radius: 12px; font-weight: 700; font-size: 16px; cursor: pointer; margin-top: 10px; }
         .btn-valid:active { transform: scale(0.98); opacity: 0.9; }
@@ -55,378 +45,107 @@
         .footer-icons { margin-top: 40px; display: flex; justify-content: center; gap: 20px; color: #d1d1d6; font-size: 24px; }
         .chat-container { width: 100%; max-width: 600px; margin: 0 auto; height: 100vh; background: var(--card); display: flex; flex-direction: column; position: relative; }
         .header { background: var(--header-grad); padding: 8px 12px; display: flex; align-items: center; justify-content: space-between; color: white; border-bottom-left-radius: 15px; border-bottom-right-radius: 15px; z-index: 20; gap: 8px; }
-        
         #modeContainer { display: flex; align-items: center; gap: 6px; flex: 1; justify-content: center; }
         #modeText { font-size: 15px; font-weight: 900; opacity: 0.95; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-transform: uppercase; letter-spacing: 0.5px; }
-        .btn-reset-mode { background: rgba(255,255,255,0.2); border: none; border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: white; transition: all 0.3s; flex-shrink: 0; }
-        .btn-reset-mode:active { background: rgba(255,255,255,0.4); transform: rotate(-180deg); }
-        
+        .btn-reset-mode { background: rgba(255,255,255,0.2); border: none; border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: white; transition: all 0.3s; flex-shrink: 0; }        .btn-reset-mode:active { background: rgba(255,255,255,0.4); transform: rotate(-180deg); }
         .header-btn { font-size: 22px; cursor: pointer; flex-shrink: 0; }
-        .user-avatar {
-            width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,0.3); color: white;
-            display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px;
-            background-size: cover; background-position: center; cursor: pointer; margin-left: 6px;
-        }
-
-        .chat-content { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-        .message { 
-            padding: 12px 16px; 
-            border-radius: 18px; 
-            max-width: 100%;
-            width: fit-content;
-            word-wrap: break-word; 
-            line-height: 1.4; 
-            position: relative; 
-            font-weight: 700;
-        }
-        .message.bot { background: var(--bot); color: var(--text); align-self: flex-start; padding-right: 50px; }
+        .user-avatar { width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,0.3); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; background-size: cover; background-position: center; cursor: pointer; margin-left: 6px; }
+        .chat-content { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
+        .msg-wrapper { display: flex; flex-direction: column; align-items: flex-start; width: 100%; }
+        .msg-wrapper.user-msg { align-items: flex-end; }
+        .message { padding: 12px 16px; border-radius: 18px; max-width: 100%; width: fit-content; word-wrap: break-word; line-height: 1.45; position: relative; font-weight: 700; }
+        .message.bot { background: var(--bot); color: var(--text); align-self: flex-start; }
         .message.user { background: var(--accent); color: white; align-self: flex-end; }
-
-        .message-text a {
-            color: var(--link-color);
-            text-decoration: underline;
-            word-break: break-all;
-        }
-
-        .btn-copy {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            width: 32px;
-            height: 32px;
-            background: rgba(0,0,0,0.15);
-            border: none;
-            border-radius: 6px;            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            opacity: 0;
-            transition: all 0.2s ease;
-            color: var(--text);
+        .message-text a { color: var(--link-color); text-decoration: underline; word-break: break-all; }
+        .msg-actions { display: flex; gap: 8px; margin-top: 5px; padding: 0 5px; }
+        .msg-wrapper.user-msg .msg-actions { justify-content: flex-end; }
+        .action-btn { 
+            width: 32px; height: 32px; 
+            background: rgba(255,122,1,0.15); 
+            border: none; 
+            border-radius: 8px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            cursor: pointer; 
+            transition: all 0.2s; 
             font-size: 16px;
+            color: #ff7a01;
         }
-        .message.bot:hover .btn-copy,
-        .message.bot:active .btn-copy { opacity: 1; }
-        .btn-copy:active { background: rgba(0,0,0,0.25); transform: scale(0.9); }
-        .btn-copy.copied { background: #34c759; color: white; }
-        @media (max-width: 768px) { .btn-copy { opacity: 1; } }
-
-        /* SUGGESTIONS IN-CHAT */
-        .suggestion-btn {
-            display: block;
-            width: 100%;
-            text-align: left;
-            padding: 12px 16px;
-            margin: 6px 0;
-            background: var(--card);
-            border: 2px solid var(--accent);
-            border-left: 5px solid var(--accent);
-            border-radius: 12px;
-            color: var(--text);
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            animation: slideUp 0.3s ease;
+        .dark-theme .action-btn { 
+            background: rgba(255,149,0,0.25); 
+            color: #ff9500;
         }
+        .action-btn:active { transform: scale(0.9); background: rgba(255,122,1,0.3); }
+        .action-btn.speaking { 
+            background: #ff7a01; 
+            color: white; 
+            animation: pulse 1.2s infinite; 
+        }
+        @keyframes pulse { 
+            0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255,122,1,0.4); } 
+            50% { transform: scale(1.05); box-shadow: 0 0 0 6px rgba(255,122,1,0); } 
+        }
+        .suggestion-btn { display: block; width: 100%; text-align: left; padding: 12px 16px; margin: 6px 0; background: var(--card); border: 2px solid var(--accent); border-left: 5px solid var(--accent); border-radius: 12px; color: var(--text); font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.05); animation: slideUp 0.3s ease; }
         .suggestion-btn:hover { background: var(--input-bg); transform: translateX(3px); }
         .suggestion-btn:active { transform: scale(0.98); }
-
-        .suggestions-container {
-            position: absolute;
-            bottom: 80px;
-            left: 0;
-            right: 0;
-            background: linear-gradient(180deg, transparent, var(--card));
-            padding: 10px 15px 5px;
-            z-index: 5;
-            display: none;
-        }
+        .suggestions-container { position: absolute; bottom: 80px; left: 0; right: 0; background: linear-gradient(180deg, transparent, var(--card)); padding: 10px 15px 5px; z-index: 5; display: none; }
         .suggestions-container.show { display: block; animation: slideUp 0.3s ease; }
         @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .suggestions-label { font-size: 11px; color: #8e8e93; margin-bottom: 8px; padding-left: 5px; font-weight: 700; }        .suggestions-scroll {
-            display: flex; gap: 8px; overflow-x: auto; overflow-y: hidden;
-            scrollbar-width: none; -ms-overflow-style: none;
-            padding: 5px 2px 10px; scroll-behavior: smooth;
-        }
+        .suggestions-label { font-size: 11px; color: #8e8e93; margin-bottom: 8px; padding-left: 5px; font-weight: 700; }
+        .suggestions-scroll { display: flex; gap: 8px; overflow-x: auto; overflow-y: hidden; scrollbar-width: none; -ms-overflow-style: none; padding: 5px 2px 10px; scroll-behavior: smooth; }
         .suggestions-scroll::-webkit-scrollbar { display: none; }
-        .suggestion-chip {
-            flex-shrink: 0; padding: 8px 16px; background: var(--accent); color: white;
-            border-radius: 20px; font-size: 13px; cursor: pointer; white-space: nowrap;
-            transition: all 0.2s; border: none; font-weight: 700;
-            animation: chipPop 0.4s ease;        }
-        @keyframes chipPop {
-            0% { opacity: 0; transform: scale(0.8) translateY(10px); }
-            60% { transform: scale(1.05); }
-            100% { opacity: 1; transform: scale(1) translateY(0); }
-        }
-        .suggestion-chip:active { transform: scale(0.95); opacity: 0.8; }
-
+        .suggestion-chip { flex-shrink: 0; padding: 8px 16px; background: var(--accent); color: white; border-radius: 20px; font-size: 13px; cursor: pointer; white-space: nowrap; transition: all 0.2s; border: none; font-weight: 700; animation: chipPop 0.4s ease; }
+        @keyframes chipPop { 0% { opacity: 0; transform: scale(0.8) translateY(10px); } 60% { transform: scale(1.05); } 100% { opacity: 1; transform: scale(1) translateY(0); } }        .suggestion-chip:active { transform: scale(0.95); opacity: 0.8; }
         .settings-page { position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: var(--card); z-index: 30; transition: left 0.4s cubic-bezier(0.77, 0, 0.175, 1); display: flex; flex-direction: column; }
         .settings-page.open { left: 0; }
         .settings-header { padding: 15px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border); }
         .settings-content { padding: 10px; overflow-y: auto; flex: 1; }
-        .setting-item { 
-            display: flex; flex-direction: column; padding: 15px; margin: 10px 20px; background: var(--input-bg); 
-            border-radius: 18px; cursor: pointer; transition: transform 0.1s; 
-        }
+        .setting-item { display: flex; flex-direction: column; padding: 15px; margin: 10px 20px; background: var(--input-bg); border-radius: 18px; cursor: pointer; transition: transform 0.1s; }
         .setting-item:active { transform: scale(0.98); }
         .setting-main { display: flex; align-items: center; gap: 15px; }
-        .setting-desc { 
-            max-height: 0; overflow: hidden; opacity: 0; transition: all 0.3s; 
-            padding-left: 39px; font-size: 13px; color: #8e8e93; font-weight: 700;
-        }
+        .setting-desc { max-height: 0; overflow: hidden; opacity: 0; transition: all 0.3s; padding-left: 39px; font-size: 13px; color: #8e8e93; font-weight: 700; }
         .setting-item.active .setting-desc { max-height: 500px; opacity: 1; margin-top: 8px; }
         .setting-icon { font-size: 20px; color: var(--accent); }
-
-        /* Menu "+" amélioré avec flou - 3 colonnes */
-        .extra-menu {
-            position: absolute;
-            bottom: 85px;
-            left: 15px;
-            display: none;
-            flex-direction: column;
-            gap: 16px;
-            z-index: 10;
-            background: rgba(120, 120, 120, 0.2);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            padding: 18px 16px;
-            border-radius: 28px;
-            border: 1px solid rgba(255,255,255,0.15);            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-            max-width: 360px;
-        }
-        .extra-menu.show {
-            display: flex;
-            animation: bounceIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        }
-        @keyframes bounceIn {
-            0% { opacity: 0; transform: scale(0.3) translateY(40px); }
-            60% { transform: scale(1.05) translateY(-5px); }
-            100% { opacity: 1; transform: scale(1) translateY(0); }
-        }
-        .menu-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-        }
-        .menu-row {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-decoration: none;
-            cursor: pointer;
-            background: rgba(255,255,255,0.1);
-            padding: 12px 4px;
-            border-radius: 16px;
-            transition: transform 0.15s, background 0.2s;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-        .menu-row:active {
-            transform: scale(0.95);
-            background: rgba(255,255,255,0.2);
-        }
-        .menu-item {
-            width: 44px;
-            height: 44px;
-            background: var(--accent);
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 22px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            margin-bottom: 6px;
-        }
-        .menu-label {
-            background: transparent;
-            padding: 4px 4px;
-            border-radius: 12px;            font-size: 12px;
-            color: white;
-            font-weight: 700;
-            text-align: center;
-            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
-            white-space: nowrap;
-        }
-
-        /* Galerie et Bibliothèque (headers) */
-        .gallery-header, .bibliotheque-header {
-            background: var(--header-grad);
-            padding: 8px 12px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            color: white;
-            border-bottom-left-radius: 15px;
-            border-bottom-right-radius: 15px;
-        }
-        .gallery-header .title, .bibliotheque-header .title {
-            font-size: 18px;
-            font-weight: 900;
-            flex: 1;
-        }
-        /* FIX 1: Gallery en 3 colonnes */
-        .gallery-container {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 4px;
-            padding: 4px;
-            overflow-y: auto;
-            max-height: calc(100vh - 120px);
-        }
-        .gallery-item {
-            width: 100%;
-            /* FIX 1: Hauteur fixe à 3cm (115px) */
-            height: 115px;
-            background: var(--input-bg);
-            border-radius: 12px;
-            overflow: hidden;
-            cursor: pointer;
-            border: 1px solid var(--border);
-            transition: transform 0.2s;
-            position: relative;
-        }
-        .gallery-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;        }
+        .extra-menu { position: absolute; bottom: 85px; left: 15px; display: none; flex-direction: column; gap: 16px; z-index: 10; background: rgba(120, 120, 120, 0.2); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); padding: 18px 16px; border-radius: 28px; border: 1px solid rgba(255,255,255,0.15); box-shadow: 0 8px 20px rgba(0,0,0,0.2); max-width: 360px; }
+        .extra-menu.show { display: flex; animation: bounceIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55); }
+        @keyframes bounceIn { 0% { opacity: 0; transform: scale(0.3) translateY(40px); } 60% { transform: scale(1.05) translateY(-5px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
+        .menu-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .menu-row { display: flex; flex-direction: column; align-items: center; text-decoration: none; cursor: pointer; background: rgba(255,255,255,0.1); padding: 12px 4px; border-radius: 16px; transition: transform 0.15s, background 0.2s; border: 1px solid rgba(255,255,255,0.1); }
+        .menu-row:active { transform: scale(0.95); background: rgba(255,255,255,0.2); }
+        .menu-item { width: 44px; height: 44px; background: var(--accent); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 22px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 6px; }
+        .menu-label { background: transparent; padding: 4px 4px; border-radius: 12px; font-size: 12px; color: white; font-weight: 700; text-align: center; text-shadow: 0 1px 3px rgba(0,0,0,0.3); white-space: nowrap; }
+        .gallery-header, .bibliotheque-header { background: var(--header-grad); padding: 8px 12px; display: flex; align-items: center; gap: 12px; color: white; border-bottom-left-radius: 15px; border-bottom-right-radius: 15px; }
+        .gallery-header .title, .bibliotheque-header .title { font-size: 18px; font-weight: 900; flex: 1; }
+        .gallery-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 4px; overflow-y: auto; max-height: calc(100vh - 120px); }
+        .gallery-item { width: 100%; height: 115px; background: var(--input-bg); border-radius: 12px; overflow: hidden; cursor: pointer; border: 1px solid var(--border); transition: transform 0.2s; position: relative; }
+        .gallery-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
         .gallery-item:active { transform: scale(0.95); }
-        .downloaded-badge {
-            position: absolute;
-            top: 6px;
-            right: 6px;
-            background: #34c759;
-            color: white;
-            border-radius: 50%;
-            width: 26px;
-            height: 26px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-        }
-        .gallery-lightbox {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.95);
-            z-index: 5000;
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
+        .downloaded-badge { position: absolute; top: 6px; right: 6px; background: #34c759; color: white; border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; font-size: 16px; box-shadow: 0 2px 6px rgba(0,0,0,0.3); z-index: 2; }
+        .gallery-lightbox { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 5000; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
         .gallery-lightbox.show { display: flex; }
-        .lightbox-img {
-            max-width: 95%;
-            max-height: 80vh;
-            border-radius: 16px;
-            object-fit: contain;
-        }
-        .lightbox-close {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            color: white;
-            font-size: 32px;
-            cursor: pointer;
-            z-index: 10;
-        }
-        .lightbox-download-btn {
-            position: absolute;
-            bottom: 30px;
-            right: 30px;
-            background: var(--accent);
-            color: white;            border: none;
-            border-radius: 50%;
-            width: 56px;
-            height: 56px;
-            font-size: 28px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            transition: background 0.2s;
-        }
+        .lightbox-img { max-width: 95%; max-height: 80vh; border-radius: 16px; object-fit: contain; }
+        .lightbox-close { position: absolute; top: 20px; right: 20px; color: white; font-size: 32px; cursor: pointer; z-index: 10; }
+        .lightbox-download-btn { position: absolute; bottom: 30px; right: 30px; background: var(--accent); color: white; border: none; border-radius: 50%; width: 56px; height: 56px; font-size: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.3); transition: background 0.2s; }
         .lightbox-download-btn.downloaded { background: #34c759; }
-
-        /* Bibliothèque */
-        .bibliotheque-container {
-            flex: 1;
-            overflow-y: auto;
-            padding: 16px;
-        }
-        .bibliotheque-suggestions {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        /* Modal lecture (Bibliothèque) */
-        .lecture-modal {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.85);
-            backdrop-filter: blur(6px);
-            z-index: 4000;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 0;
-        }
+        .bibliotheque-container { flex: 1; overflow-y: auto; padding: 16px; }
+        .bibliotheque-suggestions { display: flex; flex-direction: column; gap: 8px; }
+        .lecture-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(6px); z-index: 4000; display: none; align-items: center; justify-content: center; padding: 0; }
         .lecture-modal.show { display: flex; }
-        .lecture-card {
-            background: var(--card);
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-        }
-        .lecture-header {
-            padding: 18px 20px;
-            border-bottom: 1px solid var(--border);
-            display: flex;            align-items: center;
-            justify-content: space-between;
-        }
+        .lecture-card { background: var(--card); width: 100%; height: 100%; display: flex; flex-direction: column; }
+        .lecture-header { padding: 18px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
         .lecture-title { font-size: 18px; font-weight: 800; }
         .lecture-close { font-size: 28px; cursor: pointer; padding: 8px; }
-        .lecture-content {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
-            white-space: pre-wrap;
-            word-break: break-word;
-            font-weight: 400;
-            line-height: 1.5;
-        }
-        .lecture-copy {
-            position: absolute;
-            bottom: 24px;
-            right: 24px;
-            background: var(--accent);
-            color: white;
-            border: none;
-            border-radius: 30px;
-            padding: 12px 20px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: 700;
-            font-size: 16px;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            z-index: 10;
-        }
-
-        .input-bar { padding: 10px 15px calc(20px + var(--safe-bottom)); display: flex; align-items: flex-end; gap: 10px; border-top: 1px solid var(--border); background: var(--card); }
-        .btn-plus, .btn-send { width: 45px; height: 45px; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: all 0.2s ease; flex-shrink: 0; }
-        .btn-plus:active, .btn-send:active { transform: scale(0.85); }
-        .btn-plus.hidden { width: 0; opacity: 0; transform: scale(0); margin-right: -10px; pointer-events: none; }
+        .lecture-content { flex: 1; padding: 20px; overflow-y: auto; white-space: pre-wrap; word-break: break-word; font-weight: 400; line-height: 1.5; }
+        .lecture-copy { position: absolute; bottom: 24px; right: 24px; background: var(--accent); color: white; border: none; border-radius: 30px; padding: 12px 20px; display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 16px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.2); z-index: 10; }
+        .input-bar { padding: 10px 15px calc(20px + var(--safe-bottom)); display: flex; align-items: flex-end; gap: 8px; border-top: 1px solid var(--border); background: var(--card); }
+        .btn-plus, .btn-send, .btn-mic { width: 45px; height: 45px; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: all 0.2s ease; flex-shrink: 0; }
+        .btn-mic { background: var(--input-bg); border-radius: 50%; }
+        .btn-mic.hidden { width: 0; opacity: 0; transform: scale(0); margin-right: -8px; pointer-events: none; }
+        .btn-mic.listening { background: #ff3b30; animation: pulse 1s infinite; }
+        .btn-mic i { font-size: 24px; color: var(--accent); }
+        .btn-mic.listening i { color: white; }
+        .btn-plus:active, .btn-send:active, .btn-mic:active { transform: scale(0.85); }        .btn-plus.hidden { width: 0; opacity: 0; transform: scale(0); margin-right: -8px; pointer-events: none; }
         .btn-plus i, .btn-send i { font-size: 38px; color: var(--accent); }
         .input-container { flex: 1; background: var(--input-bg); border-radius: 20px; padding: 8px 15px; display: flex; min-width: 0; }
         textarea { width: 100%; border: none; background: transparent; color: var(--text); font-size: 16px; outline: none; resize: none; max-height: 120px; padding: 5px 0; min-width: 0; font-weight: 700; }
@@ -434,34 +153,22 @@
         .btn-send.show { width: 45px; opacity: 1; transform: scale(1); pointer-events: auto; }
         .typing { font-style: italic; color: #8e8e93; font-size: 13px; margin-left: 10px; display: none; font-weight: 700; }
         .typing.show { display: block; }
-
-        #error-popup { position: fixed; top: -100px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 340px; background: #ff3b30; color: white; padding: 14px; border-radius: 18px; z-index: 3000; transition: top 0.4s; text-align: center; display: flex; align-items: center; gap: 10px; font-weight: 700; }        #error-popup.show { top: 20px; }
-
+        #error-popup { position: fixed; top: -100px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 340px; background: #ff3b30; color: white; padding: 14px; border-radius: 18px; z-index: 3000; transition: top 0.4s; text-align: center; display: flex; align-items: center; gap: 10px; font-weight: 700; }
+        #error-popup.show { top: 20px; }
         #overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: none !important; z-index: 1500; backdrop-filter: blur(4px); }
         #overlay.show { display: block !important; }
-                #pay-sheet {
-            position: fixed; bottom: -100% !important; left: 0; width: 100%; background: var(--pay-bg); color: var(--pay-text);
-            padding: 30px 20px 50px 20px; border-top-left-radius: 25px; border-top-right-radius: 25px;
-            transition: bottom 0.5s cubic-bezier(0.32, 1, 0.23, 1); z-index: 2000; text-align: center;
-            box-shadow: 0 -10px 30px rgba(0,0,0,0.3); display: none !important;
-        }
+        #pay-sheet { position: fixed; bottom: -100% !important; left: 0; width: 100%; background: var(--pay-bg); color: var(--pay-text); padding: 30px 20px 50px 20px; border-top-left-radius: 25px; border-top-right-radius: 25px; transition: bottom 0.5s cubic-bezier(0.32, 1, 0.23, 1); z-index: 2000; text-align: center; box-shadow: 0 -10px 30px rgba(0,0,0,0.3); display: none !important; }
         #pay-sheet.show { bottom: 0 !important; display: block !important; }
         #pay-sheet h2 { margin: 0 0 10px 0; color: #ffffff; font-weight:700; }
         #pay-sheet p { color: #a1a1a6; margin: 15px 0 25px; font-size: 15px; font-weight: 700; }
         #pay-sheet .btn-pay { display: block; width: 100%; padding: 16px; background: var(--pay-btn); color: white; text-decoration: none; border-radius: 14px; font-weight: 700; font-size: 16px; transition: transform 0.1s; }
         #pay-sheet .btn-pay:active { transform: scale(0.98); }
         #pay-sheet .close-link { margin-top: 20px; color: #8e8e93; font-size: 14px; cursor: pointer; font-weight: 700; }
-        #pay-sheet .contact-admin-btn {
-            display: block; width: 100%; padding: 16px; margin-top: 12px; background: transparent;
-            border: 2px solid #ff7a01; border-radius: 14px; font-weight: 700; font-size: 16px;
-            cursor: pointer; color: #ff7a01; transition: background 0.1s;
-        }
+        #pay-sheet .contact-admin-btn { display: block; width: 100%; padding: 16px; margin-top: 12px; background: transparent; border: 2px solid #ff7a01; border-radius: 14px; font-weight: 700; font-size: 16px; cursor: pointer; color: #ff7a01; transition: background 0.1s; }
         #pay-sheet .contact-admin-btn:active { background: rgba(255,122,1,0.1); }
-
         #load-status { position: fixed; top: 0; left: 0; right: 0; background: #ffcc00; color: #000; text-align: center; padding: 8px; font-size: 13px; font-weight: 700; z-index: 9999; display: none; }
         #load-status.error { background: #ff3b30; color: white; }
         #load-status.success { background: #34c759; color: white; }
-
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 4000; display: none; align-items: center; justify-content: center; padding: 20px; }
         .modal-overlay.show { display: flex; }
         .modal-card { background: var(--card); border-radius: 24px; width: 100%; max-width: 360px; padding: 24px 20px 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); color: var(--text); }
@@ -472,78 +179,38 @@
         .modal-btn { flex: 1; padding: 14px; border-radius: 14px; font-weight: 700; font-size: 16px; cursor: pointer; border: none; }
         .modal-btn.cancel { background: var(--input-bg); color: var(--text); }
         .modal-btn.confirm { background: var(--accent); color: white; }
-
         #pwa-install-sheet { position: fixed; top: -100%; left: 0; right: 0; background: var(--card); color: var(--text); padding: 20px 20px 30px; border-bottom-left-radius: 25px; border-bottom-right-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 2500; transition: top 0.4s; }
         #pwa-install-sheet.show { top: 0; }
         .pwa-sheet-header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
         .pwa-sheet-header i { font-size: 40px; color: var(--accent); }
-        .install-btn-top { 
-            background: var(--accent); color: white; border: none; 
-            padding: 6px 14px;
-            border-radius: 20px; 
-            font-weight: 700; font-size: 13px;
-            display: inline-flex; align-items: center; gap: 4px; 
-            cursor: pointer; margin-left: auto;             box-shadow: none;
-        }
+        .install-btn-top { background: var(--accent); color: white; border: none; padding: 6px 14px; border-radius: 20px; font-weight: 700; font-size: 13px; display: inline-flex; align-items: center; gap: 4px; cursor: pointer; margin-left: auto; box-shadow: none; }
         .install-btn-top:active { transform: scale(0.95); opacity: 0.9; }
         .pwa-steps { margin: 20px 0; }
         .pwa-step { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; font-weight: 700; }
-        .pwa-close-btn { background: transparent; border: 1px solid var(--border); color: var(--text); padding: 12px; border-radius: 14px; width: 100%; cursor: pointer; font-weight: 700; }        #install-banner { display: none; }
-
+        .pwa-close-btn { background: transparent; border: 1px solid var(--border); color: var(--text); padding: 12px; border-radius: 14px; width: 100%; cursor: pointer; font-weight: 700; }
+        #install-banner { display: none; }
         #unlock-modal { position: fixed; bottom: -100%; left: 0; right: 0; background: var(--card); color: var(--text); padding: 20px 20px 30px; border-top-left-radius: 25px; border-top-right-radius: 25px; box-shadow: 0 -10px 30px rgba(0,0,0,0.2); z-index: 3000; transition: bottom 0.4s cubic-bezier(0.32, 1, 0.23, 1); max-height: 90vh; overflow-y: auto; }
         #unlock-modal.show { bottom: 0; }
         .unlock-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
         .unlock-title { font-size: 20px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
         .unlock-close { font-size: 24px; cursor: pointer; padding: 5px; }
-        .unlock-step { display: none; }
-        .unlock-step.active { display: block; }
+        .unlock-step { display: none; }        .unlock-step.active { display: block; }
         .unlock-input { width: 100%; padding: 16px; border-radius: 14px; border: none; background: var(--input-bg); color: var(--text); font-size: 16px; margin-bottom: 15px; font-weight: 700; }
         .unlock-btn { width: 100%; padding: 16px; border-radius: 14px; font-weight: 700; font-size: 16px; cursor: pointer; border: none; margin-bottom: 10px; background: var(--accent); color: white; }
         .unlock-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         .unlock-secondary { background: transparent; border: 1px solid var(--border); color: var(--text); }
         .error-message { color: #ff3b30; background: rgba(255,59,48,0.1); padding: 15px; border-radius: 14px; margin-bottom: 20px; text-align: center; font-weight: 700; }
-
         .suite-btn { display: block; margin-top: 12px; padding: 8px 16px; background: var(--accent); color: white; border: none; border-radius: 20px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; width: fit-content; }
         .suite-btn:active { transform: scale(0.96); opacity: 0.9; }
-
-        /* Styles pour la page des boutons A-Z (VERTICAUX) */
-        .az-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            padding: 20px;
-            max-width: 400px;
-            margin: 0 auto;
-        }
-        /* FIX 2: Réduction taille boutons A-Z */
-        .az-btn {
-            background: var(--accent);
-            color: white;
-            border: none;
-            border-radius: 16px;
-            padding: 12px 0;
-            font-size: 18px;
-            font-weight: 700;
-            cursor: pointer;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-            transition: transform 0.1s, opacity 0.2s;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-        }
-        .az-btn:active {
-            transform: scale(0.98);
-            opacity: 0.9;
-        }
-    </style></head>
+        .az-grid { display: flex; flex-direction: column; gap: 12px; padding: 20px; max-width: 400px; margin: 0 auto; }
+        .az-btn { background: var(--accent); color: white; border: none; border-radius: 16px; padding: 12px 0; font-size: 18px; font-weight: 700; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.1); transition: transform 0.1s, opacity 0.2s; text-decoration: none; display: flex; align-items: center; justify-content: center; width: 100%; }
+        .az-btn:active { transform: scale(0.98); opacity: 0.9; }
+    </style>
+</head>
 <body>
-
 <div id="load-status">Chargement des connaissances...</div>
 <div id="error-popup"><i class="ph-fill ph-warning-circle"></i><span id="error-msg"></span></div>
 <div id="overlay" onclick="closePay()"></div>
-
 <div id="pay-sheet">
     <h2>Accès VIP Requis</h2>
     <p>Aucun abonnement trouvé pour ces informations.</p>
@@ -551,7 +218,6 @@
     <button class="contact-admin-btn" onclick="contacterAdmin('vip')">Contacter l'admin</button>
     <p class="close-link" onclick="closePay()">Fermer</p>
 </div>
-
 <div id="pwa-install-sheet">
     <div class="pwa-sheet-header">
         <i class="ph ph-device-mobile"></i>
@@ -575,74 +241,29 @@
         </div>
     </div>
 </div>
-
-<!-- MODAL VIP BIBLIOTHÈQUE -->
 <div id="bibliotheque-unlock-modal" style="display:none; position:fixed; bottom:0; left:0; right:0; background:var(--card); color:var(--text); padding:20px 20px 30px; border-top-left-radius:25px; border-top-right-radius:25px; box-shadow:0 -10px 30px rgba(0,0,0,0.2); z-index:3000; transition:bottom 0.4s; max-height:90vh; overflow-y:auto;">
-    <div class="unlock-header">
-        <div class="unlock-title"><i class="ph ph-lock"></i> Accès Bibliothèque</div>
-        <div class="unlock-close" onclick="closeBibliothequeUnlockModal()"><i class="ph ph-x"></i></div>
-    </div>
-    <div id="biblio-step-code" class="unlock-step active">
-        <p style="margin-bottom:15px;">Entrez le code reçu après paiement :</p>
-        <input type="text" id="biblio-code-input" class="unlock-input" placeholder="Code d'accès">
-        <button class="unlock-btn" id="btnValiderBiblio" onclick="verifierCodeAccesBibliotheque()">Valider</button>
-        <button class="unlock-btn unlock-secondary" onclick="contacterAdmin('biblio')">Contacter l'admin</button>    </div>
-    <div id="biblio-step-payment" class="unlock-step">
-        <div class="error-message"><i class="ph ph-warning-circle" style="font-size:24px;margin-bottom:8px;display:block;"></i>Code invalide.</div>
-        <button class="unlock-btn unlock-secondary" onclick="contacterAdmin('payment')">Contacter l'admin</button>
-    </div>
+    <div class="unlock-header"><div class="unlock-title"><i class="ph ph-lock"></i> Accès Bibliothèque</div><div class="unlock-close" onclick="closeBibliothequeUnlockModal()"><i class="ph ph-x"></i></div></div>
+    <div id="biblio-step-code" class="unlock-step active"><p style="margin-bottom:15px;">Entrez le code reçu après paiement :</p><input type="text" id="biblio-code-input" class="unlock-input" placeholder="Code d'accès"><button class="unlock-btn" id="btnValiderBiblio" onclick="verifierCodeAccesBibliotheque()">Valider</button><button class="unlock-btn unlock-secondary" onclick="contacterAdmin('biblio')">Contacter l'admin</button></div>    <div id="biblio-step-payment" class="unlock-step"><div class="error-message"><i class="ph ph-warning-circle" style="font-size:24px;margin-bottom:8px;display:block;"></i>Code invalide.</div><button class="unlock-btn unlock-secondary" onclick="contacterAdmin('payment')">Contacter l'admin</button></div>
 </div>
-
-<!-- MODAL VIP PROCEDURE -->
 <div id="unlock-modal">
-    <div class="unlock-header">
-        <div class="unlock-title"><i class="ph ph-lock"></i> Accès Procédure</div>
-        <div class="unlock-close" onclick="closeUnlockModal()"><i class="ph ph-x"></i></div>
-    </div>
-    <div id="unlock-step-code" class="unlock-step active">
-        <p style="margin-bottom:15px;">Entrez le code reçu après paiement :</p>
-        <input type="text" id="unlock-code-input" class="unlock-input" placeholder="Code d'accès">
-        <button class="unlock-btn" id="btnValiderProcedure" onclick="verifierCodeAcces()">Valider</button>
-        <button class="unlock-btn unlock-secondary" onclick="contacterAdmin('code')">Contacter l'admin</button>
-    </div>
-    <div id="unlock-step-payment" class="unlock-step">
-        <div class="error-message"><i class="ph ph-warning-circle" style="font-size:24px;margin-bottom:8px;display:block;"></i>Le code que vous avez saisi est invalide ou ne correspond pas. Pour accéder à ce menu, veuillez contacter l'administrateur.</div>
-        <button class="unlock-btn unlock-secondary" onclick="contacterAdmin('payment')">Contacter l'admin</button>
-    </div>
+    <div class="unlock-header"><div class="unlock-title"><i class="ph ph-lock"></i> Accès Procédure</div><div class="unlock-close" onclick="closeUnlockModal()"><i class="ph ph-x"></i></div></div>
+    <div id="unlock-step-code" class="unlock-step active"><p style="margin-bottom:15px;">Entrez le code reçu après paiement :</p><input type="text" id="unlock-code-input" class="unlock-input" placeholder="Code d'accès"><button class="unlock-btn" id="btnValiderProcedure" onclick="verifierCodeAcces()">Valider</button><button class="unlock-btn unlock-secondary" onclick="contacterAdmin('code')">Contacter l'admin</button></div>
+    <div id="unlock-step-payment" class="unlock-step"><div class="error-message"><i class="ph ph-warning-circle" style="font-size:24px;margin-bottom:8px;display:block;"></i>Le code que vous avez saisi est invalide ou ne correspond pas. Pour accéder à ce menu, veuillez contacter l'administrateur.</div><button class="unlock-btn unlock-secondary" onclick="contacterAdmin('payment')">Contacter l'admin</button></div>
 </div>
-
-<!-- MODAL SERVICE -->
 <div id="service-unlock-modal" style="display:none; position:fixed; bottom:0; left:0; right:0; background:var(--card); color:var(--text); padding:20px 20px 30px; border-top-left-radius:25px; border-top-right-radius:25px; box-shadow:0 -10px 30px rgba(0,0,0,0.2); z-index:3500; transition:bottom 0.4s; max-height:90vh; overflow-y:auto;">
-    <div class="unlock-header">
-        <div class="unlock-title"><i class="ph ph-android-logo"></i> Service</div>
-        <div class="unlock-close" onclick="closeServiceUnlockModal()"><i class="ph ph-x"></i></div>
-    </div>
-    <div id="service-step-code" class="unlock-step active">
-        <p style="margin-bottom:15px;">Entrez le code d'accès :</p>
-        <input type="text" id="service-code-input" class="unlock-input" placeholder="Code VIP">
-        <button class="unlock-btn" id="btnValiderService" onclick="verifierCodeAccesService()">Valider</button>
-        <button class="unlock-btn unlock-secondary" onclick="contacterAdmin('service')">Contacter l'admin</button>
-    </div>
-    <div id="service-step-payment" class="unlock-step">
-        <div class="error-message"><i class="ph ph-warning-circle" style="font-size:24px;margin-bottom:8px;display:block;"></i>Code invalide.</div>
-        <button class="unlock-btn unlock-secondary" onclick="contacterAdmin('service_payment')">Contacter l'admin</button>
-    </div>
+    <div class="unlock-header"><div class="unlock-title"><i class="ph ph-android-logo"></i> Service</div><div class="unlock-close" onclick="closeServiceUnlockModal()"><i class="ph ph-x"></i></div></div>
+    <div id="service-step-code" class="unlock-step active"><p style="margin-bottom:15px;">Entrez le code d'accès :</p><input type="text" id="service-code-input" class="unlock-input" placeholder="Code VIP"><button class="unlock-btn" id="btnValiderService" onclick="verifierCodeAccesService()">Valider</button><button class="unlock-btn unlock-secondary" onclick="contacterAdmin('service')">Contacter l'admin</button></div>
+    <div id="service-step-payment" class="unlock-step"><div class="error-message"><i class="ph ph-warning-circle" style="font-size:24px;margin-bottom:8px;display:block;"></i>Code invalide.</div><button class="unlock-btn unlock-secondary" onclick="contacterAdmin('service_payment')">Contacter l'admin</button></div>
 </div>
-
-<!-- Overlay A-Z -->
 <div id="az-overlay" style="position:fixed; inset:0; background:var(--bg); z-index:4000; display:none; overflow-y:auto; padding:20px;">
-    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;">
-        <h2 style="margin:0; color:var(--text);">Sélectionner une lettre</h2>
-        <button onclick="closeAZOverlay()" style="background:var(--accent); border:none; color:white; font-size:24px; width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer;"><i class="ph ph-x"></i></button>
-    </div>
-    <div class="az-grid" id="az-buttons-container"></div></div>
-
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;"><h2 style="margin:0; color:var(--text);">Sélectionner une lettre</h2><button onclick="closeAZOverlay()" style="background:var(--accent); border:none; color:white; font-size:24px; width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer;"><i class="ph ph-x"></i></button></div>
+    <div class="az-grid" id="az-buttons-container"></div>
+</div>
 <div id="page-auth" class="page active">
     <div class="auth-container">
         <div class="auth-content">
             <div class="icon-main"><i class="ph-fill ph-shield-check"></i></div>
-            <h2>Vérification</h2>
-            <p>Entrez vos informations de référence.</p>
+            <h2>Vérification</h2><p>Entrez vos informations de référence.</p>
             <input type="email" id="userEmail" class="input-field" placeholder="Email d'achat">
             <input type="text" id="userCode" class="input-field" placeholder="Code de transaction">
             <button class="btn-valid" id="btnValid" onclick="verifierAcces()">Valider</button>
@@ -658,46 +279,24 @@
             <div id="modeContainer"><span id="modeText">🤖 MODE: CERVEAU</span><button class="btn-reset-mode" onclick="resetMode()"><i class="ph ph-arrow-counter-clockwise"></i></button></div>
             <div class="header-actions" style="display:flex;gap:8px;"><div class="user-avatar" id="userAvatar" onclick="changeUserPhoto()" title="Changer la photo de profil"></div><div class="header-btn" onclick="toggleTheme()"><i id="themeIcon" class="ph ph-moon"></i></div></div>
         </div>
-
-        <!-- Header Gallery -->
-        <div class="gallery-header" id="galleryHeader" style="display:none;">
-            <div class="header-btn" onclick="exitGalleryMode()"><i class="ph ph-arrow-left"></i></div>
-            <span class="title">🖼️ Gallery</span>
-            <div class="header-btn" onclick="refreshGallery()"><i class="ph ph-arrows-clockwise"></i></div>
-        </div>
-
-        <!-- Header Bibliothèque -->
-        <div class="bibliotheque-header" id="bibliothequeHeader" style="display:none;">
-            <div class="header-btn" onclick="exitBibliothequeMode()"><i class="ph ph-arrow-left"></i></div>
-            <span class="title">📚 Bibliothèque</span>
-            <div class="header-btn" onclick="refreshBibliotheque()"><i class="ph ph-arrows-clockwise"></i></div>
-        </div>
-
+        <div class="gallery-header" id="galleryHeader" style="display:none;"><div class="header-btn" onclick="exitGalleryMode()"><i class="ph ph-arrow-left"></i></div><span class="title">🖼️ Gallery</span><div class="header-btn" onclick="refreshGallery()"><i class="ph ph-arrows-clockwise"></i></div></div>
+        <div class="bibliotheque-header" id="bibliothequeHeader" style="display:none;"><div class="header-btn" onclick="exitBibliothequeMode()"><i class="ph ph-arrow-left"></i></div><span class="title">📚 Bibliothèque</span><div class="header-btn" onclick="refreshBibliotheque()"><i class="ph ph-arrows-clockwise"></i></div></div>
         <div class="chat-content" id="chatArea" onclick="closeMenu()"></div>
         <div id="galleryView" style="display:none; flex:1; overflow-y:auto;"></div>
         <div id="bibliothequeView" style="display:none; flex:1; overflow-y:auto;"></div>
         <div class="typing" id="typing"><span id="typingName">Petio</span> écrit...</div>
-
         <div class="suggestions-container" id="suggestionsContainer"><div class="suggestions-label">💡 Suggestions :</div><div class="suggestions-scroll" id="suggestionsScroll"></div></div>
-
-        <!-- Galerie Lightbox -->
         <div class="gallery-lightbox" id="galleryLightbox" onclick="closeLightbox()">
             <span class="lightbox-close" onclick="closeLightbox()">&times;</span>
             <img class="lightbox-img" id="lightboxImg" src="" alt="">
-            <button class="lightbox-download-btn" id="lightboxDownloadBtn" onclick="downloadCurrentImage(event)"><i class="ph ph-download-simple"></i></button>        </div>
-
-        <!-- Modal lecture Bibliothèque -->
+            <button class="lightbox-download-btn" id="lightboxDownloadBtn" onclick="downloadCurrentImage(event)"><i class="ph ph-download-simple"></i></button>
+        </div>
         <div class="lecture-modal" id="lectureModal" onclick="closeLectureModal()">
-            <div class="lecture-card" onclick="event.stopPropagation()">
-                <div class="lecture-header">
-                    <span class="lecture-title" id="lectureTitle">Fichier</span>
-                    <span class="lecture-close" onclick="closeLectureModal()"><i class="ph ph-x"></i></span>
-                </div>
+            <div class="lecture-card" onclick="event.stopPropagation()">                <div class="lecture-header"><span class="lecture-title" id="lectureTitle">Fichier</span><span class="lecture-close" onclick="closeLectureModal()"><i class="ph ph-x"></i></span></div>
                 <div class="lecture-content" id="lectureContent">Chargement...</div>
                 <button class="lecture-copy" id="lectureCopyBtn" onclick="copyLectureContent()"><i class="ph ph-copy"></i> Copier</button>
             </div>
         </div>
-
         <div class="settings-page" id="settingsPage">
             <div class="settings-header"><div class="header-btn" style="color:var(--text)" onclick="closeSettings()"><i class="ph ph-caret-left"></i></div><span style="font-weight:700; color:var(--text)">Paramètres</span></div>
             <div class="settings-content">
@@ -705,11 +304,7 @@
                 <div class="setting-item" onclick="changeUserPhoto()"><div class="setting-main"><i class="setting-icon ph ph-camera"></i><span>Photo de profil</span></div><div class="setting-desc">Choisir une photo pour votre avatar</div></div>
                 <div class="setting-item" onclick="afficherBanniereInstallation()"><div class="setting-main"><i class="setting-icon ph ph-device-mobile"></i><span>Installer l'application</span></div><div class="setting-desc">Ajouter Petio à l'écran d'accueil.</div></div>
                 <div class="setting-item" onclick="window.open('https://wa.me/12496806826','_blank')"><div class="setting-main"><i class="setting-icon ph ph-whatsapp-logo"></i><span>Contact</span></div><div class="setting-desc">Besoin d'aide ? Écrivez-nous sur WhatsApp.</div></div>
-                <!-- BOUTON SERVICE -->
-                <div class="setting-item" onclick="openServiceModal()">
-                    <div class="setting-main"><i class="setting-icon ph ph-android-logo" style="font-size:28px;"></i><span>Service</span></div>
-                    <div class="setting-desc">Accès aux services (nécessite code VIP).</div>
-                </div>
+                <div class="setting-item" onclick="openServiceModal()"><div class="setting-main"><i class="setting-icon ph ph-android-logo" style="font-size:28px;"></i><span>Service</span></div><div class="setting-desc">Accès aux services (nécessite code VIP).</div></div>
                 <div class="setting-item" onclick="toggleSettingDesc('faq')"><div class="setting-main"><i class="setting-icon ph ph-question"></i><span>FAQ</span></div><div class="setting-desc" id="faq-desc"><p><strong>Comment utiliser Petio ?</strong><br>Tapez votre question dans la zone de saisie. Petio analysera les fichiers du mode actif et vous répondra instantanément. Utilisez le menu <code>+</code> pour changer de mode.</p><p><strong>Que sont les "Modes" ?</strong><br>Chaque mode charge une base de connaissances différente. Par exemple, le mode <em>Novice</em> propose des explications simples, tandis que le mode <em>Formate</em> contient des procédures techniques avancées. Les réponses sont strictement limitées au mode sélectionné.</p><p><strong>Petio fonctionne-t-il hors ligne ?</strong><br>Oui. Une fois l'application installée en tant que PWA et les fichiers chargés, Petio fonctionne entièrement hors ligne.</p><p><strong>Comment obtenir un accès VIP ?</strong><br>Cliquez sur "Avoir mes accès" sur l'écran de vérification ou contactez l'administrateur via WhatsApp.</p></div></div>
                 <div class="setting-item" onclick="toggleSettingDesc('cgu')"><div class="setting-main"><i class="setting-icon ph ph-scales"></i><span>CGU</span></div><div class="setting-desc" id="cgu-desc"><p><strong>1. Objet</strong><br>Les présentes Conditions Générales d'Utilisation (CGU) régissent l'accès et l'utilisation de l'application Petio.</p><p><strong>2. Nature du service</strong><br>Petio est un assistant numérique fonctionnant entièrement en local sur votre appareil. Il fournit des informations à partir de bases de connaissances textuelles chargées localement.</p><p><strong>3. 🛡️ CLAUSE DE NON-RESPONSABILITÉ</strong><br><strong>L'Administrateur et le créateur de Petio déclinent toute responsabilité, en aucun cas, concernant les décisions prises, les actions entreprises ou les conséquences subies par l'Utilisateur suite à l'utilisation de Petio.</strong> L'Utilisateur utilise l'application sous sa seule responsabilité.</p><p><strong>4. Accès et Modes</strong><br>Petio propose plusieurs modes de fonctionnement. Certains contenus peuvent être réservés aux utilisateurs disposant d'un accès VIP vérifié.</p><p><strong>5. Propriété intellectuelle</strong><br>L'interface, le code source et la structure de Petio sont la propriété exclusive de son créateur.</p></div></div>
                 <div class="setting-item" onclick="toggleSettingDesc('confidentialite')"><div class="setting-main"><i class="setting-icon ph ph-lock"></i><span>Confidentialité</span></div><div class="setting-desc" id="confidentialite-desc"><p><strong>1. Collecte des données</strong><br>Petio <strong>ne collecte aucune donnée personnelle</strong> sur des serveurs externes. Votre adresse email et votre code de transaction sont uniquement utilisés localement pour vérifier votre statut d'accès.</p><p><strong>2. Stockage local</strong><br>- L'historique de vos conversations est sauvegardé exclusivement dans le <code>localStorage</code> de votre appareil.<br>- Les fichiers de connaissances sont mis en cache localement pour un fonctionnement hors ligne.<br>- Vous pouvez effacer toutes vos données via le bouton "Déconnexion".</p><p><strong>3. Sécurité</strong><br>- Petio fonctionne en environnement sandbox (navigateur).<br>- Les liens externes s'ouvrent dans un nouvel onglet sécurisé.<br>- Aucune publicité, tracker ou script d'analyse n'est intégré.</p><p><strong>4. Responsabilité</strong><br>Comme indiqué dans les CGU, <strong>l'Administrateur n'est responsable en aucun cas</strong> de l'usage que vous faites des informations fournies.</p></div></div>
@@ -719,8 +314,6 @@
                 <div class="setting-item" onclick="deconnexionComplete()"><div class="setting-main"><i class="setting-icon ph ph-sign-out" style="color:#ff3b30"></i><span style="color:#ff3b30">Déconnexion</span></div><div class="setting-desc">Se déconnecter.</div></div>
             </div>
         </div>
-
-        <!-- Menu "+" 3 colonnes -->
         <div class="extra-menu" id="plusMenu">
             <div class="menu-grid">
                 <div class="menu-row" onclick="changerMode('Global')"><div class="menu-item"><i class="ph-fill ph-globe"></i></div><span class="menu-label">Global</span></div>
@@ -735,534 +328,344 @@
             </div>
         </div>
         <div class="input-bar" id="inputBar">
+            <div class="btn-mic" id="btnMic" onclick="toggleVoiceInput()"><i class="ph ph-microphone"></i></div>
             <div class="btn-plus" id="btnPlus" onclick="toggleMenu(event)"><i class="ph ph-plus-circle"></i></div>
             <div class="input-container"><textarea id="userInput" placeholder="Message..." rows="1" oninput="handleInput(this)"></textarea></div>
             <div class="btn-send" id="btnSend" onclick="envoyerMessage()"><i class="ph-fill ph-paper-plane-right"></i></div>
         </div>
     </div>
 </div>
-
 <script>
 (function(){
-    // ==================== CONFIG ====================
     const GALLERY_TXT_URL = 'gallery.txt';
     const DRIVE_API_KEY = 'AIzaSyDiZNla26G3wblOh9ZFLs2vvPFDI1ZTDJo';
     const DRIVE_FOLDER_ID = '1hUE4sYA5tkyFy2_QayOG2D-Qvms4-cIR';
     const URL_GAS_CHECK = "https://script.google.com/macros/s/AKfycbwECfIzsgINAu5IqMDaqcDuYtZAaspR16wvxu-BuLaqTdGJT-6Pec3hJs27lYvxzaIB2Q/exec";
-    const URL_GAS_GLOBAL = 'https://script.google.com/macros/s/AKfycbxCmsUiDwNhlqAa_qoIYx2Vtr3_2V4x63rjqqn7aU69787Ba9xymzpLLxmG9wF6HKVN/exec';
-    const UNLOCK_KEY_PROCEDURE = 'petio_procedure_unlocked';
+    const URL_GAS_GLOBAL = 'https://script.google.com/macros/s/AKfycbxCmsUiDwNhlqAa_qoIYx2Vtr3_2V4x63rjqqn7aU69787Ba9xymzpLLxmG9wF6HKVN/exec';    const UNLOCK_KEY_PROCEDURE = 'petio_procedure_unlocked';
     const UNLOCK_KEY_BIBLIOTHEQUE = 'petio_bibliotheque_unlocked';
     const UNLOCK_KEY_SERVICE = 'petio_service_unlocked';
     const BIB_CACHE_KEY = 'petio_bibliotheque_raw_cache';
-    
-    // ⚠️ GROQ API KEY - CORRIGÉE ET SUR UNE SEULE LIGNE
-    const GROQ_API_KEY = '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'; 
-
+    const GROQ_API_KEY = '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';
     let modeActuel = 'Cerveau';
     let galleryModeActive = false, bibliothequeModeActive = false;
     let currentLightboxImageUrl = '', currentLightboxImageId = '';
     const cacheFichiers = {}, fullTextCache = new Map();
     const LOCAL_MODES_BIB = ['novice', 'formate', 'procedure', 'application', 'divers'];
-    
-    // Éléments DOM
     const textarea = document.getElementById('userInput');
     const btnPlus = document.getElementById('btnPlus');
     const btnSend = document.getElementById('btnSend');
+    const btnMic = document.getElementById('btnMic');
     const menu = document.getElementById('plusMenu');
     const loadStatus = document.getElementById('load-status');
     const suggestionsContainer = document.getElementById('suggestionsContainer');
     let nomBot = localStorage.getItem('botName') || 'Petio';
     let isLoadingHistory = false;
     let traductionActive = localStorage.getItem('petio_traduction') !== 'false';
-
-    // ==================== PWA & SERVICE WORKER ====================
+    let recognition = null;
+    let isListening = false;
+    let ttsQueue = [];
+    let isSpeaking = false;
     const MANIFEST_DATA = { name:"Petio Assistant", short_name:"Petio", description:"Assistant intelligent local", start_url:".", display:"standalone", background_color:"#ffffff", theme_color:"#007aff", icons:[{ src:"https://i.ibb.co/zVsc6LDk/62943fce33c7f18d50a127290140782f.jpg", sizes:"512x512", type:"image/jpeg", purpose:"any maskable" }] };
     const manifestBlob = new Blob([JSON.stringify(MANIFEST_DATA)], {type:'application/manifest+json'});
     document.querySelector('link[rel="manifest"]').href = URL.createObjectURL(manifestBlob);
     if('serviceWorker' in navigator){ window.addEventListener('load',()=>{ const swCode = `const CACHE_NAME='petio-v1';const ASSETS=['.','https://unpkg.com/@phosphor-icons/web@2.1.1','https://i.ibb.co/zVsc6LDk/62943fce33c7f18d50a127290140782f.jpg'];self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE_NAME).then(cache=>cache.addAll(ASSETS)));self.skipWaiting();});self.addEventListener('activate',e=>{e.waitUntil(clients.claim());});self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(res=>res||fetch(e.request).catch(()=>caches.match('.'))));});`; const swBlob = new Blob([swCode],{type:'application/javascript'}); navigator.serviceWorker.register(URL.createObjectURL(swBlob)); }); }
-
-    // ==================== THEME & PHOTO ====================
-    function toggleTheme(){ document.body.classList.toggle('dark-theme'); document.getElementById('themeIcon').className = document.body.classList.contains('dark-theme')?'ph ph-sun':'ph ph-moon'; localStorage.setItem('theme', document.body.classList.contains('dark-theme')?'dark':'light'); }    if(localStorage.getItem('theme')==='dark'){ document.body.classList.add('dark-theme'); document.getElementById('themeIcon').className='ph ph-sun'; }
+    function toggleTheme(){ document.body.classList.toggle('dark-theme'); document.getElementById('themeIcon').className = document.body.classList.contains('dark-theme')?'ph ph-sun':'ph ph-moon'; localStorage.setItem('theme', document.body.classList.contains('dark-theme')?'dark':'light'); }
+    if(localStorage.getItem('theme')==='dark'){ document.body.classList.add('dark-theme'); document.getElementById('themeIcon').className='ph ph-sun'; }
     function loadUserPhoto(){ const a=document.getElementById('userAvatar'); const p=localStorage.getItem('petio_user_photo'); if(p){ a.style.backgroundImage=`url(${p})`; a.style.color='transparent'; a.textContent=''; } else { a.style.backgroundImage=''; a.style.color='white'; a.textContent='U'; } }
     window.changeUserPhoto=function(){ const i=document.createElement('input'); i.type='file'; i.accept='image/*'; i.onchange=e=>{ const f=e.target.files[0]; if(!f)return; const r=new FileReader(); r.onload=ev=>{ localStorage.setItem('petio_user_photo',ev.target.result); loadUserPhoto(); }; r.readAsDataURL(f); }; i.click(); };
-
-    // ==================== TRADUCTION ====================
     async function traduireGoogle(texte, source, cible){ if(!texte)return ''; try{ const r=await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=${source}&tl=${cible}&dt=t&q=${encodeURIComponent(texte)}`); const d=await r.json(); return d[0].map(p=>p[0]).join(''); }catch(e){return texte;} }
-    async function traduireENversFR(t){ if(!traductionActive)return t; return traduireGoogle(t,'en','fr'); }
     async function traduireFR(t){ return traduireGoogle(t,'en','fr'); }
-
-    // ==================== EXTRACTION TEXTE LOCAL ====================
     async function extraireTexteFichierLocal(fileName){ const lower=fileName.toLowerCase(); try{ const r=await fetch(fileName); if(!r.ok)return null; if(lower.endsWith('.txt'))return await r.text(); if(lower.endsWith('.pdf')){ const b=await r.arrayBuffer(); const pdf=await pdfjsLib.getDocument({b}).promise; let t=''; for(let i=1;i<=pdf.numPages;i++){ const page=await pdf.getPage(i); const c=await page.getTextContent(); t+=c.items.map(it=>it.str).join(' ')+'\n'; } return t; } if(lower.endsWith('.docx')||lower.endsWith('.doc')){ const b=await r.arrayBuffer(); const res=await mammoth.extractRawText({arrayBuffer:b}); return res.value; } return null; }catch(e){return null;} }
-
-    // ==================== CHARGEMENT FICHIERS MODES ====================
     async function chargerFichiersMode(mode){ if(cacheFichiers[mode])return cacheFichiers[mode]; let contenu=''; const base=mode.toLowerCase(); try{ const r=await fetch(`${base}.txt`); if(r.ok)contenu+=await r.text()+'\n'; }catch(e){} const motifs=[ i=>`${base}${i}.txt`, i=>`${base}_${i}.txt`, i=>`${base}-${i}.txt` ]; for(let motif of motifs){ let i=1,fails=0; while(i<=500){ const url=motif(i); try{ const r=await fetch(url); if(r.ok){ contenu+=await r.text()+'\n'; fails=0; }else fails++; }catch(e){ fails++; } if(fails>=3)break; i++; } } if(mode==='Procedure'){ const prefixes=['procedure','proc','doc']; const exts=['.pdf','.docx']; for(let p of prefixes){ for(let e of exts){ let i=1,fails=0; while(i<=500){ const fn=`${p}${i}${e}`; try{ const t=await extraireTexteFichierLocal(fn); if(t){ contenu+=`[Fichier: ${fn}]\n${t}\n\n`; fullTextCache.set(fn,t); fails=0; }else fails++; }catch(e){ fails++; } if(fails>=3)break; i++; } } } } if(mode==='Divers'){ const seps=['','_','-','.']; for(let num=1;num<=9;num++){ for(let s of seps){ const fn=`divers${s}${num}.txt`; try{ const r=await fetch(fn); if(r.ok)contenu+=`[Fichier: ${fn}]\n${await r.text()}\n\n`; }catch(e){} const fn2=`divers${num}${s}.txt`; try{ const r=await fetch(fn2); if(r.ok)contenu+=`[Fichier: ${fn2}]\n${await r.text()}\n\n`; }catch(e){} } } try{ const r=await fetch('divers.txt'); if(r.ok)contenu+=await r.text()+'\n'; }catch(e){} } if(!contenu.trim())return null; cacheFichiers[mode]=contenu; return contenu; }
-
-    // ==================== RECHERCHE MODE GLOBAL ====================
-    async function rechercherModeGlobal(query){ try{ const url=`${URL_GAS_GLOBAL}?action=search&q=${encodeURIComponent(query)}`; const r=await fetch(url); const d=await r.json(); if(d.success&&d.results.length>0){ if(d.results.length===1&&!d.fallback) return await traduireENversFR(d.results[0].fullText); const matches=d.results.map(r=>({full:r.fullText, preview:r.excerpt.replace(/<[^>]*>/g,'')})); const msg=d.fallback?(d.message||`ℹ️ Aucun résultat exact. Suggestions aléatoires :`):`✅ Trouvé ${d.count} résultat(s) dans Petio_global. Choisissez une option ci-dessous :`; return {message:msg, matches}; } return d.success?`ℹ️ Aucun résultat pour "${query}" dans Petio_global.`:`⚠️ Erreur de connexion au mode Global.`; }catch(e){ return `⚠️ Impossible de contacter le mode Global.`; } }
-
-    // ==================== MOTEUR DE RECHERCHE (CERVEAU = GROQ) ====================
+    async function rechercherModeGlobal(query){ try{ const url=`${URL_GAS_GLOBAL}?action=search&q=${encodeURIComponent(query)}`; const r=await fetch(url); const d=await r.json(); if(d.success&&d.results.length>0){ if(d.results.length===1&&!d.fallback) return await traduireFR(d.results[0].fullText); const matches=d.results.map(r=>({full:r.fullText, preview:r.excerpt.replace(/<[^>]*>/g,'')})); const msg=d.fallback?(d.message||`ℹ️ Aucun résultat exact. Suggestions aléatoires :`):`✅ Trouvé ${d.count} résultat(s) dans Petio_global. Choisissez une option ci-dessous :`; return {message:msg, matches}; } return d.success?`ℹ️ Aucun résultat pour "${query}" dans Petio_global.`:`⚠️ Erreur de connexion au mode Global.`; }catch(e){ return `⚠️ Impossible de contacter le mode Global.`; } }
+    function checkCerveauLimit(){
+        if(modeActuel !== 'Cerveau') return {allowed: true};
+        const email = localStorage.getItem('userEmail') || 'anonymous';
+        const key = `petio_cerveau_limit_${email}`;
+        let data = JSON.parse(localStorage.getItem(key) || '{"count":0,"timestamp":0}');
+        const now = Date.now();
+        if(now - data.timestamp > 2 * 60 * 60 * 1000){ data = {count:0, timestamp:now}; localStorage.setItem(key, JSON.stringify(data)); }
+        if(data.count >= 15){
+            const remaining = 2 * 60 * 60 * 1000 - (now - data.timestamp);
+            const min = Math.floor(remaining / 60000);
+            const sec = Math.floor((remaining % 60000) / 1000);
+            return {allowed: false, msg: `⏳ Limite atteinte ! Réessayez dans ${min}m ${sec}s.`};
+        }        return {allowed: true, key, data};
+    }
+    function incrementCerveauCount(check){ if(check.allowed){ check.data.count++; localStorage.setItem(check.key, JSON.stringify(check.data)); } }
     async function rechercherDansFichiers(mode,msg){
         if(mode==='Global') return await rechercherModeGlobal(msg);
         if(mode==='Gallery'||mode==='Bibliotheque') return null;
-        
-        // ===== MODE CERVEAU : GROQ API =====
         if(mode === 'Cerveau'){
+            const limitCheck = checkCerveauLimit();
+            if(!limitCheck.allowed) return limitCheck.msg;
             try {
                 document.getElementById('typing').classList.add('show');
-                
-                // ✅ URL GROQ
-                const url = 'https://api.groq.com/openai/v1/chat/completions';
-                
-                const response = await fetch(url, {
+                const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
                     method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${GROQ_API_KEY}`,
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Authorization': `Bearer ${GROQ_API_KEY}`, 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        model: "llama-3.1-8b-instant", // Modèle rapide et gratuit
+                        model: "llama-3.1-8b-instant",
                         messages: [
-                            { role: "system", content: "Tu es Petio, un assistant intelligent, serviable et poli. Tu réponds toujours en français." },
+                            { role: "system", content: "Tu es Petio, un assistant intelligent, serviable et poli. Tu réponds TOUJOURS en français." },
                             { role: "user", content: msg }
                         ],
-                        temperature: 0.7,
-                        max_tokens: 500
+                        temperature: 0.7, max_tokens: 500
                     })
                 });
-                
-                if (!response.ok) {
-                    const err = await response.json().catch(() => ({}));                    console.error('❌ Erreur Groq:', err);
-                    if(response.status === 401) throw new Error("Clé API Groq invalide.");
-                    if(response.status === 429) throw new Error("Trop de requêtes.");
-                    throw new Error(`Erreur HTTP ${response.status}`);
-                }
-                
+                if (!response.ok) { const err = await response.json().catch(() => ({})); throw new Error(response.status === 401 ? "Clé API invalide." : `Erreur HTTP ${response.status}`); }
                 const data = await response.json();
                 const text = data.choices[0]?.message?.content;
-                
-                if (text) return text.trim();
+                if(text){ incrementCerveauCount(limitCheck); return text.trim(); }
                 return "Désolé, je n'ai pas de réponse pour l'instant.";
-                
-            } catch (e) {
-                console.error('💥 Exception Groq:', e);
-                return `❌ Erreur IA: ${e.message}`;
-            } finally {
-                document.getElementById('typing').classList.remove('show');
-            }
+            } catch (e) { return `❌ Erreur IA: ${e.message}`; }
+            finally { document.getElementById('typing').classList.remove('show'); }
         }
-        
-        // Logique existante pour les autres modes
         const contenu=await chargerFichiersMode(mode);
         if(!contenu) return `Désolé, la base du mode ${mode} est vide.`;
         const paras=contenu.split(/\n\s*\n/).filter(p=>p.trim().length>20);
-        const q=normalize(msg);
+        const q=msg.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,'');
         const words=q.split(/[^a-z0-9]/i).filter(w=>w.length>=2);
         if(words.length===0) return `Je n'ai pas compris "${msg}".`;
         const matches=[];
         for(let p of paras){
-            const np=normalize(p);
+            const np=p.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,'');
             if(words.every(w=>np.includes(w))){
                 const ww=p.trim().split(/\s+/);
                 const preview=ww.slice(0,15).join(' ')+(ww.length>15?'...':'');
-                let src=null;
-                const fm=p.match(/^\[Fichier: (.*?)\]/);
-                if(fm)src=fm[1];
+                let src=null; const fm=p.match(/^\[Fichier: (.*?)\]/); if(fm)src=fm[1];
                 matches.push({full:p.trim(),preview,sourceFile:src});
             }
         }
         if(matches.length>0){
             if(matches.length===1){
-                const s=matches[0];
-                const t=await traduireENversFR(s.full);
+                const s=matches[0];                const t=await traduireFR(s.full);
                 if(s.sourceFile&&(s.sourceFile.endsWith('.pdf')||s.sourceFile.endsWith('.docx'))) return {__isDocumentMessage:true, text:t, sourceFile:s.sourceFile};
                 return t;
             }
             return { message:`J'ai trouvé ${matches.length} résultats pour "${msg}". Choisissez une option ci-dessous :`, matches };
         }
         const rnd=paras.sort(()=>Math.random()-0.5).slice(0,3).map(p=>{
-            const ww=p.trim().split(/\s+/);            const preview=ww.slice(0,15).join(' ')+(ww.length>15?'...':'');
-            let src=null;
-            const fm=p.match(/^\[Fichier: (.*?)\]/);
-            if(fm)src=fm[1];
+            const ww=p.trim().split(/\s+/); const preview=ww.slice(0,15).join(' ')+(ww.length>15?'...':'');
+            let src=null; const fm=p.match(/^\[Fichier: (.*?)\]/); if(fm)src=fm[1];
             return {full:p.trim(),preview,sourceFile:src};
         });
         return { message:`Je n'ai pas trouvé d'information pour "${msg}" dans le mode ${mode}. Voici quelques suggestions aléatoires :`, matches:rnd };
     }
-
-    function normalize(s){ return s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,''); }
-
-    // ==================== GALLERY ====================
     const downloadedKey='petio_gallery_downloaded';
     function getDownloadedMap(){ try{ return JSON.parse(localStorage.getItem(downloadedKey)||'{}'); }catch(e){return{};} }
     function isDownloaded(id){ return !!getDownloadedMap()[id]; }
     function setDownloaded(id){ const m=getDownloadedMap(); m[id]=true; localStorage.setItem(downloadedKey,JSON.stringify(m)); }
-    
     async function loadGalleryFromTxt(){ 
-        const v=document.getElementById('galleryView'); 
-        v.innerHTML='<div class="gallery-loading"><i class="ph ph-spinner"></i> Chargement...</div>'; 
+        const v=document.getElementById('galleryView'); v.innerHTML='<div class="gallery-loading"><i class="ph ph-spinner"></i> Chargement...</div>'; 
         try{ 
-            const r=await fetch(GALLERY_TXT_URL); 
-            if(!r.ok) throw new Error('Fichier gallery.txt introuvable'); 
-            const t=await r.text(); 
-            const urlRegex = /https?:\/\/[^\s"'<>]+/gi;
-            const urls = t.match(urlRegex) || [];
-            const uniqueUrls = [...new Set(urls)];
-            
-            if(!uniqueUrls.length){ 
-                v.innerHTML='<div class="gallery-loading">Aucune image trouvée.</div>'; 
-                return; 
-            }
-            
-            const items = uniqueUrls.map(url => ({
-                url: url,
-                id: btoa(url).substring(0,20)
-            }));
-            
+            const r=await fetch(GALLERY_TXT_URL); if(!r.ok) throw new Error('Fichier gallery.txt introuvable'); 
+            const t=await r.text(); const urls = t.match(/https?:\/\/[^\s"'<>]+/gi) || []; const uniqueUrls = [...new Set(urls)];
+            if(!uniqueUrls.length){ v.innerHTML='<div class="gallery-loading">Aucune image trouvée.</div>'; return; }
             let h='<div class="gallery-container">'; 
-            items.forEach(it=>{ 
-                const dl=isDownloaded(it.id); 
-                h+=`<div class="gallery-item" data-id="${it.id}" data-url="${it.url}" onclick="openLightbox(this)"><img src="${it.url}" loading="lazy" onerror="this.style.display='none'">${dl?'<span class="downloaded-badge"><i class="ph ph-check"></i></span>':''}</div>`; 
-            }); 
-            h+='</div>'; 
-            v.innerHTML=h; 
-        }catch(e){ 
-            v.innerHTML='<div class="gallery-loading">Erreur.</div>'; 
-        } 
+            uniqueUrls.forEach(url=>{ const id=btoa(url).substring(0,20); const dl=isDownloaded(id); h+=`<div class="gallery-item" data-id="${id}" data-url="${url}" onclick="openLightbox(this)"><img src="${url}" loading="lazy" onerror="this.style.display='none'">${dl?'<span class="downloaded-badge"><i class="ph ph-check"></i></span>':''}</div>`; }); 
+            h+='</div>'; v.innerHTML=h; 
+        }catch(e){ v.innerHTML='<div class="gallery-loading">Erreur.</div>'; } 
     }
     window.openLightbox=function(el){ currentLightboxImageUrl=el.dataset.url; currentLightboxImageId=el.dataset.id; document.getElementById('lightboxImg').src=currentLightboxImageUrl; const b=document.getElementById('lightboxDownloadBtn'); b.classList.toggle('downloaded',isDownloaded(currentLightboxImageId)); document.getElementById('galleryLightbox').classList.add('show'); };
     window.closeLightbox=function(){ document.getElementById('galleryLightbox').classList.remove('show'); };
-    window.downloadCurrentImage=function(e){ e.stopPropagation(); if(currentLightboxImageUrl){ const a=document.createElement('a'); a.href=currentLightboxImageUrl; a.download=''; a.click(); setDownloaded(currentLightboxImageId); document.getElementById('lightboxDownloadBtn').classList.add('downloaded'); const it=document.querySelector(`.gallery-item[data-id="${currentLightboxImageId}"]`); if(it&&!it.querySelector('.downloaded-badge')){ const b=document.createElement('span'); b.className='downloaded-badge'; b.innerHTML='<i class="ph ph-check"></i>'; it.appendChild(b); } } };
+    window.downloadCurrentImage=async function(e){ 
+        e.stopPropagation(); if(!currentLightboxImageUrl) return;
+        const btn = document.getElementById('lightboxDownloadBtn');
+        try {
+            btn.innerHTML = '<i class="ph ph-spinner ph-spin"></i>';
+            const res = await fetch(currentLightboxImageUrl); const blob = await res.blob();
+            const url = window.URL.createObjectURL(blob); const a = document.createElement('a');
+            a.href = url; a.download = `petio_img_${currentLightboxImageId}.jpg`; document.body.appendChild(a); a.click(); document.body.removeChild(a);
+            window.URL.revokeObjectURL(url); setDownloaded(currentLightboxImageId);
+            btn.innerHTML = '<i class="ph ph-check"></i>'; btn.classList.add('downloaded');
+            const item = document.querySelector(`.gallery-item[data-id="${currentLightboxImageId}"]`);
+            if(item && !item.querySelector('.downloaded-badge')){ const badge = document.createElement('span'); badge.className='downloaded-badge'; badge.innerHTML='<i class="ph ph-check"></i>'; item.appendChild(badge); }
+            setTimeout(() => { btn.innerHTML = '<i class="ph ph-download-simple"></i>'; }, 2000);
+        } catch(err) { afficherErreur('Erreur téléchargement'); }
+    };
     window.refreshGallery=function(){ if(galleryModeActive)loadGalleryFromTxt(); };
-
-    // ==================== BIBLIOTHÈQUE ====================
-    let allBibliothequeFiles = [];
-    let bibliothequeRawCache = {};
-
+    let allBibliothequeFiles = []; let bibliothequeRawCache = {};
     function loadBibCache(){ try{ bibliothequeRawCache = JSON.parse(localStorage.getItem(BIB_CACHE_KEY)||'{}'); }catch(e){ bibliothequeRawCache = {}; } }
-    function saveBibCache(){ localStorage.setItem(BIB_CACHE_KEY, JSON.stringify(bibliothequeRawCache)); }
-    loadBibCache();
-
-    async function getFileRawContent(file){
-        const cacheKey = file.source === 'local' ? file.path : file.id;
+    function saveBibCache(){ localStorage.setItem(BIB_CACHE_KEY, JSON.stringify(bibliothequeRawCache)); } loadBibCache();
+    async function getFileRawContent(file){        const cacheKey = file.source === 'local' ? file.path : file.id;
         if(bibliothequeRawCache[cacheKey]) return bibliothequeRawCache[cacheKey];
-        
         let raw = '';
-        if(file.source === 'local'){
-            raw = await extraireTexteFichierLocal(file.path);
-        } else {
-            const mime = file.mimeType;
-            const id = file.id;
-            if(mime === 'application/vnd.google-apps.document'){
-                const eurl = `https://www.googleapis.com/drive/v3/files/${id}/export?mimeType=text/plain&key=${DRIVE_API_KEY}`;
-                raw = await (await fetch(eurl)).text();
-            } else if(mime === 'application/pdf'){
-                const r = await fetch(`https://www.googleapis.com/drive/v3/files/${id}?alt=media&key=${DRIVE_API_KEY}`);
-                const b = await r.arrayBuffer();
-                const pdf = await pdfjsLib.getDocument({b}).promise;
-                for(let i=1; i<=pdf.numPages; i++){
-                    const p = await pdf.getPage(i);
-                    const c = await p.getTextContent();
-                    raw += c.items.map(it=>it.str).join(' ') + '\n';
-                }
-            } else {
-                const dl = await fetch(`https://www.googleapis.com/drive/v3/files/${id}?alt=media&key=${DRIVE_API_KEY}`);
-                const blob = await dl.blob();
-                if(blob.type.includes('word') || mime === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'){
-                    const b = await blob.arrayBuffer();
-                    raw = (await mammoth.extractRawText({arrayBuffer:b})).value;
-                } else {
-                    raw = await blob.text();
-                }
-            }
+        if(file.source === 'local'){ raw = await extraireTexteFichierLocal(file.path); }
+        else {
+            const mime = file.mimeType; const id = file.id;
+            if(mime === 'application/vnd.google-apps.document'){ raw = await (await fetch(`https://www.googleapis.com/drive/v3/files/${id}/export?mimeType=text/plain&key=${DRIVE_API_KEY}`)).text(); }
+            else if(mime === 'application/pdf'){ const b = await (await fetch(`https://www.googleapis.com/drive/v3/files/${id}?alt=media&key=${DRIVE_API_KEY}`)).arrayBuffer(); const pdf = await pdfjsLib.getDocument({b}).promise; for(let i=1; i<=pdf.numPages; i++){ const p = await pdf.getPage(i); const c = await p.getTextContent(); raw += c.items.map(it=>it.str).join(' ') + '\n'; } }
+            else { const dl = await fetch(`https://www.googleapis.com/drive/v3/files/${id}?alt=media&key=${DRIVE_API_KEY}`); const blob = await dl.blob(); if(blob.type.includes('word')){ raw = (await mammoth.extractRawText({arrayBuffer: await blob.arrayBuffer()})).value; } else { raw = await blob.text(); } }
         }
-        if(raw){
-            bibliothequeRawCache[cacheKey] = raw;
-            saveBibCache();
-        }        return raw || '(Fichier vide)';
+        if(raw){ bibliothequeRawCache[cacheKey] = raw; saveBibCache(); } return raw || '(Fichier vide)';
     }
-
     async function loadBibliotheque(){ 
-        const view=document.getElementById('bibliothequeView'); 
-        view.innerHTML='<div class="gallery-loading"><i class="ph ph-spinner"></i> Chargement...</div>'; 
+        const view=document.getElementById('bibliothequeView'); view.innerHTML='<div class="gallery-loading"><i class="ph ph-spinner"></i> Chargement...</div>'; 
         try{ 
             const files=[]; 
-            for(const mode of LOCAL_MODES_BIB){ 
-                const base=mode; 
-                const exts=['txt','pdf','docx','doc']; 
-                for(const ext of exts){ 
-                    const name=`${base}.${ext}`; 
-                    if(await extraireTexteFichierLocal(name)!==null) files.push({name,source:'local',path:name}); 
-                } 
-                const pats=[]; 
-                for(const ext of exts){ 
-                    pats.push(i=>`${base}${i}.${ext}`, i=>`${base}_${i}.${ext}`, i=>`${base}-${i}.${ext}`); 
-                } 
-                for(const p of pats){ 
-                    let i=1,fails=0; 
-                    while(i<=500){ 
-                        const name=p(i); 
-                        if(await extraireTexteFichierLocal(name)!==null){ 
-                            files.push({name,source:'local',path:name}); 
-                            fails=0; 
-                        }else fails++; 
-                        if(fails>=3)break; 
-                        i++; 
-                    } 
-                } 
-            } 
-            try{ 
-                const dr=await fetch(`https://www.googleapis.com/drive/v3/files?q='${DRIVE_FOLDER_ID}'+in+parents&key=${DRIVE_API_KEY}&fields=files(id,name,mimeType)`); 
-                const dd=await dr.json(); 
-                if(dd.files) dd.files.forEach(f=>{ 
-                    if(!f.name.match(/\.(jpg|jpeg|png|gif|webp|svg)$/i)) files.push({name:f.name,source:'drive',id:f.id,mimeType:f.mimeType}); 
-                }); 
-            }catch(e){}
-            
-            allBibliothequeFiles = files.sort((a,b)=>a.name.localeCompare(b.name));
-            renderBibliothequeList();
-        }catch(e){ 
-            view.innerHTML='<p>Erreur.</p>'; 
-        } 
+            for(const mode of LOCAL_MODES_BIB){ const base=mode; const exts=['txt','pdf','docx','doc']; for(const ext of exts){ const name=`${base}.${ext}`; if(await extraireTexteFichierLocal(name)!==null) files.push({name,source:'local',path:name}); } const pats=[]; for(const ext of exts){ pats.push(i=>`${base}${i}.${ext}`, i=>`${base}_${i}.${ext}`, i=>`${base}-${i}.${ext}`); } for(const p of pats){ let i=1,fails=0; while(i<=500){ const name=p(i); if(await extraireTexteFichierLocal(name)!==null){ files.push({name,source:'local',path:name}); fails=0; }else fails++; if(fails>=3)break; i++; } } } 
+            try{ const dr=await fetch(`https://www.googleapis.com/drive/v3/files?q='${DRIVE_FOLDER_ID}'+in+parents&key=${DRIVE_API_KEY}&fields=files(id,name,mimeType)`); const dd=await dr.json(); if(dd.files) dd.files.forEach(f=>{ if(!f.name.match(/\.(jpg|jpeg|png|gif|webp|svg)$/i)) files.push({name:f.name,source:'drive',id:f.id,mimeType:f.mimeType}); }); }catch(e){}
+            allBibliothequeFiles = files.sort((a,b)=>a.name.localeCompare(b.name)); renderBibliothequeList();
+        }catch(e){ view.innerHTML='<p>Erreur.</p>'; } 
     }
-
-    function renderBibliothequeList(){
-        const view=document.getElementById('bibliothequeView');
-        if(allBibliothequeFiles.length===0){             view.innerHTML='<p style="text-align:center;padding:20px;">Aucun fichier trouvé.</p>'; 
-            return; 
-        }
-        let h = '<div class="bibliotheque-suggestions">';
-        allBibliothequeFiles.forEach(f=>{ 
-            h+=`<button class="suggestion-btn" data-name="${f.name}" data-source="${f.source}" data-path="${f.path||''}" data-id="${f.id||''}" data-mime="${f.mimeType||''}" onclick="openBibliothequeFile(this)">📄 ${f.name}</button>`; 
-        }); 
-        h+='</div>'; 
-        view.innerHTML=h; 
-    }
-
-    window.openBibliothequeFile = async function(btn){ 
-        const modal=document.getElementById('lectureModal'); 
-        const title=document.getElementById('lectureTitle'); 
-        const content=document.getElementById('lectureContent'); 
-        title.textContent=btn.dataset.name; 
-        content.textContent='Chargement et traduction...'; 
-        modal.classList.add('show'); 
-        try{ 
-            const file = {
-                name: btn.dataset.name,
-                source: btn.dataset.source,
-                path: btn.dataset.path,
-                id: btn.dataset.id,
-                mimeType: btn.dataset.mime
-            };
-            const raw = await getFileRawContent(file);
-            const translated = await traduireFR(raw);
-            content.textContent = translated;
-        }catch(e){ 
-            content.textContent='Erreur de lecture.'; 
-        } 
-    };
+    function renderBibliothequeList(){ const view=document.getElementById('bibliothequeView'); if(allBibliothequeFiles.length===0){ view.innerHTML='<p style="text-align:center;padding:20px;">Aucun fichier trouvé.</p>'; return; } let h = '<div class="bibliotheque-suggestions">'; allBibliothequeFiles.forEach(f=>{ h+=`<button class="suggestion-btn" data-name="${f.name}" data-source="${f.source}" data-path="${f.path||''}" data-id="${f.id||''}" data-mime="${f.mimeType||''}" onclick="openBibliothequeFile(this)">📄 ${f.name}</button>`; }); h+='</div>'; view.innerHTML=h; }
+    window.openBibliothequeFile = async function(btn){ const modal=document.getElementById('lectureModal'); document.getElementById('lectureTitle').textContent=btn.dataset.name; document.getElementById('lectureContent').textContent='Chargement et traduction...'; modal.classList.add('show'); try{ const file = {name: btn.dataset.name, source: btn.dataset.source, path: btn.dataset.path, id: btn.dataset.id, mimeType: btn.dataset.mime}; document.getElementById('lectureContent').textContent = await traduireFR(await getFileRawContent(file)); }catch(e){ document.getElementById('lectureContent').textContent='Erreur de lecture.'; } };
     window.closeLectureModal=function(){ document.getElementById('lectureModal').classList.remove('show'); };
-    window.copyLectureContent=function(){ const t=document.getElementById('lectureContent').textContent; navigator.clipboard.writeText(t); alert('Copié !'); };
+    window.copyLectureContent=function(){ navigator.clipboard.writeText(document.getElementById('lectureContent').textContent); alert('Copié !'); };
     window.refreshBibliotheque=function(){ if(bibliothequeModeActive) loadBibliotheque(); };
-
-    // ==================== MODALES VIP INDEPENDANTES ====================
-    function isProcedureUnlocked(){ return localStorage.getItem(UNLOCK_KEY_PROCEDURE)==='true'; }
-    function setProcedureUnlocked(){ localStorage.setItem(UNLOCK_KEY_PROCEDURE,'true'); }
+    window.toggleVoiceInput = function(){
+        if(!recognition){
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if(!SpeechRecognition){ afficherErreur('Micro non supporté'); return; }
+            recognition = new SpeechRecognition(); recognition.lang = 'fr-FR'; recognition.continuous = false; recognition.interimResults = false;
+            recognition.onresult = (event) => { textarea.value = event.results[0][0].transcript; handleInput(textarea); isListening=false; btnMic.classList.remove('listening'); };
+            recognition.onerror = () => { isListening=false; btnMic.classList.remove('listening'); };
+            recognition.onend = () => { isListening=false; btnMic.classList.remove('listening'); };
+        }
+        if(isListening){ recognition.stop(); isListening=false; btnMic.classList.remove('listening'); }
+        else { try{ recognition.start(); isListening=true; btnMic.classList.add('listening'); }catch(e){} }
+    };
+    function getBestFrenchVoice() {
+        const voices = speechSynthesis.getVoices();
+        const priorities = ['google', 'microsoft', 'samantha', 'daniel', 'paul', 'thomas', 'aurelie'];
+        for (let p of priorities) {
+            const v = voices.find(v => v.lang.startsWith('fr') && v.name.toLowerCase().includes(p));
+            if (v) return v;
+        }
+        return voices.find(v => v.lang.startsWith('fr')) || voices[0];
+    }
+    function cleanTextForSpeech(text) {
+        // Supprimer les emojis
+        text = text.replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F1E0}-\u{1F1FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, '');        // Supprimer la ponctuation excessive mais garder les points pour les phrases
+        text = text.replace(/[,.!?;:]+/g, function(match) {
+            return match.length > 1 ? '. ' : match;
+        });
+        // Remplacer les sauts de ligne par des espaces
+        text = text.replace(/\n+/g, ' ');
+        // Supprimer les caractères spéciaux
+        text = text.replace(/[#*_`~>\[\](){}|\\]/g, '');
+        // Nettoyer les espaces multiples
+        text = text.replace(/\s+/g, ' ').trim();
+        return text;
+    }
+    window.speakText = function(text, btnEl) {
+        window.speechSynthesis.cancel();
+        if (!text || !('speechSynthesis' in window)) return;
+        const cleanedText = cleanTextForSpeech(text);
+        const sentences = cleanedText.match(/[^.!?]+[.!?]+/g) || [cleanedText];
+        const voice = getBestFrenchVoice();
+        ttsQueue = sentences.map(s => ({text: s.trim(), voice}));
+        isSpeaking = true;
+        btnEl.classList.add('speaking');
+        processQueue(btnEl);
+    };
+    function processQueue(btnEl) {
+        if (ttsQueue.length === 0 || !isSpeaking) {
+            btnEl.classList.remove('speaking');
+            isSpeaking = false;
+            return;
+        }
+        const {text, voice} = ttsQueue.shift();
+        const utter = new SpeechSynthesisUtterance(text);
+        utter.voice = voice;
+        utter.lang = 'fr-FR';
+        utter.rate = 0.95;
+        utter.pitch = 1.0;
+        utter.volume = 1.0;
+        if ('wakeLock' in navigator) {
+            navigator.wakeLock.request('screen').catch(()=>{});
+        }
+        utter.onend = () => processQueue(btnEl);
+        utter.onerror = () => processQueue(btnEl);
+        speechSynthesis.speak(utter);
+    }
+    window.stopSpeaking = function(btnEl) {
+        window.speechSynthesis.cancel();
+        ttsQueue = [];
+        isSpeaking = false;
+        btnEl.classList.remove('speaking');
+    };
+    function isProcedureUnlocked(){ return localStorage.getItem(UNLOCK_KEY_PROCEDURE)==='true'; }    function setProcedureUnlocked(){ localStorage.setItem(UNLOCK_KEY_PROCEDURE,'true'); }
     function isBibliothequeUnlocked(){ return localStorage.getItem(UNLOCK_KEY_BIBLIOTHEQUE)==='true'; }
     function setBibliothequeUnlocked(){ localStorage.setItem(UNLOCK_KEY_BIBLIOTHEQUE,'true'); }
     function isServiceUnlocked(){ return localStorage.getItem(UNLOCK_KEY_SERVICE)==='true'; }
     function setServiceUnlocked(){ localStorage.setItem(UNLOCK_KEY_SERVICE,'true'); }
-    
-    function showBibliothequeUnlockModal(){
-        document.getElementById('bibliotheque-unlock-modal').style.display='block';
-        document.getElementById('biblio-step-code').classList.add('active');
-        document.getElementById('biblio-step-payment').classList.remove('active');
-        document.getElementById('biblio-code-input').value = '';    }
-    window.closeBibliothequeUnlockModal = function(){
-        document.getElementById('bibliotheque-unlock-modal').style.display='none';
-    };
-    window.verifierCodeAccesBibliotheque = async function(){
-        const btn = document.getElementById('btnValiderBiblio');
-        const code = document.getElementById('biblio-code-input').value.trim();
-        const email = localStorage.getItem('userEmail')||'';
-        if(!code){ alert('Code requis'); return; }
-        btn.disabled = true; btn.textContent = 'Vérification...';
-        try{
-            const r = await fetch(`${URL_GAS_CHECK}?action=checkProcedureCode&email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}`);
-            const t = await r.text();
-            if(t.trim()==='VALIDE'){
-                setBibliothequeUnlocked();
-                closeBibliothequeUnlockModal();
-                enterBibliothequeMode();
-            } else {
-                document.getElementById('biblio-step-code').classList.remove('active');
-                document.getElementById('biblio-step-payment').classList.add('active');
-            }
-        }catch(e){ alert('Erreur réseau'); }
-        btn.disabled = false; btn.textContent = 'Valider';
-    };
-
-    function showUnlockModal(){
-        document.getElementById('unlock-step-code').classList.add('active');
-        document.getElementById('unlock-step-payment').classList.remove('active');
-        document.getElementById('unlock-code-input').value = '';
-        document.getElementById('unlock-modal').classList.add('show');
-    }
-    window.closeUnlockModal=function(){ 
-        document.getElementById('unlock-modal').classList.remove('show');
-    };
-    window.contacterAdmin=function(c){ 
-        let m="Bonjour, je contacte l'administrateur de Petio."; 
-        if(c==='vip') m="Bonjour, je souhaite obtenir un accès VIP pour Petio."; 
-        else if(c==='payment') m="Bonjour, le code saisi est invalide."; 
-        else if(c==='biblio') m="Bonjour, je souhaite obtenir l'accès à la Bibliothèque."; 
-        else if(c==='code') m="Bonjour, j'ai un problème avec le code d'accès Procédure."; 
-        else if(c==='service' || c==='service_payment') m="Bonjour, je souhaite obtenir l'accès au Service."; 
-        window.open(`https://wa.me/12496806826?text=${encodeURIComponent(m)}`,'_blank'); 
-    };
-    async function verifierCodeAcces(){ 
-        const btn = document.getElementById('btnValiderProcedure');
-        const code=document.getElementById('unlock-code-input').value.trim(); 
-        const email=localStorage.getItem('userEmail')||''; 
-        if(!code){ afficherErreur("Veuillez saisir un code."); return; } 
-        if(!email){ afficherErreur("Email utilisateur introuvable."); return; } 
-        btn.disabled = true; btn.textContent = 'Vérification...';        try{ 
-            const r=await fetch(`${URL_GAS_CHECK}?action=checkProcedureCode&email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}`); 
-            const t=await r.text(); 
-            if(t.trim()==='VALIDE'){ 
-                setProcedureUnlocked(); 
-                closeUnlockModal(); 
-                await activerModeProcedure(); 
-            }else{ 
-                document.getElementById('unlock-step-code').classList.remove('active'); 
-                document.getElementById('unlock-step-payment').classList.add('active'); 
-            } 
-        }catch(e){ afficherErreur("Erreur réseau."); }
-        btn.disabled = false; btn.textContent = 'Valider';
-    }
-
-    // ==================== MODAL SERVICE (avec mémoire) ====================
-    window.openServiceModal = function(){
-        if(isServiceUnlocked()){
-            closeSettings();
-            afficherAZOverlay();
-            return;
-        }
-        closeSettings();
-        document.getElementById('service-unlock-modal').style.display='block';
-        document.getElementById('service-step-code').classList.add('active');
-        document.getElementById('service-step-payment').classList.remove('active');
-        document.getElementById('service-code-input').value = '';
-    };
-    window.closeServiceUnlockModal = function(){
-        document.getElementById('service-unlock-modal').style.display='none';
-    };
-    window.verifierCodeAccesService = async function(){
-        const btn = document.getElementById('btnValiderService');
-        const code = document.getElementById('service-code-input').value.trim();
-        const email = localStorage.getItem('userEmail')||'';
-        if(!code){ alert('Code requis'); return; }
-        btn.disabled = true; btn.textContent = 'Vérification...';
-        try{
-            const r = await fetch(`${URL_GAS_CHECK}?action=checkProcedureCode&email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}`);
-            const t = await r.text();
-            if(t.trim()==='VALIDE'){
-                setServiceUnlocked();
-                closeServiceUnlockModal();
-                afficherAZOverlay();
-            } else {
-                document.getElementById('service-step-code').classList.remove('active');
-                document.getElementById('service-step-payment').classList.add('active');
-            }
-        }catch(e){ alert('Erreur réseau'); }
-        btn.disabled = false; btn.textContent = 'Valider';    };
-
-    function afficherAZOverlay(){
-        const overlay = document.getElementById('az-overlay');
-        const container = document.getElementById('az-buttons-container');
-        container.innerHTML = '';
-        for(let i=65; i<=90; i++){
-            const lettre = String.fromCharCode(i);
-            const btn = document.createElement('a');
-            btn.className = 'az-btn';
-            btn.href = `${lettre.toLowerCase()}.html`;
-            btn.textContent = lettre;
-            container.appendChild(btn);
-        }
-        overlay.style.display = 'block';
-    }
-    window.closeAZOverlay = function(){
-        document.getElementById('az-overlay').style.display = 'none';
-    };
-
-    async function activerModeProcedure(){ 
-        modeActuel='Procedure'; 
-        document.getElementById('modeText').textContent='🤖 MODE: PROCEDURE'; 
-        closeMenu(); 
-        afficherMessage('✅ Mode changé : Procedure','bot'); 
-    }
-
-    // ==================== MODES (Gallery & Bibliotheque) ====================
+    function showBibliothequeUnlockModal(){ document.getElementById('bibliotheque-unlock-modal').style.display='block'; document.getElementById('biblio-step-code').classList.add('active'); document.getElementById('biblio-step-payment').classList.remove('active'); document.getElementById('biblio-code-input').value = ''; }
+    window.closeBibliothequeUnlockModal = function(){ document.getElementById('bibliotheque-unlock-modal').style.display='none'; };
+    window.verifierCodeAccesBibliotheque = async function(){ const btn = document.getElementById('btnValiderBiblio'); const code = document.getElementById('biblio-code-input').value.trim(); const email = localStorage.getItem('userEmail')||''; if(!code){ alert('Code requis'); return; } btn.disabled = true; btn.textContent = 'Vérification...'; try{ const r = await fetch(`${URL_GAS_CHECK}?action=checkProcedureCode&email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}`); const t = await r.text(); if(t.trim()==='VALIDE'){ setBibliothequeUnlocked(); closeBibliothequeUnlockModal(); enterBibliothequeMode(); } else { document.getElementById('biblio-step-code').classList.remove('active'); document.getElementById('biblio-step-payment').classList.add('active'); } }catch(e){ alert('Erreur réseau'); } btn.disabled = false; btn.textContent = 'Valider'; };
+    function showUnlockModal(){ document.getElementById('unlock-step-code').classList.add('active'); document.getElementById('unlock-step-payment').classList.remove('active'); document.getElementById('unlock-code-input').value = ''; document.getElementById('unlock-modal').classList.add('show'); }
+    window.closeUnlockModal=function(){ document.getElementById('unlock-modal').classList.remove('show'); };
+    window.contacterAdmin=function(c){ let m="Bonjour, je contacte l'administrateur de Petio."; if(c==='vip') m="Bonjour, je souhaite obtenir un accès VIP pour Petio."; else if(c==='payment') m="Bonjour, le code saisi est invalide."; else if(c==='biblio') m="Bonjour, je souhaite obtenir l'accès à la Bibliothèque."; else if(c==='code') m="Bonjour, j'ai un problème avec le code d'accès Procédure."; else if(c==='service' || c==='service_payment') m="Bonjour, je souhaite obtenir l'accès au Service."; window.open(`https://wa.me/12496806826?text=${encodeURIComponent(m)}`,'_blank'); };
+    async function verifierCodeAcces(){ const btn = document.getElementById('btnValiderProcedure'); const code=document.getElementById('unlock-code-input').value.trim(); const email=localStorage.getItem('userEmail')||''; if(!code){ afficherErreur("Veuillez saisir un code."); return; } if(!email){ afficherErreur("Email utilisateur introuvable."); return; } btn.disabled = true; btn.textContent = 'Vérification...'; try{ const r=await fetch(`${URL_GAS_CHECK}?action=checkProcedureCode&email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}`); const t=await r.text(); if(t.trim()==='VALIDE'){ setProcedureUnlocked(); closeUnlockModal(); await activerModeProcedure(); }else{ document.getElementById('unlock-step-code').classList.remove('active'); document.getElementById('unlock-step-payment').classList.add('active'); } }catch(e){ afficherErreur("Erreur réseau."); } btn.disabled = false; btn.textContent = 'Valider'; }
+    window.openServiceModal = function(){ if(isServiceUnlocked()){ closeSettings(); afficherAZOverlay(); return; } closeSettings(); document.getElementById('service-unlock-modal').style.display='block'; document.getElementById('service-step-code').classList.add('active'); document.getElementById('service-step-payment').classList.remove('active'); document.getElementById('service-code-input').value = ''; };
+    window.closeServiceUnlockModal = function(){ document.getElementById('service-unlock-modal').style.display='none'; };
+    window.verifierCodeAccesService = async function(){ const btn = document.getElementById('btnValiderService'); const code = document.getElementById('service-code-input').value.trim(); const email = localStorage.getItem('userEmail')||''; if(!code){ alert('Code requis'); return; } btn.disabled = true; btn.textContent = 'Vérification...'; try{ const r = await fetch(`${URL_GAS_CHECK}?action=checkProcedureCode&email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}`); const t = await r.text(); if(t.trim()==='VALIDE'){ setServiceUnlocked(); closeServiceUnlockModal(); afficherAZOverlay(); } else { document.getElementById('service-step-code').classList.remove('active'); document.getElementById('service-step-payment').classList.add('active'); } }catch(e){ alert('Erreur réseau'); } btn.disabled = false; btn.textContent = 'Valider'; };
+    function afficherAZOverlay(){ const overlay = document.getElementById('az-overlay'); const container = document.getElementById('az-buttons-container'); container.innerHTML = ''; for(let i=65; i<=90; i++){ const lettre = String.fromCharCode(i); const btn = document.createElement('a'); btn.className = 'az-btn'; btn.href = `${lettre.toLowerCase()}.html`; btn.textContent = lettre; container.appendChild(btn); } overlay.style.display = 'block'; }
+    window.closeAZOverlay = function(){ document.getElementById('az-overlay').style.display = 'none'; };
+    async function activerModeProcedure(){ modeActuel='Procedure'; document.getElementById('modeText').textContent='🤖 MODE: PROCEDURE'; closeMenu(); afficherMessage('✅ Mode changé : Procedure','bot'); }
     function enterGalleryMode(){ galleryModeActive=true; document.getElementById('mainHeader').style.display='none'; document.getElementById('galleryHeader').style.display='flex'; document.getElementById('bibliothequeHeader').style.display='none'; document.getElementById('chatArea').style.display='none'; document.getElementById('galleryView').style.display='block'; document.getElementById('bibliothequeView').style.display='none'; document.getElementById('inputBar').style.display='none'; document.getElementById('modeText').textContent='🖼️ GALLERY'; closeMenu(); loadGalleryFromTxt(); }
     window.exitGalleryMode=function(){ galleryModeActive=false; document.getElementById('mainHeader').style.display='flex'; document.getElementById('galleryHeader').style.display='none'; document.getElementById('chatArea').style.display='flex'; document.getElementById('galleryView').style.display='none'; document.getElementById('inputBar').style.display='flex'; changerMode('Cerveau'); };
-    
-    function enterBibliothequeMode(){ 
-        if(!isBibliothequeUnlocked()){
-            showBibliothequeUnlockModal();
-            return;
-        }
-        bibliothequeModeActive=true; 
-        document.getElementById('mainHeader').style.display='none'; 
-        document.getElementById('bibliothequeHeader').style.display='flex'; 
-        document.getElementById('galleryHeader').style.display='none'; 
-        document.getElementById('chatArea').style.display='none'; 
-        document.getElementById('galleryView').style.display='none'; 
-        document.getElementById('bibliothequeView').style.display='block'; 
-        document.getElementById('inputBar').style.display='none'; 
-        document.getElementById('modeText').textContent='📚 BIBLIOTHÈQUE'; 
-        closeMenu(); 
-        loadBibliotheque(); 
-    }
+    function enterBibliothequeMode(){ if(!isBibliothequeUnlocked()){ showBibliothequeUnlockModal(); return; } bibliothequeModeActive=true; document.getElementById('mainHeader').style.display='none'; document.getElementById('bibliothequeHeader').style.display='flex'; document.getElementById('galleryHeader').style.display='none'; document.getElementById('chatArea').style.display='none'; document.getElementById('galleryView').style.display='none'; document.getElementById('bibliothequeView').style.display='block'; document.getElementById('inputBar').style.display='none'; document.getElementById('modeText').textContent='📚 BIBLIOTHÈQUE'; closeMenu(); loadBibliotheque(); }
     window.exitBibliothequeMode=function(){ bibliothequeModeActive=false; document.getElementById('mainHeader').style.display='flex'; document.getElementById('bibliothequeHeader').style.display='none'; document.getElementById('chatArea').style.display='flex'; document.getElementById('bibliothequeView').style.display='none'; document.getElementById('inputBar').style.display='flex'; changerMode('Cerveau'); };
-    // ==================== CHANGEMENT DE MODE ====================
-    const changerModeOriginal=async function(n){ 
-        if(n==='Gallery'){ enterGalleryMode(); return; } 
-        if(n==='Bibliotheque'){ enterBibliothequeMode(); return; } 
-        if(galleryModeActive) exitGalleryMode(); 
-        if(bibliothequeModeActive) exitBibliothequeMode(); 
-        if(n!=='Global'){ 
-            if(!await chargerFichiersMode(n)){ 
-                afficherErreur(`Mode ${n} sans fichier`); 
-                return; 
-            } 
-        } 
-        modeActuel=n; 
-        document.getElementById('modeText').textContent=`🤖 MODE: ${n.toUpperCase()}`; 
-        localStorage.setItem('petio_current_mode',n); 
-        closeMenu(); 
-        afficherMessage(`✅ Mode changé : ${n}`, 'bot'); 
-    };
-    window.changerMode=async function(n){ 
-        if(n==='Procedure'){ 
-            if(isProcedureUnlocked()) 
-                await changerModeOriginal(n); 
-            else 
-                showUnlockModal(); 
-        } else { 
-            await changerModeOriginal(n); 
-        } 
-    };
-
-    // ==================== AFFICHAGE MESSAGES ====================
+    const changerModeOriginal=async function(n){ if(n==='Gallery'){ enterGalleryMode(); return; } if(n==='Bibliotheque'){ enterBibliothequeMode(); return; } if(galleryModeActive) exitGalleryMode(); if(bibliothequeModeActive) exitBibliothequeMode(); if(n!=='Global'){ if(!await chargerFichiersMode(n)){ afficherErreur(`Mode ${n} sans fichier`); return; } } modeActuel=n; document.getElementById('modeText').textContent=`🤖 MODE: ${n.toUpperCase()}`; localStorage.setItem('petio_current_mode',n); closeMenu(); afficherMessage(`✅ Mode changé : ${n}`, 'bot'); };
+    window.changerMode=async function(n){ if(n==='Procedure'){ if(isProcedureUnlocked()) await changerModeOriginal(n); else showUnlockModal(); } else { await changerModeOriginal(n); } };
     function lierUrls(t){ return t.replace(/(https?:\/\/[^\s]+)/g,'<a href="$1" target="_blank" rel="noopener">$1</a>'); }
-    function afficherMessageBot(texte,skip){ const c=document.getElementById('chatArea'); const b=document.createElement('div'); b.className='message bot'; const s=document.createElement('span'); s.className='message-text'; s.setAttribute('data-full-text',texte); const copy=document.createElement('button'); copy.className='btn-copy'; copy.innerHTML='<i class="ph ph-copy"></i>'; copy.onclick=()=>copierMessage(copy); b.appendChild(s); b.appendChild(copy); c.appendChild(b); let i=0; const speed=30; const txtAvecLiens=lierUrls(texte); function type(){ if(i<texte.length){ s.textContent+=texte.charAt(i); i++; c.scrollTop=c.scrollHeight; setTimeout(type,speed); }else{ s.innerHTML=txtAvecLiens; if(!isLoadingHistory&&!skip) sauvegarderHistorique(); } } type(); return new Promise(r=>setTimeout(r,texte.length*30+50)); }
-    function afficherMessageUser(texte,skip){ const c=document.getElementById('chatArea'); const b=document.createElement('div'); b.className='message user'; b.textContent=texte; c.appendChild(b); if(!isLoadingHistory&&!skip) sauvegarderHistorique(); c.scrollTop=c.scrollHeight; return Promise.resolve(); }
-    async function afficherMessage(texte,type,skip){ const t=await traduireENversFR(texte); return type==='bot'? afficherMessageBot(t,skip): afficherMessageUser(t,skip); }
-    function sauvegarderHistorique(){ if(isLoadingHistory)return; const msgs=[]; document.querySelectorAll('#chatArea .message').forEach(m=>{ const type=m.classList.contains('user')?'user':'bot'; let txt=type==='bot'?(m.querySelector('.message-text')?.getAttribute('data-full-text')||m.textContent):m.textContent; msgs.push({type,texte:txt}); }); localStorage.setItem('chatHistory',JSON.stringify(msgs)); }
+    function afficherMessageBot(texte,skip){ 
+        const c=document.getElementById('chatArea'); 
+        const wrapper=document.createElement('div'); 
+        wrapper.className='msg-wrapper';
+        const b=document.createElement('div'); 
+        b.className='message bot'; 
+        const s=document.createElement('span'); 
+        s.className='message-text'; 
+        s.setAttribute('data-full-text',texte); 
+        b.appendChild(s); 
+        wrapper.appendChild(b);
+        const actions=document.createElement('div'); 
+        actions.className='msg-actions';
+        const copy=document.createElement('button'); 
+        copy.className='action-btn'; 
+        copy.innerHTML='<i class="ph ph-copy"></i>'; 
+        copy.onclick=()=>copierMessage(s);
+        const speak=document.createElement('button'); 
+        speak.className='action-btn'; 
+        speak.innerHTML='<i class="ph ph-speaker-high"></i>'; 
+        speak.onclick=()=>{ 
+            if(speak.classList.contains('speaking')){ 
+                stopSpeaking(speak); 
+            } else { 
+                speakText(texte, speak);             } 
+        };
+        actions.appendChild(copy);
+        actions.appendChild(speak);
+        wrapper.appendChild(actions);
+        c.appendChild(wrapper); 
+        let i=0; const speed=25; const txtAvecLiens=lierUrls(texte); 
+        function type(){ if(i<texte.length){ s.textContent+=texte.charAt(i); i++; c.scrollTop=c.scrollHeight; setTimeout(type,speed); }else{ s.innerHTML=txtAvecLiens; if(!isLoadingHistory&&!skip) sauvegarderHistorique(); } } 
+        type(); return new Promise(r=>setTimeout(r,texte.length*25+50)); 
+    }
+    function afficherMessageUser(texte,skip){ 
+        const c=document.getElementById('chatArea'); 
+        const wrapper=document.createElement('div'); 
+        wrapper.className='msg-wrapper user-msg';
+        const b=document.createElement('div'); 
+        b.className='message user'; 
+        b.textContent=texte; 
+        wrapper.appendChild(b); 
+        c.appendChild(wrapper);
+        if(!isLoadingHistory&&!skip) sauvegarderHistorique(); 
+        c.scrollTop=c.scrollHeight; 
+        return Promise.resolve(); 
+    }
+    async function afficherMessage(texte,type,skip){ 
+        const t = type === 'bot' ? await traduireFR(texte) : texte; 
+        return type==='bot'? afficherMessageBot(t,skip): afficherMessageUser(t,skip); 
+    }
+    function sauvegarderHistorique(){ if(isLoadingHistory)return; const msgs=[]; document.querySelectorAll('#chatArea .message').forEach(m=>{ const wrapper=m.closest('.msg-wrapper'); const type=wrapper.classList.contains('user-msg')?'user':'bot'; let txt=type==='bot'?(m.querySelector('.message-text')?.getAttribute('data-full-text')||m.textContent):m.textContent; msgs.push({type,texte:txt}); }); localStorage.setItem('chatHistory',JSON.stringify(msgs)); }
     function chargerHistorique(){ isLoadingHistory=true; document.getElementById('chatArea').innerHTML=''; const saved=localStorage.getItem('chatHistory'); if(!saved){ afficherMessage('Accès confirmé. Bonjour, comment puis-je vous aider ?','bot').then(()=>isLoadingHistory=false); return; } try{ const msgs=JSON.parse(saved); Promise.all(msgs.map(m=>afficherMessage(m.texte,m.type,true))).then(()=>{ isLoadingHistory=false; sauvegarderHistorique(); }); }catch(e){ afficherMessage('Accès confirmé. Bonjour, comment puis-je vous aider ?','bot').then(()=>isLoadingHistory=false); } }
-    function copierMessage(btn){ const txt=btn.closest('.message').querySelector('.message-text').textContent.trim(); navigator.clipboard.writeText(txt).then(()=>{ btn.innerHTML='<i class="ph-fill ph-check"></i>'; btn.classList.add('copied'); setTimeout(()=>{ btn.innerHTML='<i class="ph ph-copy"></i>'; btn.classList.remove('copied'); },2000); }); }
+    function copierMessage(el){ const txt=el.textContent.trim(); navigator.clipboard.writeText(txt).then(()=>{ const btn=el.closest('.msg-wrapper').querySelector('.action-btn:first-child'); if(btn){ btn.innerHTML='<i class="ph-fill ph-check"></i>'; setTimeout(()=>{ btn.innerHTML='<i class="ph ph-copy"></i>'; },2000); } }); }
     function mettreAJourNomBot(){ document.getElementById('typingName').textContent=nomBot; document.getElementById('currentBotName').textContent=nomBot; document.title=`Petio - ${nomBot}`; }
-
-    // ==================== INIT & UTILS ====================
     function toggleTranslation(){ traductionActive=!traductionActive; localStorage.setItem('petio_traduction',traductionActive); const i=document.getElementById('translationSettingIcon'); i.className=traductionActive?'setting-icon ph ph-translate':'setting-icon ph ph-translate-slash'; i.style.opacity=traductionActive?'1':'0.5'; }
     function initTranslationButton(){ const i=document.getElementById('translationSettingIcon'); if(!traductionActive){ i.className='setting-icon ph ph-translate-slash'; i.style.opacity='0.5'; } }
     function closeMenu(){ menu.classList.remove('show'); suggestionsContainer.classList.remove('show'); }
@@ -1270,58 +673,32 @@
     function closeSettings(){ document.getElementById('settingsPage').classList.remove('open'); }
     function afficherErreur(m){ const p=document.getElementById('error-popup'); document.getElementById('error-msg').innerText=m; p.classList.add('show'); setTimeout(()=>p.classList.remove('show'),4000); }
     function resetMode(){ changerMode('Cerveau'); }
-    async function verifierAcces(){ 
-        const email=document.getElementById('userEmail').value.trim(), code=document.getElementById('userCode').value.trim(), btn=document.getElementById('btnValid'); 
-        if(!email||!code){ afficherErreur("Champs obligatoires."); return; }         btn.disabled=true; btn.innerText="Vérification...";
-        try{ 
-            const r=await fetch(`https://script.google.com/macros/s/AKfycbwECfIzsgINAu5IqMDaqcDuYtZAaspR16wvxu-BuLaqTdGJT-6Pec3hJs27lYvxzaIB2Q/exec?action=verif&email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}`); 
-            const t=await r.text(); 
-            if(t.trim()==='VALIDE'){ 
-                localStorage.setItem('pierre_bot_access','true'); 
-                localStorage.setItem('userEmail',email); 
-                let adminUsers=JSON.parse(localStorage.getItem('petio_admin_users')||'[]'); 
-                if(!adminUsers.some(u=>u.email===email)){ 
-                    adminUsers.push({email,date:new Date().toISOString()}); 
-                    localStorage.setItem('petio_admin_users',JSON.stringify(adminUsers)); 
-                } 
-                showPage('robot'); 
-                chargerHistorique(); 
-            }else{ 
-                openPay(); 
-            } 
-        }catch(e){ 
-            afficherErreur("Erreur réseau."); 
-        } finally{ 
-            btn.disabled=false; btn.innerText="Valider"; 
-        } 
-    }
+    async function verifierAcces(){ const email=document.getElementById('userEmail').value.trim(), code=document.getElementById('userCode').value.trim(), btn=document.getElementById('btnValid'); if(!email||!code){ afficherErreur("Champs obligatoires."); return; } btn.disabled=true; btn.innerText="Vérification..."; try{ const r=await fetch(`https://script.google.com/macros/s/AKfycbwECfIzsgINAu5IqMDaqcDuYtZAaspR16wvxu-BuLaqTdGJT-6Pec3hJs27lYvxzaIB2Q/exec?action=verif&email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}`); const t=await r.text(); if(t.trim()==='VALIDE'){ localStorage.setItem('pierre_bot_access','true'); localStorage.setItem('userEmail',email); let adminUsers=JSON.parse(localStorage.getItem('petio_admin_users')||'[]'); if(!adminUsers.some(u=>u.email===email)){ adminUsers.push({email,date:new Date().toISOString()}); localStorage.setItem('petio_admin_users',JSON.stringify(adminUsers)); } showPage('robot'); chargerHistorique(); }else{ openPay(); } }catch(e){ afficherErreur("Erreur réseau."); } finally{ btn.disabled=false; btn.innerText="Valider"; } }
     function openPay(){ document.getElementById('pay-sheet').classList.add('show'); document.getElementById('overlay').classList.add('show'); }
     function closePay(){ document.getElementById('pay-sheet').classList.remove('show'); document.getElementById('overlay').classList.remove('show'); }
     function showPage(n){ document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.getElementById(`page-${n}`).classList.add('active'); if(n==='robot')setTimeout(()=>textarea.focus(),100); }
-    function handleInput(el){ el.style.height='auto'; el.style.height=(el.scrollHeight>40?el.scrollHeight:'auto')+'px'; const v=!!el.value.trim(); btnSend.classList.toggle('show',v); btnPlus.classList.toggle('hidden',v); }
-    function resetInputBar(){ textarea.value=''; handleInput(textarea); textarea.focus(); }
+    function handleInput(el){ 
+        el.style.height='auto'; 
+        el.style.height=(el.scrollHeight>40?el.scrollHeight:'auto')+'px'; 
+        const v=!!el.value.trim(); 
+        btnSend.classList.toggle('show',v); 
+        btnPlus.classList.toggle('hidden',v); 
+        btnMic.classList.toggle('hidden',v); 
+    }    function resetInputBar(){ textarea.value=''; handleInput(textarea); textarea.focus(); }
     function toggleMenu(e){ e.stopPropagation(); menu.classList.toggle('show'); }
     async function envoyerMessage(){ const msg=textarea.value.trim(); if(!msg)return; if(modeActuel==='Gallery'||modeActuel==='Bibliotheque'){ afficherErreur('Ce mode n\'accepte pas de chat.'); return; } document.querySelectorAll('.suggestion-btn').forEach(b=>b.remove()); afficherMessage(msg,'user'); resetInputBar(); document.getElementById('typing').classList.add('show'); try{ const rep=await rechercherDansFichiers(modeActuel,msg); document.getElementById('typing').classList.remove('show'); if(rep&&rep.__isDocumentMessage){ await afficherMessageAvecBoutonDocument(rep.text,rep.sourceFile); }else if(rep&&rep.matches){ await afficherMessage(rep.message,'bot'); afficherSuggestionsInChat(rep.matches); }else{ afficherMessage(rep,'bot'); } }catch(e){ document.getElementById('typing').classList.remove('show'); afficherMessage("Erreur lors de la recherche.",'bot'); } }
-    function afficherSuggestionsInChat(matches){ const ca=document.getElementById('chatArea'); matches.forEach(m=>{ const b=document.createElement('button'); b.className='suggestion-btn'; traduireENversFR(m.preview).then(p=>b.textContent=p); b.onclick=async()=>{ document.querySelectorAll('.suggestion-btn').forEach(bt=>bt.remove()); const full=await traduireENversFR(m.full); if(m.sourceFile&&(m.sourceFile.endsWith('.pdf')||m.sourceFile.endsWith('.docx'))) await afficherMessageAvecBoutonDocument(full,m.sourceFile); else await afficherMessage(full,'bot'); }; ca.appendChild(b); }); ca.scrollTop=ca.scrollHeight; }
-    async function afficherMessageAvecBoutonDocument(textePartiel,sourceFile){ const c=document.getElementById('chatArea'); const b=document.createElement('div'); b.className='message bot'; const s=document.createElement('span'); s.className='message-text'; s.setAttribute('data-full-text',textePartiel); s.innerHTML=lierUrls(textePartiel); const copy=document.createElement('button'); copy.className='btn-copy'; copy.innerHTML='<i class="ph ph-copy"></i>'; copy.onclick=()=>copierMessage(copy); b.appendChild(s); b.appendChild(copy); const suite=document.createElement('button'); suite.className='suite-btn'; suite.innerHTML='<i class="ph ph-book-open"></i> Lire la suite du document'; suite.onclick=async()=>{ suite.disabled=true; suite.innerHTML='<i class="ph ph-spinner"></i> Chargement...'; try{ let full=fullTextCache.get(sourceFile); if(!full){ full=await extraireTexteFichierLocal(sourceFile); if(full)fullTextCache.set(sourceFile,full); } if(full){ const t=await traduireENversFR(full); await afficherMessage(`📄 **Document complet : ${sourceFile}**\n\n${t}`,'bot'); }else await afficherMessage(`❌ Impossible de charger le document "${sourceFile}".`,'bot'); }catch(e){ await afficherMessage(`❌ Erreur lors du chargement du document.`,'bot'); } suite.remove(); if(!isLoadingHistory) sauvegarderHistorique(); }; b.appendChild(suite); c.appendChild(b); if(!isLoadingHistory) sauvegarderHistorique(); c.scrollTop=c.scrollHeight; }
-
-    // ==================== INIT APP ====================
+    function afficherSuggestionsInChat(matches){ const ca=document.getElementById('chatArea'); matches.forEach(m=>{ const b=document.createElement('button'); b.className='suggestion-btn'; traduireFR(m.preview).then(p=>b.textContent=p); b.onclick=async()=>{ document.querySelectorAll('.suggestion-btn').forEach(bt=>bt.remove()); const full=await traduireFR(m.full); if(m.sourceFile&&(m.sourceFile.endsWith('.pdf')||m.sourceFile.endsWith('.docx'))) await afficherMessageAvecBoutonDocument(full,m.sourceFile); else await afficherMessage(full,'bot'); }; ca.appendChild(b); }); ca.scrollTop=ca.scrollHeight; }
+    async function afficherMessageAvecBoutonDocument(textePartiel,sourceFile){ const c=document.getElementById('chatArea'); const wrapper=document.createElement('div'); wrapper.className='msg-wrapper'; const b=document.createElement('div'); b.className='message bot'; const s=document.createElement('span'); s.className='message-text'; s.setAttribute('data-full-text',textePartiel); s.innerHTML=lierUrls(textePartiel); b.appendChild(s); wrapper.appendChild(b); const actions=document.createElement('div'); actions.className='msg-actions'; const copy=document.createElement('button'); copy.className='action-btn'; copy.innerHTML='<i class="ph ph-copy"></i>'; copy.onclick=()=>copierMessage(s); const speak=document.createElement('button'); speak.className='action-btn'; speak.innerHTML='<i class="ph ph-speaker-high"></i>'; speak.onclick=()=>{ if(speak.classList.contains('speaking')){ stopSpeaking(speak); } else { speakText(textePartiel, speak); } }; actions.appendChild(copy); actions.appendChild(speak); wrapper.appendChild(actions); const suite=document.createElement('button'); suite.className='suite-btn'; suite.innerHTML='<i class="ph ph-book-open"></i> Lire la suite du document'; suite.onclick=async()=>{ suite.disabled=true; suite.innerHTML='<i class="ph ph-spinner"></i> Chargement...'; try{ let full=fullTextCache.get(sourceFile); if(!full){ full=await extraireTexteFichierLocal(sourceFile); if(full)fullTextCache.set(sourceFile,full); } if(full){ const t=await traduireFR(full); await afficherMessage(`📄 **Document complet : ${sourceFile}**\n\n${t}`,'bot'); }else await afficherMessage(`❌ Impossible de charger le document "${sourceFile}".`,'bot'); }catch(e){ await afficherMessage(`❌ Erreur lors du chargement du document.`,'bot'); } suite.remove(); if(!isLoadingHistory) sauvegarderHistorique(); }; wrapper.appendChild(suite); c.appendChild(wrapper); if(!isLoadingHistory) sauvegarderHistorique(); c.scrollTop=c.scrollHeight; }
     window.addEventListener('DOMContentLoaded',async()=>{ loadStatus.style.display='block'; const contenu=await chargerFichiersMode('Cerveau'); loadStatus.className=contenu?'success':'error'; loadStatus.textContent=contenu?'✅ Prêt.':'⚠️ Fichier cerveau.txt manquant'; setTimeout(()=>loadStatus.style.display='none',2000); initTranslationButton(); loadUserPhoto(); mettreAJourNomBot(); if(localStorage.getItem('pierre_bot_access')==='true'){ showPage('robot'); chargerHistorique(); } if(localStorage.getItem('theme')==='dark'){ document.body.classList.add('dark-theme'); document.getElementById('themeIcon').className='ph ph-sun'; } });
     function deconnexionComplete(){ localStorage.removeItem('pierre_bot_access'); localStorage.removeItem('chatHistory'); localStorage.removeItem(UNLOCK_KEY_PROCEDURE); localStorage.removeItem(UNLOCK_KEY_BIBLIOTHEQUE); localStorage.removeItem(UNLOCK_KEY_SERVICE); window.location.reload(); }
-
-    // Expositions globales
-    window.verifierAcces=verifierAcces; window.openPay=openPay; window.closePay=closePay;
-    window.toggleTheme=toggleTheme; window.handleInput=handleInput; window.toggleMenu=toggleMenu;
-    window.closeMenu=closeMenu; window.openSettings=openSettings; window.closeSettings=closeSettings;
-    window.resetMode=resetMode; window.envoyerMessage=envoyerMessage; window.copierMessage=copierMessage;
-    window.contacterAdmin=contacterAdmin; window.verifierCodeAcces=verifierCodeAcces;
-    window.deconnexionComplete=deconnexionComplete; window.toggleTranslation=toggleTranslation;
+    window.verifierAcces=verifierAcces; window.openPay=openPay; window.closePay=closePay; window.toggleTheme=toggleTheme; window.handleInput=handleInput; window.toggleMenu=toggleMenu; window.closeMenu=closeMenu; window.openSettings=openSettings; window.closeSettings=closeSettings; window.resetMode=resetMode; window.envoyerMessage=envoyerMessage; window.copierMessage=copierMessage; window.contacterAdmin=contacterAdmin; window.verifierCodeAcces=verifierCodeAcces; window.deconnexionComplete=deconnexionComplete; window.toggleTranslation=toggleTranslation;
     window.afficherBanniereInstallation=function(){ closeSettings(); document.getElementById('pwa-install-sheet').classList.add('show'); };
     window.confirmChangeName=function(){ const n=document.getElementById('newBotNameInput').value.trim(); if(n){ nomBot=n; localStorage.setItem('botName',nomBot); mettreAJourNomBot(); afficherMessage(`✨ Assistant renommé en "${nomBot}".`,'bot'); } closeNameModal(); };
     window.openNameModal=function(){ closeSettings(); document.getElementById('newBotNameInput').value=nomBot; document.getElementById('nameModal').classList.add('show'); };
     window.closeNameModal=function(){ document.getElementById('nameModal').classList.remove('show'); };
     function toggleSettingDesc(id){ ['faq','cgu','confidentialite','apropos'].forEach(k=>{ if(k!==id){ const d=document.getElementById(k+'-desc'); if(d&&d.parentElement.classList.contains('active')) d.parentElement.classList.remove('active'); } }); const c=document.getElementById(id+'-desc'); if(c) c.parentElement.classList.toggle('active'); }
-    window.toggleSettingDesc=toggleSettingDesc;})();
+    window.toggleSettingDesc=toggleSettingDesc;
+})();
 </script>
 </body>
-    </html>
+                                                                                                                                                                                                                                                                                                                                          </html>
